@@ -1,10 +1,7 @@
-// Store pending rebuild request
-let pendingRebuild: NodeJS.Timeout | null = null;
-const DEBOUNCE_MS = 30_000; // 30 seconds
-
 /**
  * Triggers a frontend rebuild via GitHub Actions workflow_dispatch.
- * Debounces multiple rapid changes to prevent excessive rebuilds.
+ * Dispatches immediately; rapid successive edits are coalesced by GitHub
+ * Actions concurrency (cancel-in-progress on ci.yml).
  */
 export async function triggerFrontendRebuild(collection: string, operation: string): Promise<void> {
   const token = process.env.GITHUB_TOKEN;
@@ -16,39 +13,29 @@ export async function triggerFrontendRebuild(collection: string, operation: stri
     return;
   }
 
-  // Clear any pending rebuild
-  if (pendingRebuild) {
-    clearTimeout(pendingRebuild);
-    console.log(`[Rebuild] Debouncing: ${collection} ${operation}`);
-  }
+  const workflowFile = process.env.GITHUB_WORKFLOW_FILE ?? 'ci.yml';
+  const ref = process.env.GITHUB_REF ?? 'main';
 
-  // Schedule rebuild after debounce period
-  pendingRebuild = setTimeout(async () => {
-    pendingRebuild = null;
-
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy.yml/dispatches`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/vnd.github.v3+json',
-          },
-          body: JSON.stringify({ ref: 'main' }),
-        }
-      );
-
-      if (response.ok || response.status === 204) {
-        console.log(`[Rebuild] Triggered for ${collection} ${operation}`);
-      } else {
-        const errorText = await response.text();
-        console.error(`[Rebuild] Failed (${response.status}): ${errorText}`);
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github.v3+json',
+        },
+        body: JSON.stringify({ ref, inputs: { deploy_target: 'app-only' } }),
       }
-    } catch (error) {
-      console.error('[Rebuild] Error:', error);
-    }
-  }, DEBOUNCE_MS);
+    );
 
-  console.log(`[Rebuild] Scheduled for ${collection} ${operation} (in ${DEBOUNCE_MS / 1000}s)`);
+    if (response.ok || response.status === 204) {
+      console.log(`[Rebuild] Triggered ${workflowFile} for ${collection} ${operation}`);
+    } else {
+      const errorText = await response.text();
+      console.error(`[Rebuild] Failed (${response.status}) dispatching ${workflowFile}: ${errorText}`);
+    }
+  } catch (error) {
+    console.error(`[Rebuild] Error dispatching ${workflowFile}:`, error);
+  }
 }
