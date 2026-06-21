@@ -121,11 +121,11 @@ The CMS automatically triggers a frontend rebuild when content is published or u
 
 1. When you save content in the CMS (blog posts, pages, videos, etc.)
 2. PayloadCMS `afterChange` hooks detect the change
-3. The CMS calls GitHub Actions API to trigger the `deploy.yml` workflow
+3. The CMS calls GitHub Actions API to trigger the `ci.yml` workflow
 4. GitHub Actions rebuilds and deploys the static site to GitHub Pages
 5. Changes appear live in ~2-5 minutes
 
-**Debouncing**: If you make multiple rapid changes, only one rebuild is triggered after 30 seconds of inactivity. This prevents excessive builds when batch-editing content.
+**Coalescing**: Rebuilds are dispatched immediately. Rapid successive edits are coalesced by GitHub Actions concurrency (`cancel-in-progress` on `ci.yml`), so only the latest run proceeds.
 
 ### Setup
 
@@ -156,12 +156,20 @@ The CMS automatically triggers a frontend rebuild when content is published or u
 
 ### Alternative: Scheduled Rebuilds
 
-If you prefer not to use webhooks, add a cron trigger to `.github/workflows/deploy.yml`:
+If you prefer not to use webhooks, add a `schedule:` entry to the existing `on:` block in
+`.github/workflows/ci.yml` (alongside the existing `pull_request`, `push`, and
+`workflow_dispatch` triggers):
 
 ```yaml
+# .github/workflows/ci.yml
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_target: # ...existing input definition...
   schedule:
     - cron: '0 */6 * * *' # Every 6 hours
 ```
