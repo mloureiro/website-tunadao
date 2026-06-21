@@ -5,8 +5,19 @@ export const FestivalParticipants: CollectionConfig = {
   slug: 'festival-participants',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
-        await triggerFrontendRebuild('festival-participants', operation);
+      async ({ doc, operation, req }) => {
+        const festivalId =
+          typeof doc.festival === 'object' && doc.festival !== null
+            ? doc.festival.id
+            : doc.festival;
+        if (festivalId) {
+          try {
+            const festival = await req.payload.findByID({ collection: 'festivals', id: festivalId });
+            if (festival?.status === 'published') {
+              await triggerFrontendRebuild('festival-participants', operation);
+            }
+          } catch {}
+        }
         return doc;
       },
     ],
