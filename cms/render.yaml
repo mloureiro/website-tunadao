@@ -40,6 +40,10 @@ services:
         sync: false
       - key: GITHUB_REPO
         sync: false
+      - key: GITHUB_WORKFLOW_FILE
+        value: "ci.yml"
+      - key: GITHUB_REF
+        value: "main"
       # Cloudinary Upload Widget (client-side)
       - key: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
         sync: false
