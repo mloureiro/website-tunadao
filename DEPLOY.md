@@ -102,7 +102,7 @@ Set these in the Render dashboard (or they are declared in `cms/render.yaml` for
 > the intent clearly in the Render dashboard.
 
 > **Secret grep gate:** no real secret values are committed in source. Run
-> `git grep -n "dev-secret-key-change-in-production" -- ':!wiki'` — must return nothing.
+> `git grep -n "dev-secret-key-change-in-production" -- ':!wiki' ':!DEPLOY.md'` — must return nothing.
 
 ### Database - Turso
 
