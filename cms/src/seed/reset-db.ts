@@ -8,8 +8,8 @@ import { LOCAL_DB_FILE, LOCAL_DB_URL } from '../lib/db-path';
 dotenvConfig({ path: '.env.local', override: true });
 
 const resetDatabase = async () => {
-  const tursoUrl = process.env.TURSO_DATABASE_URL;
-  const authToken = process.env.TURSO_AUTH_TOKEN;
+  const tursoUrl = process.env.TURSO_DATABASE_URL || undefined;
+  const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
   const isLocal = !tursoUrl;
   const url = tursoUrl ?? LOCAL_DB_URL;
 
