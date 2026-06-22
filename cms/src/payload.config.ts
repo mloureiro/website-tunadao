@@ -46,6 +46,21 @@ const resolveSecret = (): string => {
   return 'dev-only-insecure-secret';
 };
 
+const resolveAllowedOrigins = (): string[] => {
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (isProduction() && !frontendUrl) {
+    throw new Error(
+      'FRONTEND_URL is required in production for CORS/CSRF. ' +
+        'Set it in the Render dashboard (render.yaml declares it).',
+    );
+  }
+  return [
+    'http://localhost:3000',
+    'http://localhost:4321', // Astro dev server
+    frontendUrl || '',
+  ].filter(Boolean);
+};
+
 export default buildConfig({
   secret: resolveSecret(),
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
@@ -107,14 +122,6 @@ export default buildConfig({
 
   sharp,
 
-  cors: [
-    'http://localhost:3000',
-    'http://localhost:4321', // Astro dev server
-    process.env.FRONTEND_URL || '',
-  ].filter(Boolean),
-  csrf: [
-    'http://localhost:3000',
-    'http://localhost:4321',
-    process.env.FRONTEND_URL || '',
-  ].filter(Boolean),
+  cors: resolveAllowedOrigins(),
+  csrf: resolveAllowedOrigins(),
 });
