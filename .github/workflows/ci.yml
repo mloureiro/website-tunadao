@@ -137,6 +137,9 @@ jobs:
       - name: Run unit tests
         run: npm run test -w app
 
+      - name: Run CMS unit tests
+        run: npm run test -w cms
+
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
