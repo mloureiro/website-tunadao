@@ -27,6 +27,24 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      # Schema push safety (must be disabled in production)
+      - key: PAYLOAD_DISABLE_PUSH
+        value: "true"
+      # Contact
+      - key: CONTACT_EMAIL
+        sync: false
+      # GitHub (for automatic frontend rebuilds)
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_OWNER
+        sync: false
+      - key: GITHUB_REPO
+        sync: false
+      # Cloudinary Upload Widget (client-side)
+      - key: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+        sync: false
       # Optional
       - key: RESEND_API_KEY
         sync: false
