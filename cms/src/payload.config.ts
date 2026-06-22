@@ -5,6 +5,7 @@ import { resendAdapter } from '@payloadcms/email-resend';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+import { LOCAL_DB_URL } from './lib/db-path';
 
 // Collections
 import { Users } from './collections/Users';
@@ -49,7 +50,7 @@ export default buildConfig({
 
   db: sqliteAdapter({
     client: {
-      url: process.env.TURSO_DATABASE_URL || 'file:./data/tunadao.db',
+      url: process.env.TURSO_DATABASE_URL || LOCAL_DB_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     },
     push: process.env.PAYLOAD_DISABLE_PUSH !== 'true',
