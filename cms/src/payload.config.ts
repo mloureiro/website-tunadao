@@ -67,7 +67,7 @@ export default buildConfig({
       url: process.env.TURSO_DATABASE_URL || LOCAL_DB_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     },
-    push: process.env.PAYLOAD_DISABLE_PUSH !== 'true',
+    push: process.env.PAYLOAD_DISABLE_PUSH === 'true' ? false : !isProduction(),
   }),
 
   email: process.env.RESEND_API_KEY
