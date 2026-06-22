@@ -22,18 +22,14 @@ export const seedAdminUser = async (payload: Payload) => {
     return;
   }
 
-  try {
-    await payload.create({
-      collection: 'users',
-      data: {
-        email,
-        password,
-        name,
-        role: 'admin',
-      },
-    });
-    console.log(`  Created admin user: ${email}`);
-  } catch (error) {
-    console.error(`  Failed to create admin user:`, error);
-  }
+  await payload.create({
+    collection: 'users',
+    data: {
+      email,
+      password,
+      name,
+      role: 'admin',
+    },
+  });
+  console.log(`  Created admin user: ${email}`);
 };
