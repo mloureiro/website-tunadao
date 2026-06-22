@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { LOCAL_DB_URL } from './lib/db-path';
+import { isProduction } from './lib/env';
 
 // Collections
 import { Users } from './collections/Users';
@@ -32,8 +33,21 @@ import { ContactInfo } from './globals/ContactInfo';
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+const resolveSecret = (): string => {
+  const secret = process.env.PAYLOAD_SECRET;
+  if (secret) return secret;
+  if (isProduction()) {
+    throw new Error(
+      'PAYLOAD_SECRET is required in production. Set it in the Render dashboard ' +
+        '(render.yaml declares it via generateValue: true).',
+    );
+  }
+  // Local dev only — non-secret, never used in production (guarded above).
+  return 'dev-only-insecure-secret';
+};
+
 export default buildConfig({
-  secret: process.env.PAYLOAD_SECRET || 'dev-secret-key-change-in-production',
+  secret: resolveSecret(),
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000',
 
   admin: {
