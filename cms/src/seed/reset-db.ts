@@ -2,25 +2,18 @@ import 'dotenv/config';
 import { config as dotenvConfig } from 'dotenv';
 import { createClient } from '@libsql/client';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { LOCAL_DB_FILE, LOCAL_DB_URL } from '../lib/db-path';
 
 // Load .env.local (overrides .env)
 dotenvConfig({ path: '.env.local', override: true });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const resetDatabase = async () => {
-  const url = process.env.TURSO_DATABASE_URL;
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
+  const isLocal = !tursoUrl;
+  const url = tursoUrl ?? LOCAL_DB_URL;
 
-  if (!url) {
-    console.error('❌ TURSO_DATABASE_URL not set');
-    process.exit(1);
-  }
-
-  console.log(`🔗 Connecting to: ${url}`);
+  console.log(isLocal ? `🔗 Local file DB: ${LOCAL_DB_FILE}` : `🔗 Connecting to: ${url}`);
 
   const client = createClient({
     url,
@@ -82,9 +75,8 @@ const resetDatabase = async () => {
     await client.execute('PRAGMA foreign_keys = ON');
 
     // Also remove local SQLite cache to prevent schema conflicts
-    const localDbPath = path.resolve(__dirname, '../../data/tunadao.db');
-    if (fs.existsSync(localDbPath)) {
-      fs.unlinkSync(localDbPath);
+    if (fs.existsSync(LOCAL_DB_FILE)) {
+      fs.unlinkSync(LOCAL_DB_FILE);
       console.log('🗑️  Removed local SQLite cache');
     }
 
