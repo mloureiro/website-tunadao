@@ -127,6 +127,79 @@ Set these in the Render dashboard (or they are declared in `cms/render.yaml` for
 
 5. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Render dashboard (or via `cms/render.yaml`).
 
+### First admin / first login
+
+**When to run:** Once, immediately after the Turso database and Render environment variables are
+configured and before anyone needs access to `/admin`. Run it from the `cms/` directory (or via
+the workspace flag from the repo root) with the required env vars exported in your shell.
+
+**Why a script and not the `/admin` first-user screen:** The production Turso database starts
+completely empty — no tables, no schema. The Render web service has `PAYLOAD_DISABLE_PUSH=true`
+and `NODE_ENV=production`, so Payload never auto-creates the schema. As a result, the native
+"create first user" screen at `/admin` fails immediately with `no such table: users`. The
+provisioning helper below is the correct first-bootstrap path. Adopting proper Payload migrations
+(`payload migrate`) before launch is tracked as a separate follow-up (`website-tunadao-ogjb`) and
+will supersede this step.
+
+**Required env vars** (export in the shell before running):
+
+| Variable              | Description                        |
+| --------------------- | ---------------------------------- |
+| `ADMIN_EMAIL`         | Email for the first admin account  |
+| `ADMIN_PASSWORD`      | Password for the first admin       |
+| `ADMIN_NAME`          | Display name (optional — default: `Admin`) |
+| `TURSO_DATABASE_URL`  | Production Turso DB URL            |
+| `TURSO_AUTH_TOKEN`    | Production Turso auth token        |
+| `PAYLOAD_SECRET`      | **Must match the Render value** — see warning below |
+
+> **`PAYLOAD_SECRET` warning:** The helper temporarily overrides `NODE_ENV=development` so the
+> push gate fires. This also relaxes the production-only fail-fasts in `payload.config.ts`, which
+> means `PAYLOAD_SECRET` is **not enforced by the script itself**. However, if `PAYLOAD_SECRET`
+> does not match the value Render uses for the running web service, the seeded password hash will
+> be cryptographically invalid and the admin will not be able to log in. Always export the same
+> `PAYLOAD_SECRET` value that is set in the Render dashboard.
+
+**Command:**
+
+```bash
+export ADMIN_EMAIL=admin@example.com
+export ADMIN_PASSWORD=$ADMIN_PASSWORD          # set to a strong bootstrap password
+export ADMIN_NAME="Admin"
+export TURSO_DATABASE_URL=libsql://your-db.turso.io
+export TURSO_AUTH_TOKEN=$TURSO_AUTH_TOKEN      # from: turso db tokens create tunadao
+export PAYLOAD_SECRET=$PAYLOAD_SECRET          # copy from Render dashboard → Environment tab
+
+npm run provision:admin -w cms
+```
+
+**What it does:**
+
+1. Prints a masked target host (scheme + host only — token and credentials are never echoed).
+2. Overrides push to `true` **for this process only** — the running Render service is unaffected.
+3. Creates all database tables (schema push) on a fresh Turso DB.
+4. Creates the admin user via the existing idempotent seeder.
+5. Exits 0 on success.
+
+**Data-safety and idempotency:** The command is safe to re-run. If the schema already exists,
+push is a no-op. If the admin user already exists, it logs `Skipped: … already exists` and exits
+0 — it never duplicates or overwrites an existing account. If `TURSO_DATABASE_URL` or `ADMIN_*`
+are missing (and `PROVISION_ALLOW_LOCAL` is not set), the command fails immediately with a clear
+error and writes nothing to any database.
+
+**Verification-only flag (`PROVISION_ALLOW_LOCAL=true`):** Setting this flag allows running the
+script against a local throwaway SQLite file DB instead of Turso — useful for verifying
+idempotency and fail-fast behavior without production credentials. **Never use this flag for
+production provisioning.**
+
+```bash
+# Local verification only — NOT production
+ADMIN_EMAIL=test@example.com ADMIN_PASSWORD=$ADMIN_PASSWORD \
+  PROVISION_ALLOW_LOCAL=true npm run provision:admin -w cms
+```
+
+**After first login:** Log in at `/admin` and change the password in the user profile UI if
+`ADMIN_PASSWORD` was a temporary bootstrap value.
+
 ---
 
 ## Automatic Frontend Rebuilds
