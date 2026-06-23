@@ -29,6 +29,7 @@ import { ContactSubmissions } from './collections/ContactSubmissions';
 // Globals
 import { SiteSettings } from './globals/SiteSettings';
 import { ContactInfo } from './globals/ContactInfo';
+import { RebuildStatus } from './globals/RebuildStatus';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -112,7 +113,7 @@ export default buildConfig({
     ContactSubmissions,
   ],
 
-  globals: [SiteSettings, ContactInfo],
+  globals: [SiteSettings, ContactInfo, RebuildStatus],
 
   plugins: [],
 
