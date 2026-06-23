@@ -12,6 +12,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "seed": "tsx src/seed/index.ts",
+    "provision:admin": "tsx src/seed/provision-admin.ts",
     "db:reset": "tsx src/seed/reset-db.ts",
     "db:reset-and-seed": "tsx src/seed/reset-db.ts && tsx src/seed/index.ts",
     "db:export": "tsx src/export/index.ts",
