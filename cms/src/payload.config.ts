@@ -74,6 +74,9 @@ export default buildConfig({
     meta: {
       titleSuffix: ' - Tunadao CMS',
     },
+    components: {
+      beforeDashboard: ['@/components/RebuildStatusWidget'],
+    },
   },
 
   editor: lexicalEditor(),
