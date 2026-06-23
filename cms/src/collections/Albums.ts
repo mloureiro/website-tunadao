@@ -5,9 +5,9 @@ export const Albums: CollectionConfig = {
   slug: 'albums',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
+      async ({ doc, operation, req }) => {
         if (doc.status === 'published') {
-          await triggerFrontendRebuild('albums', operation);
+          await triggerFrontendRebuild(req.payload, 'albums', operation);
         }
         return doc;
       },

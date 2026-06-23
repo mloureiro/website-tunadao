@@ -5,8 +5,8 @@ export const ContactInfo: GlobalConfig = {
   slug: 'contact-info',
   hooks: {
     afterChange: [
-      async ({ doc }) => {
-        await triggerFrontendRebuild('contact-info', 'update');
+      async ({ doc, req }) => {
+        await triggerFrontendRebuild(req.payload, 'contact-info', 'update');
         return doc;
       },
     ],

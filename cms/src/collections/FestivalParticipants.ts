@@ -14,7 +14,7 @@ export const FestivalParticipants: CollectionConfig = {
           try {
             const festival = await req.payload.findByID({ collection: 'festivals', id: festivalId });
             if (festival?.status === 'published') {
-              await triggerFrontendRebuild('festival-participants', operation);
+              await triggerFrontendRebuild(req.payload, 'festival-participants', operation);
             }
           } catch {}
         }

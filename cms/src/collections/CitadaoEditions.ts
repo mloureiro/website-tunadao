@@ -5,9 +5,9 @@ export const CitadaoEditions: CollectionConfig = {
   slug: 'citadao-editions',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
+      async ({ doc, operation, req }) => {
         if (doc.status === 'published') {
-          await triggerFrontendRebuild('citadao-editions', operation);
+          await triggerFrontendRebuild(req.payload, 'citadao-editions', operation);
         }
         return doc;
       },

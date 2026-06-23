@@ -118,10 +118,12 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'contact-info': ContactInfo;
+    'rebuild-status': RebuildStatus;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'contact-info': ContactInfoSelect<false> | ContactInfoSelect<true>;
+    'rebuild-status': RebuildStatusSelect<false> | RebuildStatusSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1203,6 +1205,45 @@ export interface ContactInfo {
   createdAt?: string | null;
 }
 /**
+ * Estado do último despoletar de rebuild do site
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rebuild-status".
+ */
+export interface RebuildStatus {
+  id: number;
+  /**
+   * Resultado do último despoletar de rebuild
+   */
+  outcome?: ('success' | 'failure' | 'skipped') | null;
+  /**
+   * Quando o rebuild foi tentado
+   */
+  timestamp?: string | null;
+  /**
+   * Ficheiro de workflow GitHub Actions despoletado
+   */
+  workflowFile?: string | null;
+  /**
+   * Coleção ou global que despoletou o rebuild
+   */
+  triggerCollection?: string | null;
+  /**
+   * Operação (create/update) que despoletou o rebuild
+   */
+  triggerOperation?: string | null;
+  /**
+   * Código de resposta HTTP (quando houve tentativa)
+   */
+  httpStatus?: number | null;
+  /**
+   * Corpo da resposta ou mensagem de erro (em caso de falha)
+   */
+  errorDetail?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
@@ -1237,6 +1278,22 @@ export interface ContactInfoSelect<T extends boolean = true> {
         latitude?: T;
         longitude?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rebuild-status_select".
+ */
+export interface RebuildStatusSelect<T extends boolean = true> {
+  outcome?: T;
+  timestamp?: T;
+  workflowFile?: T;
+  triggerCollection?: T;
+  triggerOperation?: T;
+  httpStatus?: T;
+  errorDetail?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

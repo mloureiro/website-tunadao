@@ -5,9 +5,9 @@ export const Pages: CollectionConfig = {
   slug: 'pages',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
+      async ({ doc, operation, req }) => {
         if (doc.status === 'published') {
-          await triggerFrontendRebuild('pages', operation);
+          await triggerFrontendRebuild(req.payload, 'pages', operation);
         }
         return doc;
       },
