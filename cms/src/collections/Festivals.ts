@@ -5,9 +5,9 @@ export const Festivals: CollectionConfig = {
   slug: 'festivals',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
+      async ({ doc, operation, req }) => {
         if (doc.status === 'published') {
-          await triggerFrontendRebuild('festivals', operation);
+          await triggerFrontendRebuild(req.payload, 'festivals', operation);
         }
         return doc;
       },

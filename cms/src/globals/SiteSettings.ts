@@ -5,8 +5,8 @@ export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   hooks: {
     afterChange: [
-      async ({ doc }) => {
-        await triggerFrontendRebuild('site-settings', 'update');
+      async ({ doc, req }) => {
+        await triggerFrontendRebuild(req.payload, 'site-settings', 'update');
         return doc;
       },
     ],

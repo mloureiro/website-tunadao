@@ -5,9 +5,9 @@ export const Videos: CollectionConfig = {
   slug: 'videos',
   hooks: {
     afterChange: [
-      async ({ doc, operation }) => {
+      async ({ doc, operation, req }) => {
         if (doc.status === 'published') {
-          await triggerFrontendRebuild('videos', operation);
+          await triggerFrontendRebuild(req.payload, 'videos', operation);
         }
         return doc;
       },
