@@ -175,6 +175,34 @@ const { labels } = Astro.props;
 </style>
 
 <script>
+  // PUBLIC_CMS_URL is inlined at build time by Astro (PUBLIC_* prefix).
+  // It is the client-side POST target; the build-time CMS_URL is never exposed to the browser.
+  const CMS = import.meta.env.PUBLIC_CMS_URL as string | undefined;
+
+  /**
+   * Build the JSON payload for the contact form submission.
+   *
+   * Iter 2 NOTE: add `turnstileToken: string` as a property here and pass it
+   * through to the fetch body. The server reads it in beforeValidate, verifies
+   * against Cloudflare siteverify, and strips it before persistence.
+   */
+  function buildContactPayload(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    website: string;
+  }): Record<string, string> {
+    return {
+      name: data.name,
+      email: data.email,
+      subject: data.subject,
+      message: data.message,
+      website: data.website, // honeypot field — server is source of truth (silent-accept or reject)
+      // Iter 2: add turnstileToken here
+    };
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('contactForm') as HTMLFormElement;
     const formStatus = document.getElementById('formStatus');
@@ -188,28 +216,50 @@ const { labels } = Astro.props;
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const formData = new FormData(form);
-
-        // Check honeypot
-        if (formData.get('website')) {
+        // Configuration guard: PUBLIC_CMS_URL must be set or we cannot POST.
+        if (!CMS) {
+          formStatus.textContent = errorText;
+          formStatus.className = 'form-status error';
           return;
         }
 
+        const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
+
         if (submitButton) {
           submitButton.textContent = sendingText;
           (submitButton as HTMLButtonElement).disabled = true;
         }
 
-        try {
-          // In production, this would send to the CMS API
-          // For now, simulate a successful submission
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Always POST — the server decides what to do with the honeypot.
+        // This ensures Iter 4's server silent-accept is exercised end to end.
+        // Iter 2: retrieve the Turnstile token from its hidden input and add it
+        //         to the payload via buildContactPayload().
+        const payload = buildContactPayload({
+          name: (formData.get('name') as string) ?? '',
+          email: (formData.get('email') as string) ?? '',
+          subject: (formData.get('subject') as string) ?? '',
+          message: (formData.get('message') as string) ?? '',
+          website: (formData.get('website') as string) ?? '',
+        });
 
-          formStatus.textContent = successText;
-          formStatus.className = 'form-status success';
-          form.reset();
+        try {
+          const res = await fetch(`${CMS}/api/contact-submissions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          if (res.ok) {
+            formStatus.textContent = successText;
+            formStatus.className = 'form-status success';
+            form.reset();
+          } else {
+            formStatus.textContent = errorText;
+            formStatus.className = 'form-status error';
+          }
         } catch {
+          // Network error or fetch failure
           formStatus.textContent = errorText;
           formStatus.className = 'form-status error';
         } finally {
