@@ -86,7 +86,9 @@ export default buildConfig({
       url: process.env.TURSO_DATABASE_URL || LOCAL_DB_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     },
-    push: process.env.PAYLOAD_DISABLE_PUSH === 'true' ? false : !isProduction(),
+    // Schema is owned by committed migrations (cms/src/migrations); push is off
+    // everywhere for strict dev/prod parity — run `payload migrate` to apply schema.
+    push: false,
   }),
 
   email: process.env.RESEND_API_KEY
