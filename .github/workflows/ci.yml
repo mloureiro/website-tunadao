@@ -170,6 +170,11 @@ jobs:
           # with a POST target. The actual request is intercepted by Playwright route
           # interception in the contact spec, so no live CMS is needed.
           PUBLIC_CMS_URL: 'http://localhost:3000'
+          # Cloudflare Turnstile always-pass test site key — inlined at build time
+          # so the widget div renders with a data-sitekey attribute and the form
+          # script compiles correctly. The real Turnstile api.js is intercepted by
+          # Playwright in the contact spec, so no Cloudflare network call is made.
+          PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA'
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
