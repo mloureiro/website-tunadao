@@ -21,49 +21,31 @@ const levels = [
     titleKey: 'about.hierarchy.tunoMestre',
     descKey: 'about.hierarchy.tunoMestreDesc',
     tier: 1,
-    bg: 'var(--color-accent-gold)',
-    textColor: '#ffffff',
-    maxWidth: '24rem',
   },
   {
     titleKey: 'about.hierarchy.tunosIlustres',
     descKey: 'about.hierarchy.tunosIlustresDesc',
     tier: 2,
-    bg: 'var(--color-primary)',
-    textColor: '#ffffff',
-    maxWidth: '28rem',
   },
   {
     titleKey: 'about.hierarchy.tunosDoutores',
     descKey: 'about.hierarchy.tunosDoutoresDesc',
     tier: 3,
-    bg: 'var(--color-primary-dark)',
-    textColor: '#f0eeff',
-    maxWidth: '32rem',
   },
   {
     titleKey: 'about.hierarchy.tunos',
     descKey: 'about.hierarchy.tunosDesc',
     tier: 4,
-    bg: 'var(--color-secondary-dark)',
-    textColor: '#ffffff',
-    maxWidth: '36rem',
   },
   {
     titleKey: 'about.hierarchy.caloiros',
     descKey: 'about.hierarchy.caloirosDesc',
     tier: 5,
-    bg: 'var(--color-secondary)',
-    textColor: '#ffffff',
-    maxWidth: '42rem',
   },
   {
     titleKey: 'about.hierarchy.aprendizes',
     descKey: 'about.hierarchy.aprendizesDesc',
     tier: 6,
-    bg: 'var(--color-neutral-600)',
-    textColor: '#ffffff',
-    maxWidth: '48rem',
   },
 ] as const;
 ---
@@ -79,22 +61,13 @@ const levels = [
         <div
           role="listitem"
           class="hierarchy__level"
-          style={`max-width: ${level.maxWidth};`}
+          data-tier={level.tier}
         >
-          <div
-            class="hierarchy__card"
-            style={`background: ${level.bg};`}
-          >
-            <h3
-              class="hierarchy__card-title"
-              style={`color: ${level.textColor};`}
-            >
+          <div class="hierarchy__card">
+            <h3 class="hierarchy__card-title">
               {t(level.titleKey)}
             </h3>
-            <p
-              class="hierarchy__card-desc"
-              style={`color: ${level.textColor};`}
-            >
+            <p class="hierarchy__card-desc">
               {t(level.descKey)}
             </p>
           </div>
@@ -152,6 +125,14 @@ const levels = [
     transition: all var(--transition-slow);
   }
 
+  /* Per-tier max-width (pyramid shape) */
+  .hierarchy__level[data-tier="1"] { max-width: 24rem; }
+  .hierarchy__level[data-tier="2"] { max-width: 28rem; }
+  .hierarchy__level[data-tier="3"] { max-width: 32rem; }
+  .hierarchy__level[data-tier="4"] { max-width: 36rem; }
+  .hierarchy__level[data-tier="5"] { max-width: 42rem; }
+  .hierarchy__level[data-tier="6"] { max-width: 48rem; }
+
   .hierarchy__level:hover {
     transform: translateY(-2px);
   }
@@ -167,6 +148,25 @@ const levels = [
 
   .hierarchy__card:hover {
     box-shadow: var(--shadow-xl);
+  }
+
+  /* Per-tier card background colors */
+  .hierarchy__level[data-tier="1"] .hierarchy__card { background: var(--color-accent-gold); }
+  .hierarchy__level[data-tier="2"] .hierarchy__card { background: var(--color-primary); }
+  .hierarchy__level[data-tier="3"] .hierarchy__card { background: var(--color-primary-dark); }
+  .hierarchy__level[data-tier="4"] .hierarchy__card { background: var(--color-secondary-dark); }
+  .hierarchy__level[data-tier="5"] .hierarchy__card { background: var(--color-secondary); }
+  .hierarchy__level[data-tier="6"] .hierarchy__card { background: var(--color-neutral-600); }
+
+  /* Per-tier text colors — all tiers use inverted (white); tier 3 uses a subtle tint */
+  .hierarchy__card-title,
+  .hierarchy__card-desc {
+    color: var(--color-text-inverted);
+  }
+
+  .hierarchy__level[data-tier="3"] .hierarchy__card-title,
+  .hierarchy__level[data-tier="3"] .hierarchy__card-desc {
+    color: color-mix(in srgb, var(--color-text-inverted) 94%, var(--color-primary));
   }
 
   .hierarchy__card-title {
