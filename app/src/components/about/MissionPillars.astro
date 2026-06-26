@@ -21,29 +21,21 @@ const pillars = [
     key: 'tradition',
     icon: 'lucide:layers',
     accent: 'var(--color-accent-gold)',
-    bg: 'rgba(201, 151, 42, 0.08)',
-    border: 'rgba(201, 151, 42, 0.2)',
   },
   {
     key: 'train',
     icon: 'lucide:users',
     accent: 'var(--color-primary)',
-    bg: 'rgba(41, 22, 111, 0.08)',
-    border: 'rgba(41, 22, 111, 0.2)',
   },
   {
     key: 'represent',
     icon: 'lucide:flag',
     accent: 'var(--color-secondary)',
-    bg: 'rgba(191, 0, 41, 0.08)',
-    border: 'rgba(191, 0, 41, 0.2)',
   },
   {
     key: 'community',
     icon: 'lucide:heart',
     accent: 'var(--color-gold-dark)',
-    bg: 'rgba(155, 113, 32, 0.08)',
-    border: 'rgba(155, 113, 32, 0.2)',
   },
 ] as const;
 ---
@@ -57,22 +49,18 @@ const pillars = [
       {pillars.map((pillar) => (
         <article
           class="mission__card"
-          style={`background: ${pillar.bg}; border: 1px solid ${pillar.border};`}
+          data-pillar={pillar.key}
         >
           <!-- Icon -->
           <div
             class="mission__icon"
-            style={`background: ${pillar.bg}; color: ${pillar.accent}; border: 2px solid ${pillar.border};`}
             aria-hidden="true"
           >
             <AstroIcon name={pillar.icon} size={28} />
           </div>
 
           <!-- Title -->
-          <h3
-            class="mission__card-title"
-            style={`color: ${pillar.accent};`}
-          >
+          <h3 class="mission__card-title">
             {t(`about.missionItems.${pillar.key}.title`)}
           </h3>
 
@@ -84,7 +72,6 @@ const pillars = [
           <!-- Bottom accent line -->
           <div
             class="mission__accent-line"
-            style={`background: ${pillar.accent};`}
             aria-hidden="true"
           ></div>
         </article>
@@ -132,10 +119,18 @@ const pillars = [
     }
   }
 
+  /* Per-pillar accent token — tint/border derived in commit 4 */
+  .mission__card[data-pillar="tradition"] { --pillar-accent: var(--color-accent-gold); }
+  .mission__card[data-pillar="train"]     { --pillar-accent: var(--color-primary); }
+  .mission__card[data-pillar="represent"] { --pillar-accent: var(--color-secondary); }
+  .mission__card[data-pillar="community"] { --pillar-accent: var(--color-gold-dark); }
+
   .mission__card {
     position: relative;
     border-radius: var(--radius-2xl);
     padding: var(--space-8);
+    background: var(--pillar-tint);
+    border: 1px solid var(--pillar-border);
     transition: all var(--transition-slow);
   }
 
@@ -152,6 +147,9 @@ const pillars = [
     align-items: center;
     justify-content: center;
     margin-bottom: var(--space-6);
+    background: var(--pillar-tint);
+    color: var(--pillar-accent);
+    border: 2px solid var(--pillar-border);
     transition: transform var(--transition-slow);
   }
 
@@ -164,6 +162,7 @@ const pillars = [
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-3);
+    color: var(--pillar-accent);
   }
 
   .mission__card-text {
@@ -180,6 +179,7 @@ const pillars = [
     right: var(--space-8);
     height: 2px;
     border-radius: var(--radius-full);
+    background: var(--pillar-accent);
     opacity: 0;
     transition: opacity var(--transition-slow);
   }
