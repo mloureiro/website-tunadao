@@ -229,6 +229,9 @@ jobs:
           # Create data directory at project root for cms-dump.json export
           mkdir -p data
           # Use local SQLite (no Turso) - starts empty, no reset needed
+          # Apply schema from committed migrations first (push:false means getPayload
+          # no longer auto-creates schema, so the seed would fail on a blank DB without this)
+          npm run payload -w cms -- migrate --force-accept-warning
           npm run seed -w cms
           npm run db:export -w cms
           # Verify the dump was created
