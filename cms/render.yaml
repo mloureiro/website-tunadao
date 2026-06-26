@@ -3,7 +3,7 @@ services:
     name: tunadao-cms
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: npm run payload -w cms -- migrate --force-accept-warning && npm run start
     plan: free
     healthCheckPath: /admin
     envVars:
