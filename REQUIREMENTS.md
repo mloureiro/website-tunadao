@@ -240,9 +240,12 @@
 ### 5.3 Formulário de Contacto
 
 - [x] Validação client-side
-- [x] Envio para email via Resend
-- [x] Armazenamento no CMS (backup)
-- [x] Proteção anti-spam (honeypot)
+- [x] Submissão real para o CMS (`POST /api/contact-submissions` via `PUBLIC_CMS_URL`)
+- [x] Armazenamento no CMS
+- [x] Envio de notificação por email via Resend (campos HTML-escaped)
+- [x] Anti-abuso: Cloudflare Turnstile (verificação server-side do token)
+- [x] Honeypot silencioso (aceita em silêncio, sem notificação, sem revelar deteção)
+- [x] Limites de comprimento server-side (name/email/subject/message)
 
 ### 5.4 Autenticação CMS
 
