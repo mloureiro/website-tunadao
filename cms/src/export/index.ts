@@ -21,6 +21,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 /**
  * Recursively sort object keys and array elements for deterministic output.
+ * Document arrays are re-sorted by id → slug → shortName → name (see ORDER-NORMALIZATION CONTRACT above).
  */
 function sortDeterministic(obj: unknown): unknown {
   if (obj === null || obj === undefined) {
@@ -84,6 +85,29 @@ interface CollectionConfig {
   depth?: number;
 }
 
+/**
+ * Collections to include in the CMS dump.
+ *
+ * ORDER-NORMALIZATION CONTRACT
+ * The dump is order-normalized: after fetching, `sortDeterministic` re-sorts all
+ * document arrays by id → slug → shortName → name. The dump intentionally does NOT
+ * preserve the live API `sort` order (e.g. `-startDate`, `-date`). Consumers MUST
+ * sort/group explicitly and must not rely on dump array order. Current consumers
+ * (getPalmaresYears, getCitadaoEditions, etc.) already do this.
+ *
+ * PER-COLLECTION DEPTH RATIONALE
+ * depth is the number of relationship levels Payload populates:
+ *
+ *   award-types / tunas / venues  — no depth: loop default depth = 2
+ *   citadao-editions  depth: 1   — schedule embeds venues only; no deeper relationship chain read
+ *   citadao-participants depth: 2 — participant → tuna → tuna.logo media
+ *   citadao-awards      depth: 2 — award → tuna/awardType → media
+ *   festivals           depth: 2 — festival → organizingTuna → its logo media
+ *   festival-awards     depth: 2 — award → tuna/awardType → media
+ *   festival-participants depth: 2 — participant → tuna → tuna.logo media; mirrors
+ *                                    citadao-participants and the live getFestivalParticipants() (depth: 2)
+ *   blog-posts / videos / albums / pages — no depth: loop default depth = 2
+ */
 export const COLLECTIONS_TO_EXPORT: CollectionConfig[] = [
   { slug: 'award-types', sort: 'slug' },
   { slug: 'tunas', sort: 'shortName' },
