@@ -27,20 +27,15 @@ const { title, dividerLabel, milestones } = Astro.props;
       <div class="timeline__items">
         {milestones.map((milestone, index) => {
           const t = milestones.length > 1 ? index / (milestones.length - 1) : 0;
-          const r = Math.round(41 + t * (212 - 41));
-          const g = Math.round(22 + t * (161 - 22));
-          const b = Math.round(111 + t * (94 - 111));
-          const dotColor = `rgb(${r}, ${g}, ${b})`;
 
           return (
-            <div class="timeline__item">
+            <div class="timeline__item" style={`--t: ${t};`}>
               <div
                 class="timeline__dot"
-                style={`--dot-color: ${dotColor};`}
                 aria-hidden="true"
               ></div>
               <div class="timeline__card">
-                <div class="timeline__year" style={`color: ${dotColor};`}>
+                <div class="timeline__year">
                   {milestone.year}
                 </div>
                 <p class="timeline__text">{milestone.text}</p>
@@ -108,6 +103,11 @@ const { title, dividerLabel, milestones } = Astro.props;
   }
 
   .timeline__item {
+    --dot-color: color-mix(
+      in srgb,
+      var(--color-primary),
+      var(--color-accent-gold) calc(var(--t) * 100%)
+    );
     position: relative;
     display: flex;
     align-items: center;
@@ -175,6 +175,7 @@ const { title, dividerLabel, milestones } = Astro.props;
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-2);
+    color: var(--dot-color);
   }
 
   @media (min-width: 768px) {
