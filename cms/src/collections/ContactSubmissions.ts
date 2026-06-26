@@ -1,5 +1,6 @@
 import { CollectionConfig } from 'payload';
 import { verifyTurnstileToken } from '../utils/verifyTurnstile';
+import { escapeHtml } from '../utils/escapeHtml';
 
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
@@ -124,16 +125,31 @@ export const ContactSubmissions: CollectionConfig = {
         // Send email notification on new submission
         if (operation === 'create' && req.payload.email) {
           try {
+            // HTML-escape all user-supplied fields before interpolating into the
+            // email body (finding [53o]). Escape order: escape first, THEN convert
+            // newlines to <br> so the `<br>` tags are not themselves escaped.
+            const safeName = escapeHtml(String(doc.name ?? ''));
+            const safeEmail = escapeHtml(String(doc.email ?? ''));
+            const safeSubject = escapeHtml(String(doc.subject ?? ''));
+            // Escape message first, then convert newlines to <br> so line breaks
+            // in the original message are preserved in the rendered HTML.
+            const safeMessage = escapeHtml(String(doc.message ?? '')).replace(/\n/g, '<br>');
+
+            // Strip CR/LF from the email subject header to prevent header injection.
+            // HTML-escaping the subject is not applicable (it's a header, not HTML),
+            // but CR/LF characters would split the header line.
+            const safeSubjectHeader = String(doc.subject ?? '').replace(/[\r\n]+/g, ' ');
+
             await req.payload.sendEmail({
               to: process.env.CONTACT_EMAIL || 'tunadao@gmail.com',
-              subject: `Novo contacto: ${doc.subject}`,
+              subject: `Novo contacto: ${safeSubjectHeader}`,
               html: `
                 <h2>Novo contacto recebido</h2>
-                <p><strong>Nome:</strong> ${doc.name}</p>
-                <p><strong>Email:</strong> ${doc.email}</p>
-                <p><strong>Assunto:</strong> ${doc.subject}</p>
+                <p><strong>Nome:</strong> ${safeName}</p>
+                <p><strong>Email:</strong> ${safeEmail}</p>
+                <p><strong>Assunto:</strong> ${safeSubject}</p>
                 <p><strong>Mensagem:</strong></p>
-                <p>${doc.message.replace(/\n/g, '<br>')}</p>
+                <p>${safeMessage}</p>
               `,
             });
           } catch (error) {
