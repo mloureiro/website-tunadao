@@ -193,4 +193,13 @@ const levels = [
       font-size: var(--font-size-base);
     }
   }
+
+  /* Dark-mode overrides: tiers whose token resolves to a lighter hue in dark
+     mode are corrected here so white text keeps ≥4.5:1 contrast on #0d1117. */
+
+  /* Tier 5 — --color-secondary shifts to #ff4d6d in dark (~3.5:1 on white).
+     Use the darker secondary fill for adequate contrast. */
+  [data-theme='dark'] .hierarchy__level[data-tier="5"] .hierarchy__card {
+    background: var(--color-secondary-dark);
+  }
 </style>
