@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload';
+import { verifyTurnstileToken } from '../utils/verifyTurnstile';
 
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
@@ -84,6 +85,40 @@ export const ContactSubmissions: CollectionConfig = {
     },
   ],
   hooks: {
+    // Collection-level beforeValidate: runs before field-level hooks.
+    // This hook handles anti-abuse checks in the following order:
+    //   1. Turnstile token verification (Iter 2, this hook)
+    //   2. Length caps (Iter 3 — add here)
+    //   3. Honeypot silent-accept (Iter 4 — add here, replace field-level throw)
+    // Structuring all gates here keeps the security surface consolidated.
+    beforeValidate: [
+      async ({ data, operation }) => {
+        // Only validate on create (public form submissions); skip admin updates.
+        if (operation !== 'create') return data;
+
+        // --- Turnstile verification (finding [ck0]) ---
+        // Read the transient token sent by the client widget. It is NOT a stored
+        // collection field — we verify it here and delete it before Payload persists
+        // the document, so no unknown-field error occurs.
+        const token = typeof data?.turnstileToken === 'string' ? data.turnstileToken : '';
+
+        const valid = await verifyTurnstileToken(token);
+        if (!valid) {
+          // Generic message — never disclose captcha mechanism, Cloudflare error-codes,
+          // or which specific check failed.
+          throw new Error('Validação falhou. Tenta novamente.');
+        }
+
+        // Strip the transient field so Payload doesn't see an unknown key.
+        // `data` is narrowed to non-undefined here because we returned early above
+        // when `operation !== 'create'`, and a create payload always has `data`.
+        if (data) {
+          delete data.turnstileToken;
+        }
+
+        return data;
+      },
+    ],
     afterChange: [
       async ({ doc, operation, req }) => {
         // Send email notification on new submission
