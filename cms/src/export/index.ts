@@ -14,7 +14,7 @@ dotenvConfig({ path: '.env.local', override: true });
 
 import { writeFileSync } from 'fs';
 import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import type { Where } from 'payload';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -84,7 +84,7 @@ interface CollectionConfig {
   depth?: number;
 }
 
-const COLLECTIONS_TO_EXPORT: CollectionConfig[] = [
+export const COLLECTIONS_TO_EXPORT: CollectionConfig[] = [
   { slug: 'award-types', sort: 'slug' },
   { slug: 'tunas', sort: 'shortName' },
   { slug: 'venues', sort: 'name' },
@@ -93,13 +93,14 @@ const COLLECTIONS_TO_EXPORT: CollectionConfig[] = [
   { slug: 'citadao-awards', depth: 2 },
   { slug: 'festivals', sort: '-date', where: { status: { equals: 'published' } }, depth: 2 },
   { slug: 'festival-awards', depth: 2 },
+  { slug: 'festival-participants', depth: 2 },
   { slug: 'blog-posts', sort: '-publishedAt', where: { status: { equals: 'published' } } },
   { slug: 'videos', sort: '-publishedAt', where: { status: { equals: 'published' } } },
   { slug: 'albums', sort: '-year', where: { status: { equals: 'published' } } },
   { slug: 'pages', where: { status: { equals: 'published' } } },
 ];
 
-const GLOBALS_TO_EXPORT = ['site-settings', 'contact-info'];
+export const GLOBALS_TO_EXPORT = ['site-settings', 'contact-info'];
 
 const main = async () => {
   const { getPayload } = await import('payload');
@@ -175,7 +176,13 @@ const main = async () => {
   process.exit(0);
 };
 
-main().catch((error) => {
-  console.error('Export failed:', error);
-  process.exit(1);
-});
+const isDirectRun =
+  process.argv[1] !== undefined &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  main().catch((error) => {
+    console.error('Export failed:', error);
+    process.exit(1);
+  });
+}
