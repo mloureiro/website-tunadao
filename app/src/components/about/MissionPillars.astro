@@ -119,11 +119,25 @@ const pillars = [
     }
   }
 
-  /* Per-pillar accent token — tint/border derived in commit 4 */
+  /* Per-pillar accent token */
   .mission__card[data-pillar="tradition"] { --pillar-accent: var(--color-accent-gold); }
   .mission__card[data-pillar="train"]     { --pillar-accent: var(--color-primary); }
   .mission__card[data-pillar="represent"] { --pillar-accent: var(--color-secondary); }
   .mission__card[data-pillar="community"] { --pillar-accent: var(--color-gold-dark); }
+
+  /* Tint and border derived from accent — single source of truth per pillar.
+     Eliminates the #c9972a / #9b7120 drift; changing a pillar's accent token
+     shifts its tint, border, icon, title and accent-line together. */
+  .mission__card[data-pillar] {
+    --pillar-tint: color-mix(in srgb, var(--pillar-accent) 8%, transparent);
+    --pillar-border: color-mix(in srgb, var(--pillar-accent) 20%, transparent);
+  }
+
+  /* Dark-mode: raise tint percentage so brand colors stay visible on #0d1117 */
+  [data-theme='dark'] .mission__card[data-pillar] {
+    --pillar-tint: color-mix(in srgb, var(--pillar-accent) 14%, transparent);
+    --pillar-border: color-mix(in srgb, var(--pillar-accent) 28%, transparent);
+  }
 
   .mission__card {
     position: relative;
