@@ -433,26 +433,34 @@ export async function checkCMSConnection(): Promise<void> {
     return;
   }
 
+  let response: Response;
   try {
-    const response = await fetch(`${CMS_URL}/api/users/me`, {
+    response = await fetch(`${CMS_URL}/api/health`, {
       method: 'GET',
     });
-    if (response.status === 404) {
-      if (FORCE_PROD_CMS) {
-        throw new CMSError('CMS API not found (FORCE_PROD_CMS=true)', 'users/me', 404);
-      }
-      console.warn('[CMS:Fallback] CMS API not found, will use fixtures as fallback');
-      return;
-    }
-    console.log(`[CMS] Connected to ${CMS_URL}`);
   } catch (error) {
     if (error instanceof CMSError) throw error;
     if (FORCE_PROD_CMS) {
       throw new CMSError(
         `Failed to connect to CMS at ${CMS_URL}. Is the CMS running? (FORCE_PROD_CMS=true)`,
-        'users/me'
+        'health'
       );
     }
     console.warn(`[CMS:Fallback] CMS unavailable at ${CMS_URL}, will use fixtures as fallback`);
+    return;
   }
+
+  if (response.ok) {
+    console.log(`[CMS] Connected to ${CMS_URL}`);
+    return;
+  }
+
+  if (FORCE_PROD_CMS) {
+    throw new CMSError(
+      `CMS health check failed (${response.status}) at ${CMS_URL} (FORCE_PROD_CMS=true)`,
+      'health',
+      response.status
+    );
+  }
+  console.warn(`[CMS:Fallback] CMS health check failed (${response.status}), will use fixtures as fallback`);
 }
