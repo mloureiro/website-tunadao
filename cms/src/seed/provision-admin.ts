@@ -63,14 +63,9 @@ const main = async () => {
   const maskedHost = maskDbUrl(targetUrl);
   console.log(`[provision:admin] Target DB host: ${maskedHost}   (token: ***redacted***)`);
 
-  // Force schema push ON for this process only.
-  // This MUST happen BEFORE importing payload.config — the push gate is
-  // evaluated at config module-evaluation time inside buildConfig().
-  process.env.PAYLOAD_DISABLE_PUSH = 'false';
-  process.env.NODE_ENV = 'development'; // forces isProduction() === false → push: true
-
   try {
-    // Dynamic imports AFTER the env override so the push gate sees the correct values
+    // Schema is created by committed migrations (run `payload migrate` first).
+    // getPayload connects to the already-migrated DB; we create the admin user only.
     const { getPayload } = await import('payload');
     const { default: config } = await import('../payload.config');
     const { seedAdminUser } = await import('./seeders');
