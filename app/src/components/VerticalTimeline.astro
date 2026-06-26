@@ -30,13 +30,9 @@ const sortedYears = [...years].sort((a, b) => b - a);
     <ul class="vertical-timeline__list" role="list">
       {sortedYears.map((year, index) => {
         const t = sortedYears.length > 1 ? index / (sortedYears.length - 1) : 0;
-        const r = Math.round(41 + t * (212 - 41));
-        const g = Math.round(22 + t * (161 - 22));
-        const b = Math.round(111 + t * (94 - 111));
-        const dotColor = `rgb(${r}, ${g}, ${b})`;
 
         return (
-          <li class="vertical-timeline__item">
+          <li class="vertical-timeline__item" style={`--t: ${t};`}>
             <a
               href={`#${idPrefix}-${year}`}
               class="vertical-timeline__link"
@@ -45,7 +41,6 @@ const sortedYears = [...years].sort((a, b) => b - a);
             >
               <span
                 class="vertical-timeline__dot"
-                style={`--dot-color: ${dotColor};`}
                 aria-hidden="true"
               ></span>
               <span class="vertical-timeline__label">{year}</span>
@@ -350,6 +345,11 @@ const sortedYears = [...years].sort((a, b) => b - a);
   }
 
   .vertical-timeline__item {
+    --dot-color: color-mix(
+      in srgb,
+      var(--color-primary),
+      var(--color-accent-gold) calc(var(--t) * 100%)
+    );
     margin: 0;
   }
 
