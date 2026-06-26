@@ -115,6 +115,9 @@ jobs:
       - name: Run TypeScript check
         run: npm run typecheck -w app
 
+      - name: Check migration drift (CMS)
+        run: npm run migrate:check -w cms
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
