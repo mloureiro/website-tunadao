@@ -16,7 +16,7 @@
  * No external dependencies — only node:child_process, node:fs, node:path, node:url.
  */
 
-import { execSync, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { readdirSync, rmSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,7 +27,6 @@ const __dirname = dirname(__filename);
 // Resolve repo root: cms/scripts/ → cms/ → repo root
 const REPO_ROOT = resolve(__dirname, '..', '..');
 const MIGRATIONS_DIR = join(REPO_ROOT, 'cms', 'src', 'migrations');
-const INDEX_TS = join(MIGRATIONS_DIR, 'index.ts');
 
 /** Return all filenames in migrations dir matching the ci_drift pattern. */
 function findDriftArtifacts() {
