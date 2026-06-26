@@ -166,6 +166,10 @@ jobs:
         run: npm run build -w app
         env:
           USE_TEST_FIXTURES: 'true'
+          # PUBLIC_CMS_URL must be non-empty so the contact form script is compiled
+          # with a POST target. The actual request is intercepted by Playwright route
+          # interception in the contact spec, so no live CMS is needed.
+          PUBLIC_CMS_URL: 'http://localhost:3000'
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

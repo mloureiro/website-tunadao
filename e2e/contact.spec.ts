@@ -38,6 +38,17 @@ test.describe('Contact Page', () => {
   });
 
   test('should fill and submit form', async ({ page }) => {
+    // Intercept the CMS POST so the test passes without a live backend.
+    // The form script POSTs to ${PUBLIC_CMS_URL}/api/contact-submissions;
+    // the wildcard pattern matches regardless of what PUBLIC_CMS_URL is built with.
+    await page.route('**/api/contact-submissions', (route) =>
+      route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ doc: { id: 1 } }),
+      }),
+    );
+
     await page.locator('input#name').fill('Test User');
     await page.locator('input#email').fill('test@example.com');
     await page.locator('select#subject').selectOption('informacao');
@@ -45,7 +56,7 @@ test.describe('Contact Page', () => {
 
     await page.getByRole('button', { name: /enviar/i }).click();
 
-    // Wait for success message
+    // Wait for success message rendered by the form handler on a 2xx response.
     await expect(page.locator('.form-status.success')).toBeVisible({ timeout: 5000 });
   });
 });
