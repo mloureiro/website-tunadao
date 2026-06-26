@@ -51,8 +51,12 @@ const turnstileHook = beforeValidateHook;
 type HookData = Record<string, unknown>;
 type HookArgs = Parameters<typeof beforeValidateHook>[0];
 
-function makeArgs(data: HookData, operation: 'create' | 'update' = 'create'): HookArgs {
-  return { data, operation, req: {} } as HookArgs;
+function makeArgs(
+  data: HookData,
+  operation: 'create' | 'update' = 'create',
+  context: Record<string, unknown> = {},
+): HookArgs {
+  return { data, operation, req: { context } } as HookArgs;
 }
 
 type AfterChangeArgs = Parameters<typeof afterChangeHook>[0];
@@ -60,11 +64,13 @@ type AfterChangeArgs = Parameters<typeof afterChangeHook>[0];
 function makeAfterChangeArgs(
   doc: Record<string, unknown>,
   sendEmail: (args: { to: string; subject: string; html: string }) => Promise<void>,
+  context: Record<string, unknown> = {},
 ): AfterChangeArgs {
   return {
     doc,
     operation: 'create',
     req: {
+      context,
       payload: {
         email: { transport: 'resend' }, // truthy — triggers email path
         sendEmail,
@@ -72,6 +78,175 @@ function makeAfterChangeArgs(
     },
   } as unknown as AfterChangeArgs;
 }
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions beforeValidate — honeypot silent-accept (finding [scdl])
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions beforeValidate — honeypot silent-accept', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('does NOT throw when honeypot field "website" is filled', async () => {
+    // verifyTurnstileToken is NOT mocked to resolve — it should never be called.
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      website: 'http://spam.example.com', // honeypot filled
+      turnstileToken: '', // bot has no valid token
+    };
+    const context: Record<string, unknown> = {};
+    const args = makeArgs(data, 'create', context);
+
+    await expect(beforeValidateHook(args)).resolves.not.toThrow();
+  });
+
+  it('sets req.context.isSpam to true when "website" honeypot is filled', async () => {
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      website: 'http://spam.example.com',
+      turnstileToken: '',
+    };
+    const context: Record<string, unknown> = {};
+    const args = makeArgs(data, 'create', context);
+
+    await beforeValidateHook(args);
+
+    expect(context.isSpam).toBe(true);
+  });
+
+  it('does NOT call verifyTurnstileToken when honeypot is filled', async () => {
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      website: 'http://spam.example.com',
+      turnstileToken: '', // missing token — but must not reach Turnstile
+    };
+    const context: Record<string, unknown> = {};
+
+    await beforeValidateHook(makeArgs(data, 'create', context));
+
+    expect(verifyTurnstileToken).not.toHaveBeenCalled();
+  });
+
+  it('sets req.context.isSpam when legacy "honeypot" key is filled', async () => {
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      honeypot: 'filled', // alternate key
+      turnstileToken: '',
+    };
+    const context: Record<string, unknown> = {};
+    const args = makeArgs(data, 'create', context);
+
+    await beforeValidateHook(args);
+
+    expect(context.isSpam).toBe(true);
+    expect(verifyTurnstileToken).not.toHaveBeenCalled();
+  });
+
+  it('strips the honeypot key from data when filled', async () => {
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      website: 'http://spam.example.com',
+      turnstileToken: '',
+    };
+    const context: Record<string, unknown> = {};
+
+    const result = await beforeValidateHook(makeArgs(data, 'create', context));
+
+    expect(result).not.toHaveProperty('website');
+    expect(result).not.toHaveProperty('turnstileToken');
+  });
+
+  it('does NOT produce a "Spam detected" string anywhere on honeypot path (regression guard)', async () => {
+    const data: HookData = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+      website: 'http://spam.example.com',
+      turnstileToken: '',
+    };
+    const context: Record<string, unknown> = {};
+
+    // If the hook throws, it must not say 'Spam detected'.
+    try {
+      const result = await beforeValidateHook(makeArgs(data, 'create', context));
+      // On success, context must carry isSpam and no spam-disclosure string.
+      expect(context.isSpam).toBe(true);
+      expect(JSON.stringify(result)).not.toContain('Spam detected');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      expect(msg).not.toContain('Spam detected');
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions afterChange — honeypot spam suppression
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions afterChange — honeypot spam suppression', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('does NOT call sendEmail when req.context.isSpam is true', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Bot',
+      email: 'bot@spam.com',
+      subject: 'spam',
+      message: 'buy pills',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail, { isSpam: true }));
+
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('DOES call sendEmail when req.context.isSpam is falsy', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Alice',
+      email: 'alice@example.com',
+      subject: 'hello',
+      message: 'genuine message',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail, { isSpam: false }));
+
+    expect(sendEmail).toHaveBeenCalledOnce();
+  });
+
+  it('DOES call sendEmail when req.context is empty (normal submission)', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Alice',
+      email: 'alice@example.com',
+      subject: 'hello',
+      message: 'genuine message',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    expect(sendEmail).toHaveBeenCalledOnce();
+  });
+});
 
 // ---------------------------------------------------------------------------
 // ContactSubmissions beforeValidate — Turnstile hook tests

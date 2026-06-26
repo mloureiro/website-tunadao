@@ -74,39 +74,75 @@ export const ContactSubmissions: CollectionConfig = {
         create: () => false,
       },
     },
-    // Honeypot field for spam protection
+    // Honeypot field for spam protection (finding [scdl]).
+    // The field-level throw has been replaced by a collection-level silent-accept
+    // strategy (Iter 4): see the collection beforeValidate hook below.
     {
       name: 'honeypot',
       type: 'text',
       admin: {
         hidden: true,
       },
-      hooks: {
-        beforeValidate: [
-          ({ value }) => {
-            // If honeypot has a value, it's likely spam
-            if (value) {
-              throw new Error('Spam detected');
-            }
-            return value;
-          },
-        ],
-      },
     },
   ],
   hooks: {
-    // Collection-level beforeValidate: runs before field-level hooks.
-    // This hook handles anti-abuse checks in the following order:
-    //   1. Turnstile token verification (Iter 2, this hook)
-    //   2. Length caps (Iter 3 — add here)
-    //   3. Honeypot silent-accept (Iter 4 — add here, replace field-level throw)
+    // Collection-level beforeValidate: consolidates all anti-abuse checks.
+    // Hook order (finding [scdl]):
+    //   1. Honeypot check FIRST (Iter 4) — if filled, mark req.context.isSpam and
+    //      skip remaining checks so the bot never gets a Turnstile 4xx disclosure.
+    //   2. Length caps (Iter 3)
+    //   3. Turnstile token verification (Iter 2)
+    //   4. Strip transient fields
     // Structuring all gates here keeps the security surface consolidated.
     beforeValidate: [
-      async ({ data, operation }) => {
+      async ({ data, operation, req }) => {
         // Only validate on create (public form submissions); skip admin updates.
         if (operation !== 'create') return data;
 
-        // --- Turnstile verification (finding [ck0]) ---
+        // --- 1. Honeypot check (finding [scdl]) ---
+        // The form sends the honeypot as `website` (the input name in ContactForm.astro).
+        // Tolerate `honeypot` as well in case a future form revision renames it.
+        // If either is non-empty the request is from a bot: mark it as spam and allow
+        // the create to proceed so the client receives a 2xx success-shaped response.
+        // Skip ALL remaining anti-abuse checks — a bot filling the honeypot won't have
+        // a valid Turnstile token and we must not leak that via a Turnstile 4xx.
+        const honeypotValue =
+          (typeof data?.website === 'string' ? data.website : '') ||
+          (typeof data?.honeypot === 'string' ? data.honeypot : '');
+
+        if (honeypotValue) {
+          // Signal spam to afterChange without throwing (throwing would yield a 4xx).
+          // Mutate req.context in place so the object reference shared with afterChange
+          // (and with tests) picks up the flag.
+          if (!req.context) req.context = {};
+          req.context.isSpam = true;
+          // Strip both transient honeypot keys before Payload persists the document.
+          if (data) {
+            delete data.website;
+            delete data.honeypot;
+            delete data.turnstileToken;
+          }
+          return data;
+        }
+
+        // Strip the honeypot key even on clean submissions (it is not a stored field
+        // under that name — the stored field is `honeypot` which Payload handles via
+        // the field definition above; `website` is the client-side input name).
+        if (data) {
+          delete data.website;
+        }
+
+        // --- 2. Server-side length caps (finding [ck0] / [53o]) ---
+        // Generic rejection — do not name the field or limit that was exceeded.
+        for (const [field, max] of Object.entries(FIELD_MAX_LENGTHS)) {
+          const rawValue = data?.[field];
+          const value = typeof rawValue === 'string' ? rawValue : String(rawValue ?? '');
+          if (value.length > max) {
+            throw new Error('Validação falhou. Verifica os dados e tenta novamente.');
+          }
+        }
+
+        // --- 3. Turnstile verification (finding [ck0]) ---
         // Read the transient token sent by the client widget. It is NOT a stored
         // collection field — we verify it here and delete it before Payload persists
         // the document, so no unknown-field error occurs.
@@ -119,19 +155,8 @@ export const ContactSubmissions: CollectionConfig = {
           throw new Error('Validação falhou. Tenta novamente.');
         }
 
-        // --- Server-side length caps (finding [ck0] / [53o]) ---
-        // Enforce maximum field lengths after Turnstile so cheap network-free checks
-        // do not preempt the anti-abuse gate. Generic rejection — do not name the
-        // field or limit that was exceeded.
-        for (const [field, max] of Object.entries(FIELD_MAX_LENGTHS)) {
-          const rawValue = data?.[field];
-          const value = typeof rawValue === 'string' ? rawValue : String(rawValue ?? '');
-          if (value.length > max) {
-            throw new Error('Validação falhou. Verifica os dados e tenta novamente.');
-          }
-        }
-
-        // Strip the transient field so Payload doesn't see an unknown key.
+        // --- 4. Strip transient fields ---
+        // Strip turnstileToken so Payload doesn't see an unknown key.
         // `data` is narrowed to non-undefined here because we returned early above
         // when `operation !== 'create'`, and a create payload always has `data`.
         if (data) {
@@ -143,6 +168,11 @@ export const ContactSubmissions: CollectionConfig = {
     ],
     afterChange: [
       async ({ doc, operation, req }) => {
+        // Do not notify for honeypot-flagged (spam) submissions (finding [scdl]).
+        if (req.context?.isSpam) {
+          return doc;
+        }
+
         // Send email notification on new submission
         if (operation === 'create' && req.payload.email) {
           try {
