@@ -18,6 +18,15 @@ import { ContactSubmissions } from './ContactSubmissions';
 import { verifyTurnstileToken } from '../utils/verifyTurnstile';
 
 // ---------------------------------------------------------------------------
+// Field length caps — exported constant for testing
+// ---------------------------------------------------------------------------
+
+// Field length caps are defined as a module-level const in ContactSubmissions.ts.
+// We duplicate the values here to assert the same boundaries (the authoritative
+// source is the implementation; this tests the observable behaviour).
+const CAPS = { name: 120, email: 254, subject: 200, message: 5000 } as const;
+
+// ---------------------------------------------------------------------------
 // Pull hooks from the collection definition
 // ---------------------------------------------------------------------------
 
@@ -155,6 +164,112 @@ describe('ContactSubmissions beforeValidate — Turnstile verification', () => {
       expect(message).not.toContain('missing-input');
       expect(message).not.toContain('invalid-input');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions beforeValidate — server-side length caps
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions beforeValidate — server-side length caps', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Turnstile passes so length-cap checks are reached.
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
+  });
+
+  it('accepts a submission where all fields are exactly at the cap (boundary passes)', async () => {
+    const data: HookData = {
+      name: 'a'.repeat(CAPS.name),
+      email: `${'a'.repeat(CAPS.email - '@x.co'.length)}@x.co`,
+      subject: 'b'.repeat(CAPS.subject),
+      message: 'c'.repeat(CAPS.message),
+      turnstileToken: 'valid-token',
+    };
+
+    // Should not throw.
+    await expect(beforeValidateHook(makeArgs(data))).resolves.not.toThrow();
+  });
+
+  it('rejects when name exceeds the cap', async () => {
+    const data: HookData = {
+      name: 'a'.repeat(CAPS.name + 1),
+      email: 'test@example.com',
+      subject: 'hello',
+      message: 'world',
+      turnstileToken: 'valid-token',
+    };
+
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow();
+  });
+
+  it('rejects when email exceeds the cap', async () => {
+    const data: HookData = {
+      name: 'Test',
+      email: 'a'.repeat(CAPS.email + 1),
+      subject: 'hello',
+      message: 'world',
+      turnstileToken: 'valid-token',
+    };
+
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow();
+  });
+
+  it('rejects when subject exceeds the cap', async () => {
+    const data: HookData = {
+      name: 'Test',
+      email: 'test@example.com',
+      subject: 's'.repeat(CAPS.subject + 1),
+      message: 'world',
+      turnstileToken: 'valid-token',
+    };
+
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow();
+  });
+
+  it('rejects when message exceeds the cap', async () => {
+    const data: HookData = {
+      name: 'Test',
+      email: 'test@example.com',
+      subject: 'hello',
+      message: 'm'.repeat(CAPS.message + 1),
+      turnstileToken: 'valid-token',
+    };
+
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow();
+  });
+
+  it('length-cap rejection message does not name the field or limit', async () => {
+    const data: HookData = {
+      name: 'Test',
+      email: 'test@example.com',
+      subject: 'hello',
+      message: 'm'.repeat(CAPS.message + 1),
+      turnstileToken: 'valid-token',
+    };
+
+    try {
+      await beforeValidateHook(makeArgs(data));
+      expect.fail('Expected hook to throw');
+    } catch (err) {
+      const message = err instanceof Error ? err.message.toLowerCase() : '';
+      // Must not reveal which field or what the limit is.
+      expect(message).not.toContain('message');
+      expect(message).not.toContain('5000');
+      expect(message).not.toContain('name');
+      expect(message).not.toContain('email');
+      expect(message).not.toContain('subject');
+    }
+  });
+
+  it('does NOT enforce caps on update operations', async () => {
+    // Admin can update; Turnstile + caps are skipped entirely.
+    const data: HookData = {
+      message: 'm'.repeat(CAPS.message + 1), // over the cap
+    };
+
+    await expect(beforeValidateHook(makeArgs(data, 'update'))).resolves.not.toThrow();
+    expect(verifyTurnstileToken).not.toHaveBeenCalled();
   });
 });
 

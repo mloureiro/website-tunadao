@@ -2,6 +2,15 @@ import { CollectionConfig } from 'payload';
 import { verifyTurnstileToken } from '../utils/verifyTurnstile';
 import { escapeHtml } from '../utils/escapeHtml';
 
+// Server-side length caps for contact form fields (finding [ck0]).
+// These must match or exceed the client-side maxlength attributes.
+const FIELD_MAX_LENGTHS = {
+  name: 120,
+  email: 254,
+  subject: 200,
+  message: 5000,
+} as const;
+
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
   admin: {
@@ -108,6 +117,18 @@ export const ContactSubmissions: CollectionConfig = {
           // Generic message — never disclose captcha mechanism, Cloudflare error-codes,
           // or which specific check failed.
           throw new Error('Validação falhou. Tenta novamente.');
+        }
+
+        // --- Server-side length caps (finding [ck0] / [53o]) ---
+        // Enforce maximum field lengths after Turnstile so cheap network-free checks
+        // do not preempt the anti-abuse gate. Generic rejection — do not name the
+        // field or limit that was exceeded.
+        for (const [field, max] of Object.entries(FIELD_MAX_LENGTHS)) {
+          const rawValue = data?.[field];
+          const value = typeof rawValue === 'string' ? rawValue : String(rawValue ?? '');
+          if (value.length > max) {
+            throw new Error('Validação falhou. Verifica os dados e tenta novamente.');
+          }
         }
 
         // Strip the transient field so Payload doesn't see an unknown key.
