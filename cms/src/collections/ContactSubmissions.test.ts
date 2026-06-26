@@ -26,14 +26,42 @@ if (!beforeValidateHooks || beforeValidateHooks.length === 0) {
   throw new Error('ContactSubmissions.hooks.beforeValidate must have at least one hook');
 }
 
-// The first collection-level hook handles Turnstile verification.
-const turnstileHook = beforeValidateHooks[0];
+// The first collection-level hook handles Turnstile + length caps.
+const beforeValidateHook = beforeValidateHooks[0];
+
+const afterChangeHooks = ContactSubmissions.hooks?.afterChange;
+if (!afterChangeHooks || afterChangeHooks.length === 0) {
+  throw new Error('ContactSubmissions.hooks.afterChange must have at least one hook');
+}
+
+const afterChangeHook = afterChangeHooks[0];
+
+// Keep the original name for backwards-compat within this file.
+const turnstileHook = beforeValidateHook;
 
 type HookData = Record<string, unknown>;
-type HookArgs = Parameters<typeof turnstileHook>[0];
+type HookArgs = Parameters<typeof beforeValidateHook>[0];
 
 function makeArgs(data: HookData, operation: 'create' | 'update' = 'create'): HookArgs {
   return { data, operation, req: {} } as HookArgs;
+}
+
+type AfterChangeArgs = Parameters<typeof afterChangeHook>[0];
+
+function makeAfterChangeArgs(
+  doc: Record<string, unknown>,
+  sendEmail: (args: { to: string; subject: string; html: string }) => Promise<void>,
+): AfterChangeArgs {
+  return {
+    doc,
+    operation: 'create',
+    req: {
+      payload: {
+        email: { transport: 'resend' }, // truthy — triggers email path
+        sendEmail,
+      },
+    },
+  } as unknown as AfterChangeArgs;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,5 +155,143 @@ describe('ContactSubmissions beforeValidate — Turnstile verification', () => {
       expect(message).not.toContain('missing-input');
       expect(message).not.toContain('invalid-input');
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions afterChange — HTML-escaped email body
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('escapes <script> in name — does not appear raw in email HTML', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: '<script>alert("xss")</script>',
+      email: 'attacker@example.com',
+      subject: 'hello',
+      message: 'normal message',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    expect(sendEmail).toHaveBeenCalledOnce();
+    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('escapes an anchor tag with href in email field', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Alice',
+      email: '<a href="evil.com">click</a>',
+      subject: 'phish',
+      message: 'please click',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    expect(html).not.toContain('<a href=');
+    expect(html).toContain('&lt;a ');
+  });
+
+  it('preserves message newlines as <br> after escaping', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Bob',
+      email: 'bob@example.com',
+      subject: 'multi-line',
+      // The < must be escaped; the \n must become <br>; order matters.
+      message: 'a\n<b>',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    // Newline → <br>; < → &lt; (the <br> from conversion must NOT get re-escaped)
+    expect(html).toContain('a<br>&lt;b&gt;');
+    // The raw <b> tag must not appear unescaped in the HTML body
+    expect(html).not.toContain('<b>');
+    // Verify the <br> itself is not escaped (i.e. not &lt;br&gt;)
+    expect(html).not.toContain('&lt;br&gt;');
+  });
+
+  it('escapes & in fields (& → &amp;, not double-escaped)', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Alice & Bob',
+      email: 'alice@example.com',
+      subject: 'Cats & Dogs',
+      message: 'fish & chips',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    expect(html).toContain('Alice &amp; Bob');
+    expect(html).toContain('Cats &amp; Dogs');
+    expect(html).toContain('fish &amp; chips');
+    // Must not be double-encoded
+    expect(html).not.toContain('&amp;amp;');
+  });
+
+  it('strips CR/LF from email subject header to prevent header injection', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = {
+      name: 'Eve',
+      email: 'eve@example.com',
+      subject: 'Hello\r\nBcc: victim@evil.com',
+      message: 'inject',
+    };
+
+    await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
+
+    const { subject } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    expect(subject).not.toContain('\r');
+    expect(subject).not.toContain('\n');
+    expect(subject).toContain('Hello');
+  });
+
+  it('does NOT send email on update operations', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = { name: 'Alice', email: 'a@b.com', subject: 'hi', message: 'test' };
+    const args = {
+      doc,
+      operation: 'update' as const,
+      req: {
+        payload: {
+          email: { transport: 'resend' },
+          sendEmail,
+        },
+      },
+    } as unknown as AfterChangeArgs;
+
+    await afterChangeHook(args);
+
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('does NOT send email when req.payload.email is falsy (no Resend configured)', async () => {
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+    const doc = { name: 'Alice', email: 'a@b.com', subject: 'hi', message: 'test' };
+    const args = {
+      doc,
+      operation: 'create' as const,
+      req: {
+        payload: {
+          email: undefined,
+          sendEmail,
+        },
+      },
+    } as unknown as AfterChangeArgs;
+
+    await afterChangeHook(args);
+
+    expect(sendEmail).not.toHaveBeenCalled();
   });
 });
