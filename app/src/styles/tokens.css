@@ -46,6 +46,9 @@
   --color-error-dark: #721c24;
   --color-info: #0dcaf0;
 
+  /* Link / text-emphasis token (contrast-safe alternative to --color-primary for text-on-background) */
+  --color-link: var(--color-primary);
+
   /* Brand Colors */
   --color-youtube: #ff0000;
   --color-youtube-dark: #cc0000;
@@ -169,6 +172,9 @@
   --color-primary: #6b5adf;
   --color-primary-light: #8b7aff;
   --color-primary-dark: #4a3a9f;
+
+  /* --color-link is a dedicated text token: #8b7aff ≥4.5:1 on #0d1117 and #161b22 */
+  --color-link: #8b7aff;
 
   /* Lighter secondary for dark mode */
   --color-secondary: #ff4d6d;
