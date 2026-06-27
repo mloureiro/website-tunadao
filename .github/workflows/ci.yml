@@ -19,8 +19,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: 'pages-${{ github.ref }}'
@@ -193,6 +191,10 @@ jobs:
   deploy-app:
     name: Deploy App to GitHub Pages
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     needs: [determine-targets, lint-and-typecheck, unit-tests, e2e-tests]
     if: |
       needs.determine-targets.outputs.deploy_app == 'true' &&
