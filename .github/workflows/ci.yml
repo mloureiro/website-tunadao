@@ -212,18 +212,25 @@ jobs:
       - name: Check CMS availability
         id: cms-check
         run: |
+          set -uo pipefail
+          available=false
           if [[ -n "${{ secrets.CMS_URL }}" ]]; then
-            if curl -sf "${{ secrets.CMS_URL }}/api/health" --max-time 10 > /dev/null 2>&1; then
-              echo "CMS is available"
-              echo "available=true" >> $GITHUB_OUTPUT
-            else
-              echo "CMS is NOT available - will use seed data fallback"
-              echo "available=false" >> $GITHUB_OUTPUT
-            fi
+            # Render free-tier cold start can take ~30-60s; retry a few times.
+            # ~5 attempts x (10s per-attempt cap + 15s sleep) => hard ceiling < ~3min.
+            for attempt in 1 2 3 4 5; do
+              if curl -sf "${{ secrets.CMS_URL }}/api/health" --max-time 10 >/dev/null 2>&1; then
+                echo "CMS is available (attempt $attempt)"
+                available=true
+                break
+              fi
+              echo "CMS not ready (attempt $attempt/5) - retrying in 15s..."
+              sleep 15
+            done || available=false
+            [[ "$available" == "true" ]] || echo "CMS is NOT available after retries - will use seed data fallback"
           else
             echo "CMS_URL not configured - will use seed data fallback"
-            echo "available=false" >> $GITHUB_OUTPUT
           fi
+          echo "available=$available" >> "$GITHUB_OUTPUT"
 
       - name: Generate fallback data from seeds
         if: steps.cms-check.outputs.available == 'false'
