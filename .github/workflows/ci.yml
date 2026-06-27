@@ -30,63 +30,62 @@ jobs:
     name: Determine Deploy Targets
     runs-on: ubuntu-latest
     outputs:
-      deploy_app: ${{ steps.check.outputs.deploy_app }}
-      deploy_cms: ${{ steps.check.outputs.deploy_cms }}
+      deploy_app: ${{ steps.decide.outputs.deploy_app }}
+      deploy_cms: ${{ steps.decide.outputs.deploy_cms }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # No fetch-depth override: paths-filter computes its own base
+        # (for push it diffs against github.event.before / the pushed range,
+        #  which is correct for squash & rebase merges, unlike HEAD~1).
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name == 'push'
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         with:
-          fetch-depth: 2
+          filters: |
+            app:
+              - 'app/**'
+            cms:
+              - 'cms/**'
 
-      - name: Check changed files and inputs
-        id: check
+      - name: Decide deploy targets
+        id: decide
         run: |
-          # For PRs, don't deploy anything
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "deploy_app=false" >> $GITHUB_OUTPUT
-            echo "deploy_cms=false" >> $GITHUB_OUTPUT
-            echo "Deploy targets:"
-            cat $GITHUB_OUTPUT
-            exit 0
-          fi
+          set -euo pipefail
+          deploy_app=false
+          deploy_cms=false
 
-          # Manual dispatch with specific target
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            case "${{ inputs.deploy_target }}" in
-              "app-only")
-                echo "deploy_app=true" >> $GITHUB_OUTPUT
-                echo "deploy_cms=false" >> $GITHUB_OUTPUT
-                ;;
-              "cms-only")
-                echo "deploy_app=false" >> $GITHUB_OUTPUT
-                echo "deploy_cms=true" >> $GITHUB_OUTPUT
-                ;;
-              "both")
-                echo "deploy_app=true" >> $GITHUB_OUTPUT
-                echo "deploy_cms=true" >> $GITHUB_OUTPUT
-                ;;
-              "auto"|*)
-                # Fall through to auto-detection
-                ;;
-            esac
-          fi
+          case "${{ github.event_name }}" in
+            pull_request)
+              # PRs never deploy.
+              ;;
+            workflow_dispatch)
+              case "${{ inputs.deploy_target }}" in
+                app-only) deploy_app=true ;;
+                cms-only) deploy_cms=true ;;
+                both)     deploy_app=true; deploy_cms=true ;;
+                auto|*)
+                  # Manual auto has no diff context; deploy app on green,
+                  # leave cms to an explicit choice.
+                  deploy_app=true
+                  ;;
+              esac
+              ;;
+            push)
+              # Deploy-on-green: always (re)deploy the app on a push to main.
+              deploy_app=true
+              # CMS only when cms/ changed in the pushed range.
+              if [[ "${{ steps.filter.outputs.cms }}" == "true" ]]; then
+                deploy_cms=true
+              fi
+              ;;
+          esac
 
-          # Auto-detection for push events or auto mode
-          if [[ -z "$(cat $GITHUB_OUTPUT 2>/dev/null)" ]] || [[ "${{ inputs.deploy_target }}" == "auto" ]]; then
-            # Always deploy app when main is green (deploy on green strategy)
-            echo "deploy_app=true" >> $GITHUB_OUTPUT
-
-            # CMS deploy only when cms/ files changed (triggers external Render deploy)
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-            if echo "$CHANGED_FILES" | grep -qE "^cms/"; then
-              echo "deploy_cms=true" >> $GITHUB_OUTPUT
-            else
-              echo "deploy_cms=false" >> $GITHUB_OUTPUT
-            fi
-          fi
-
-          echo "Deploy targets:"
-          cat $GITHUB_OUTPUT
+          echo "deploy_app=$deploy_app" >> "$GITHUB_OUTPUT"
+          echo "deploy_cms=$deploy_cms" >> "$GITHUB_OUTPUT"
+          echo "Resolved deploy targets: app=$deploy_app cms=$deploy_cms"
 
   lint-and-typecheck:
     name: Lint & Type Check
