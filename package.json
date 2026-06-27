@@ -33,6 +33,6 @@
     "@playwright/test": "^1.57.0",
     "happy-dom": "^20.3.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.8"
+    "lint-staged": "^15.5.2"
   }
 }

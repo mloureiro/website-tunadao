@@ -1,0 +1,12 @@
+{
+  "app/**/*.{ts,tsx}": [
+    "bash -c 'cd app && eslint --fix --no-warn-ignored \"$@\"' --",
+    "prettier --write"
+  ],
+  "app/**/*.astro": ["prettier --write"],
+  "cms/**/*.{ts,tsx}": [
+    "bash -c 'cd cms && eslint --fix --no-warn-ignored \"$@\"' --",
+    "prettier --write"
+  ],
+  "*.{json,md,yml,yaml}": ["prettier --write"]
+}
