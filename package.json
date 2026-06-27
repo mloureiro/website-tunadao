@@ -26,6 +26,9 @@
     "db:reset-and-seed": "npm run db:reset-and-seed -w cms",
     "prepare": "husky"
   },
+  "engines": {
+    "node": "^18.20.2 || >=20.9.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "happy-dom": "^20.3.1",
