@@ -1,14 +1,12 @@
 #!/usr/bin/env sh
 
 # Lint/format only staged files (fast, incremental).
-npx lint-staged
+npx lint-staged || exit 1
 
 # Typecheck only the workspaces that have staged changes.
 # CI's lint-and-typecheck job remains the authoritative full gate.
 staged="$(git diff --cached --name-only)"
-if echo "$staged" | grep -q '^app/'; then
-  npm run typecheck -w app
-fi
-if echo "$staged" | grep -q '^cms/'; then
-  npm run typecheck -w cms
-fi
+rc=0
+echo "$staged" | grep -q '^app/' && { npm run typecheck -w app || rc=1; }
+echo "$staged" | grep -q '^cms/' && { npm run typecheck -w cms || rc=1; }
+exit $rc
