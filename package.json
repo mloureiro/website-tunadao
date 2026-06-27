@@ -3,6 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Monorepo for Tunadão 1998 website",
+  "license": "UNLICENSED",
   "private": true,
   "workspaces": [
     "app",

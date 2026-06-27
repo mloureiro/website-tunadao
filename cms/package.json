@@ -2,7 +2,8 @@
   "name": "tunadao-cms",
   "version": "1.0.0",
   "description": "CMS for Tunadao 1998 website",
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
