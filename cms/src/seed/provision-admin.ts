@@ -70,7 +70,7 @@ const main = async () => {
     const { default: config } = await import('../payload.config');
     const { seedAdminUser } = await import('./seeders');
 
-    // Runs schema push against the target DB (creates tables on first run)
+    // Connect to the already-migrated DB (push:false — no schema creation here).
     const payload = await getPayload({ config });
 
     // Idempotent admin creation — logs "already exists" on a second run
