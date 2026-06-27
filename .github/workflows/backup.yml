@@ -9,23 +9,54 @@ jobs:
   backup:
     name: Backup Turso Database
     runs-on: ubuntu-latest
+    env:
+      TURSO_CLI_VERSION: v1.0.29  # pin — bump deliberately; verify on release page
     steps:
-      - name: Install Turso CLI
-        run: curl -sSfL https://get.tur.so/install.sh | bash
+      - name: Install pinned Turso CLI
+        run: |
+          set -euo pipefail
+          curl -sSfL \
+            "https://github.com/tursodatabase/turso-cli/releases/download/${TURSO_CLI_VERSION}/turso-cli_Linux_x86_64.tar.gz" \
+            -o turso.tar.gz
+          mkdir -p "$HOME/.turso"
+          tar -xzf turso.tar.gz -C "$HOME/.turso" turso
+          echo "$HOME/.turso" >> "$GITHUB_PATH"
 
-      - name: Add Turso to PATH
-        run: echo "$HOME/.turso" >> $GITHUB_PATH
+      - name: Verify Turso CLI version
+        run: turso --version
 
       - name: Dump database
         run: |
-          ~/.turso/turso db shell ${{ secrets.TURSO_DB_NAME }} ".dump" > backup.sql
+          set -euo pipefail
+          ~/.turso/turso db shell "$TURSO_DB_NAME" ".dump" > backup.sql
           echo "Backup size: $(wc -c < backup.sql) bytes"
         env:
           TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          TURSO_DB_NAME: ${{ secrets.TURSO_DB_NAME }}
 
       - name: Upload backup artifact
         uses: actions/upload-artifact@v4
         with:
           name: turso-backup-${{ github.run_number }}-${{ github.run_id }}
           path: backup.sql
-          retention-days: 90
+          retention-days: 90  # intentional: ~3 months of daily dumps for point-in-time recovery
+
+  restore-test:
+    name: Verify backup restore (fixture)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore fixture dump into a throwaway SQLite DB
+        run: |
+          set -euo pipefail
+          # sqlite3 is preinstalled on ubuntu-latest runners.
+          FIXTURE=.github/fixtures/backup-fixture.sql
+          DB=$(mktemp -d)/restore-test.db
+          sqlite3 "$DB" < "$FIXTURE"
+          # Assert expected schema + row counts round-trip.
+          tables=$(sqlite3 "$DB" "SELECT count(*) FROM sqlite_master WHERE type='table';")
+          rows=$(sqlite3 "$DB" "SELECT count(*) FROM backup_smoke;")
+          echo "tables=$tables rows=$rows"
+          [[ "$tables" -ge 1 ]] || { echo "no tables restored"; exit 1; }
+          [[ "$rows" -eq 3 ]]   || { echo "expected 3 rows, got $rows"; exit 1; }
