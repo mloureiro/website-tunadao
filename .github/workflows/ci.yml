@@ -178,10 +178,10 @@ jobs:
           # not reuse this E2E artifact. See DEPLOY.md / bead sax7.
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
 
       - name: Run E2E tests
-        run: npm run test:e2e -- --project=chromium
+        run: npx playwright test
 
       # Separate interim-origin build for the build-output consistency assertion.
       # Run AFTER Playwright so the root build in dist/ is not overwritten before
