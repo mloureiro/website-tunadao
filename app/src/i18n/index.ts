@@ -230,6 +230,40 @@ export const IDENTICAL_VALUE_ALLOWLIST: readonly DotPaths<typeof pt>[] = [
 ];
 
 /**
+ * Return the ordinal representation of a number in the given language.
+ *
+ * - PT: uniform feminine ordinal mark — `${n}ª` (matches "ª Edição" pattern)
+ * - EN: English suffix with the 11–13 exception:
+ *   1st, 2nd, 3rd, 4th, 11th, 12th, 13th, 21st, 22nd, 23rd, …
+ *
+ * @example
+ * ordinal(1, 'pt')  // → '1ª'
+ * ordinal(19, 'pt') // → '19ª'
+ * ordinal(1, 'en')  // → '1st'
+ * ordinal(2, 'en')  // → '2nd'
+ * ordinal(3, 'en')  // → '3rd'
+ * ordinal(11, 'en') // → '11th'
+ * ordinal(21, 'en') // → '21st'
+ */
+export function ordinal(n: number, lang: Language = defaultLang): string {
+  if (lang === 'pt') {
+    return `${n}ª`;
+  }
+
+  // EN: 11, 12, 13 always use 'th' (the teens exception)
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 13) {
+    return `${n}th`;
+  }
+
+  const mod10 = n % 10;
+  if (mod10 === 1) return `${n}st`;
+  if (mod10 === 2) return `${n}nd`;
+  if (mod10 === 3) return `${n}rd`;
+  return `${n}th`;
+}
+
+/**
  * Flatten a nested translation object to a sorted array of dot-path strings.
  * Only string leaves are included; intermediate objects are not.
  * Used by the key-parity test to assert PT and EN trees have identical keys.

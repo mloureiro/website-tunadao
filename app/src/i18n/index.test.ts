@@ -7,6 +7,7 @@ import {
   getLang,
   getAlternateLang,
   resolve,
+  ordinal,
   defaultLang,
   flattenKeys,
   IDENTICAL_VALUE_ALLOWLIST,
@@ -279,5 +280,34 @@ describe('t() deep fallback cascade', () => {
     // @ts-expect-error — intentional: testing runtime miss behavior for deep missing key
     const result = t('this.key.does.not.exist.anywhere');
     expect(result).toBe('this.key.does.not.exist.anywhere');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ordinal(n, lang) [vaeb]
+// ---------------------------------------------------------------------------
+describe('ordinal()', () => {
+  describe('PT — uniform feminine ordinal mark', () => {
+    it('ordinal(1, "pt") → "1ª"', () => expect(ordinal(1, 'pt')).toBe('1ª'));
+    it('ordinal(19, "pt") → "19ª"', () => expect(ordinal(19, 'pt')).toBe('19ª'));
+    it('defaults to PT when lang is omitted', () => expect(ordinal(5)).toBe('5ª'));
+  });
+
+  describe('EN — suffix with 11–13 exception', () => {
+    it('ordinal(1, "en") → "1st"', () => expect(ordinal(1, 'en')).toBe('1st'));
+    it('ordinal(2, "en") → "2nd"', () => expect(ordinal(2, 'en')).toBe('2nd'));
+    it('ordinal(3, "en") → "3rd"', () => expect(ordinal(3, 'en')).toBe('3rd'));
+    it('ordinal(4, "en") → "4th"', () => expect(ordinal(4, 'en')).toBe('4th'));
+
+    // Teens exception — 11, 12, 13 always use 'th'
+    it('ordinal(11, "en") → "11th"', () => expect(ordinal(11, 'en')).toBe('11th'));
+    it('ordinal(12, "en") → "12th"', () => expect(ordinal(12, 'en')).toBe('12th'));
+    it('ordinal(13, "en") → "13th"', () => expect(ordinal(13, 'en')).toBe('13th'));
+
+    // Resumes normal pattern after 13
+    it('ordinal(19, "en") → "19th"', () => expect(ordinal(19, 'en')).toBe('19th'));
+
+    // Twenties resume the 1st/2nd/3rd pattern
+    it('ordinal(21, "en") → "21st"', () => expect(ordinal(21, 'en')).toBe('21st'));
   });
 });
