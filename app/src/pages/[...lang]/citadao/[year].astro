@@ -5,8 +5,20 @@ import ParticipantList from '@components/citadao/ParticipantList.astro';
 import AwardsList from '@components/citadao/AwardsList.astro';
 import EditionHero from '@components/citadao/EditionHero.astro';
 import EditionNavigation from '@components/citadao/EditionNavigation.astro';
-import { useTranslations, getLocalizedPath, type Language, defaultLang } from '@i18n/index';
-import { getCitadaoEditions, getCitadaoEditionByYear, splitTunasByAwards, extractPublicId } from '@lib/cms';
+import {
+  useTranslations,
+  getLocalizedPath,
+  type Language,
+  defaultLang,
+  type DotPaths,
+} from '@i18n/index';
+import pt from '@i18n/pt.json';
+import {
+  getCitadaoEditions,
+  getCitadaoEditionByYear,
+  splitTunasByAwards,
+  extractPublicId,
+} from '@lib/cms';
 
 export async function getStaticPaths() {
   const languages: (string | undefined)[] = [undefined, 'en'];
@@ -39,7 +51,8 @@ const prevYear = currentIndex < allYears.length - 1 ? allYears[currentIndex + 1]
 const nextYear = currentIndex > 0 ? allYears[currentIndex - 1] : null;
 
 // Split tunas into those with and without prizes
-const { withPrizes: tunasWithPrizes, withoutPrizes: tunasWithoutPrizes } = splitTunasByAwards(edition);
+const { withPrizes: tunasWithPrizes, withoutPrizes: tunasWithoutPrizes } =
+  splitTunasByAwards(edition);
 
 // All contestants without awards
 const contestants = tunasWithoutPrizes.map(({ tuna }) => tuna);
@@ -59,46 +72,52 @@ const posterPublicId = edition.posterUrl ? extractPublicId(edition.posterUrl) : 
   />
 
   <!-- Participants Section -->
-  {(contestants.length > 0 || edition.guests.length > 0) && (
-    <section class="content-section" aria-labelledby="participants-title">
-      <div class="content-container">
-        <h2 id="participants-title" class="section-title">
-          {t('citadao.participatingTunas')}
-        </h2>
-        <ParticipantList
-          contestants={contestants}
-          guests={edition.guests}
-          labels={{
-            contestants: t('citadao.tunas'),
-            guests: t('citadao.guests'),
-            count: t('citadao.tunasCount'),
-          }}
-        />
-      </div>
-    </section>
-  )}
+  {
+    (contestants.length > 0 || edition.guests.length > 0) && (
+      <section class="content-section" aria-labelledby="participants-title">
+        <div class="content-container">
+          <h2 id="participants-title" class="section-title">
+            {t('citadao.participatingTunas')}
+          </h2>
+          <ParticipantList
+            contestants={contestants}
+            guests={edition.guests}
+            labels={{
+              contestants: t('citadao.tunas'),
+              guests: t('citadao.guests'),
+              count: t('citadao.tunasCount'),
+            }}
+          />
+        </div>
+      </section>
+    )
+  }
 
   <!-- Awards Section -->
-  {tunasWithPrizes.length > 0 && (
-    <section class="content-section awards-bg" aria-label={t('citadao.awards')}>
-      <div class="content-container">
-        <AwardsList
-          tunasWithPrizes={tunasWithPrizes}
-          awardLabel={(key) => t(`awards.${key}`)}
-          sectionTitle={t('citadao.awards')}
-        />
-      </div>
-    </section>
-  )}
+  {
+    tunasWithPrizes.length > 0 && (
+      <section class="content-section awards-bg" aria-label={t('citadao.awards')}>
+        <div class="content-container">
+          <AwardsList
+            tunasWithPrizes={tunasWithPrizes}
+            awardLabel={(key) => t(`awards.${key}` as DotPaths<typeof pt>)}
+            sectionTitle={t('citadao.awards')}
+          />
+        </div>
+      </section>
+    )
+  }
 
   <!-- No data fallback -->
-  {contestants.length === 0 && edition.guests.length === 0 && tunasWithPrizes.length === 0 && (
-    <section class="content-section" aria-label={t('common.noResults')}>
-      <div class="content-container">
-        <p class="no-data-text">{t('common.noResults')}</p>
-      </div>
-    </section>
-  )}
+  {
+    contestants.length === 0 && edition.guests.length === 0 && tunasWithPrizes.length === 0 && (
+      <section class="content-section" aria-label={t('common.noResults')}>
+        <div class="content-container">
+          <p class="no-data-text">{t('common.noResults')}</p>
+        </div>
+      </section>
+    )
+  }
 
   <EditionNavigation
     prevYear={prevYear}

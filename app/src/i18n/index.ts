@@ -21,35 +21,89 @@ export const translations = {
 } as const;
 
 /**
- * Get a nested translation value by dot-separated path
- * e.g., t('nav.home') returns 'Início' for PT
+ * BCP-47 locale codes for each language.
+ * Single source of truth for html[lang] and hreflang alternates.
+ * The sitemap uses the same set (pt-PT / en-US) in astro.config.mjs.
  */
-export function t(key: string, lang: Language = defaultLang): string {
-  const keys = key.split('.');
-  let value: unknown = translations[lang];
+export const langBcp47: Record<Language, string> = {
+  pt: 'pt-PT',
+  en: 'en-US',
+};
 
+/**
+ * Recursive dot-path type over a translation tree.
+ * Produces only leaf-string paths (e.g. 'nav.home', 'home.cta.about').
+ * PT is the source of truth; EN parity is enforced by the parity test.
+ */
+export type DotPaths<T> = T extends string
+  ? never
+  : {
+      [K in keyof T & string]: T[K] extends string ? K : `${K}.${DotPaths<T[K]>}`;
+    }[keyof T & string];
+
+/**
+ * Walk a translation tree by an array of keys.
+ * Returns the leaf string value, or undefined on any miss.
+ */
+function resolve(tree: unknown, keys: string[]): string | undefined {
+  let node: unknown = tree;
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
-      value = (value as Record<string, unknown>)[k];
+    if (node && typeof node === 'object' && k in (node as Record<string, unknown>)) {
+      node = (node as Record<string, unknown>)[k];
     } else {
-      // Fallback to default language
-      value = translations[defaultLang];
-      for (const fallbackKey of keys) {
-        if (value && typeof value === 'object' && fallbackKey in value) {
-          value = (value as Record<string, unknown>)[fallbackKey];
-        } else {
-          return key; // Return the key if not found
-        }
-      }
-      break;
+      return undefined;
     }
   }
-
-  return typeof value === 'string' ? value : key;
+  return typeof node === 'string' ? node : undefined;
 }
 
 /**
- * Get the language from the URL path
+ * Replace {key} tokens in a string using a vars map.
+ * Unmatched tokens are left literal. No-op when vars is undefined.
+ */
+function interpolate(value: string, vars: Record<string, string | number>): string {
+  return value.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
+}
+
+/**
+ * Get a nested translation value by dot-separated path.
+ * Falls back to the default language (PT) on any miss in the requested lang.
+ * Returns the raw key if the path is missing in both languages.
+ *
+ * @example
+ * t('nav.home')           // → 'Início'  (PT default)
+ * t('nav.home', 'en')    // → 'Home'
+ * t('citadao.about.p2', 'pt', { count: 21 })  // → '…21 edições…'
+ */
+export function t(
+  key: DotPaths<typeof pt>,
+  lang: Language = defaultLang,
+  vars?: Record<string, string | number>
+): string {
+  const keys = key.split('.');
+  let value = resolve(translations[lang], keys);
+
+  if (value === undefined && lang !== defaultLang) {
+    value = resolve(translations[defaultLang], keys);
+  }
+
+  if (value === undefined) {
+    return key;
+  }
+
+  return vars ? interpolate(value, vars) : value;
+}
+
+/**
+ * Create a typed translation function bound to a specific language.
+ * The returned function accepts optional interpolation vars.
+ */
+export function useTranslations(lang: Language) {
+  return (key: DotPaths<typeof pt>, vars?: Record<string, string | number>) => t(key, lang, vars);
+}
+
+/**
+ * Get the language from the URL path.
  */
 export function getLangFromUrl(url: URL): Language {
   const base = import.meta.env.BASE_URL || '/';
@@ -68,7 +122,7 @@ export function getLangFromUrl(url: URL): Language {
 }
 
 /**
- * Get language from Astro's currentLocale or URL
+ * Get language from Astro's currentLocale or URL.
  */
 export function getLang(astroLocale: string | undefined, url?: URL): Language {
   if (astroLocale && astroLocale in translations) {
@@ -81,14 +135,7 @@ export function getLang(astroLocale: string | undefined, url?: URL): Language {
 }
 
 /**
- * Create a translation function for a specific language
- */
-export function useTranslations(lang: Language) {
-  return (key: string) => t(key, lang);
-}
-
-/**
- * Get the base URL from Astro config, normalized (without trailing slash)
+ * Get the base URL from Astro config, normalized (without trailing slash).
  */
 function getBase(): string {
   const base = import.meta.env.BASE_URL || '/';
@@ -97,13 +144,12 @@ function getBase(): string {
 }
 
 /**
- * Get localized path - converts a path to the correct language version
- * Includes the base URL from Astro config for subdirectory deployments
+ * Get localized path — converts a path to the correct language version.
+ * Includes the base URL from Astro config for subdirectory deployments.
  * @param path - The path to localize (e.g., '/sobre')
  * @param lang - Target language
- * @param currentLang - Current language (to handle removing prefix)
  */
-export function getLocalizedPath(path: string, lang: Language, _currentLang?: Language): string {
+export function getLocalizedPath(path: string, lang: Language): string {
   const base = getBase();
 
   // Remove base path if present (handles paths from Astro.url.pathname)
@@ -131,7 +177,7 @@ export function getLocalizedPath(path: string, lang: Language, _currentLang?: La
 }
 
 /**
- * Get the alternate language
+ * Get the alternate language.
  */
 export function getAlternateLang(lang: Language): Language {
   return lang === 'pt' ? 'en' : 'pt';
