@@ -1,5 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { t, getLangFromUrl, useTranslations, getLocalizedPath, defaultLang } from './index';
+import {
+  t,
+  getLangFromUrl,
+  useTranslations,
+  getLocalizedPath,
+  defaultLang,
+  flattenKeys,
+} from './index';
+import pt from './pt.json';
+import en from './en.json';
 
 describe('i18n', () => {
   describe('t()', () => {
@@ -73,5 +82,17 @@ describe('i18n', () => {
     it('should be Portuguese', () => {
       expect(defaultLang).toBe('pt');
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Key-parity test [6poe]
+// ---------------------------------------------------------------------------
+describe('i18n key parity', () => {
+  it('PT and EN have identical key sets (1:1 parity)', () => {
+    const ptKeys = flattenKeys(pt as unknown as Record<string, unknown>);
+    const enKeys = flattenKeys(en as unknown as Record<string, unknown>);
+    // Deep-equal: both sorted arrays must be identical length + same keys
+    expect(ptKeys).toEqual(enKeys);
   });
 });
