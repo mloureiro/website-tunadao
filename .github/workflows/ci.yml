@@ -52,17 +52,21 @@ jobs:
 
       - name: Decide deploy targets
         id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DEPLOY_TARGET: ${{ inputs.deploy_target }}
+          FILTER_CMS: ${{ steps.filter.outputs.cms }}
         run: |
           set -euo pipefail
           deploy_app=false
           deploy_cms=false
 
-          case "${{ github.event_name }}" in
+          case "$EVENT_NAME" in
             pull_request)
               # PRs never deploy.
               ;;
             workflow_dispatch)
-              case "${{ inputs.deploy_target }}" in
+              case "$DEPLOY_TARGET" in
                 app-only) deploy_app=true ;;
                 cms-only) deploy_cms=true ;;
                 both)     deploy_app=true; deploy_cms=true ;;
@@ -77,7 +81,7 @@ jobs:
               # Deploy-on-green: always (re)deploy the app on a push to main.
               deploy_app=true
               # CMS only when cms/ changed in the pushed range.
-              if [[ "${{ steps.filter.outputs.cms }}" == "true" ]]; then
+              if [[ "$FILTER_CMS" == "true" ]]; then
                 deploy_cms=true
               fi
               ;;
@@ -166,10 +170,12 @@ jobs:
           # script compiles correctly. The real Turnstile api.js is intercepted by
           # Playwright in the contact spec, so no Cloudflare network call is made.
           PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA"
-          # Deterministic interim origin for build-output assertions in Iteration 2.
-          # Final origin is repo vars only — no code change needed. See DEPLOY.md / bead sax7.
-          SITE_URL: "http://loureiro.me"
-          BASE_PATH: "/website-tunadao"
+          # No SITE_URL/BASE_PATH here: the E2E build stays at root (/) so that
+          # astro preview serves pages at http://localhost:4321/<path> and the
+          # existing tests (which use absolute-path page.goto('/...') calls) work
+          # without modification. Iteration 2's build-output assertion uses its own
+          # dedicated build with the interim origin (SITE_URL + BASE_PATH) and does
+          # not reuse this E2E artifact. See DEPLOY.md / bead sax7.
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -215,14 +221,16 @@ jobs:
 
       - name: Check CMS availability
         id: cms-check
+        env:
+          CMS_URL: ${{ secrets.CMS_URL }}
         run: |
           set -uo pipefail
           available=false
-          if [[ -n "${{ secrets.CMS_URL }}" ]]; then
+          if [[ -n "$CMS_URL" ]]; then
             # Render free-tier cold start can take ~30-60s; retry a few times.
             # ~5 attempts x (10s per-attempt cap + 15s sleep) => hard ceiling < ~3min.
             for attempt in 1 2 3 4 5; do
-              if curl -sf "${{ secrets.CMS_URL }}/api/health" --max-time 10 >/dev/null 2>&1; then
+              if curl -sf "$CMS_URL/api/health" --max-time 10 >/dev/null 2>&1; then
                 echo "CMS is available (attempt $attempt)"
                 available=true
                 break
@@ -261,8 +269,10 @@ jobs:
           fi
 
       - name: Assert deploy origin is configured
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
         run: |
-          test -n "${{ vars.SITE_URL }}" || { echo "::error::vars.SITE_URL is required for deploy"; exit 1; }
+          test -n "$SITE_URL" || { echo "::error::vars.SITE_URL is required for deploy"; exit 1; }
 
       # Origin is driven by repo vars only — interim: SITE_URL=http://loureiro.me, BASE_PATH=/website-tunadao
       # Going live at root: set vars.SITE_URL=https://tunadao1998.ipv.pt and clear vars.BASE_PATH — no code change needed.
@@ -295,10 +305,12 @@ jobs:
       github.ref == 'refs/heads/main'
     steps:
       - name: Trigger Render Deploy
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
-          if [[ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]]; then
+          if [[ -n "$RENDER_DEPLOY_HOOK_URL" ]]; then
             echo "Triggering Render deploy..."
-            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            curl -X POST "$RENDER_DEPLOY_HOOK_URL"
           else
             echo "RENDER_DEPLOY_HOOK_URL not configured - skipping CMS deploy"
             echo "To enable: add RENDER_DEPLOY_HOOK_URL secret from Render dashboard"
