@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   t,
   getLangFromUrl,
@@ -76,6 +76,55 @@ describe('i18n', () => {
     it('should handle root path', () => {
       expect(getLocalizedPath('/', 'pt')).toBe('/');
       expect(getLocalizedPath('/', 'en')).toBe('/en/');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // getLocalizedPath edge cases [mroy][1vx5]
+  // ---------------------------------------------------------------------------
+  describe('getLocalizedPath() — edge cases', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it('strips /en/ prefix and returns bare path when targeting PT', () => {
+      // An already-prefixed /en/ path converted to the PT (default) locale
+      expect(getLocalizedPath('/en/citadao/2024', 'pt')).toBe('/citadao/2024');
+    });
+
+    it('strips /en/ prefix on multi-segment path when targeting EN', () => {
+      // Path that already has /en/ prefix — should not double-prefix
+      expect(getLocalizedPath('/en/citadao/2024', 'en')).toBe('/en/citadao/2024');
+    });
+
+    it('converts bare multi-segment path to EN', () => {
+      // PT path with no prefix → EN with /en/ prefix
+      expect(getLocalizedPath('/citadao/2024', 'en')).toBe('/en/citadao/2024');
+    });
+
+    it('converts trailing-slash /en/ to bare / for PT', () => {
+      // /en/ trailing-slash → PT root /
+      expect(getLocalizedPath('/en/', 'pt')).toBe('/');
+    });
+
+    it('does not produce double base when BASE_URL is a subdirectory', () => {
+      // Simulate a subdirectory deployment (e.g. GitHub Pages)
+      vi.stubEnv('BASE_URL', '/website-tunadao/');
+      // getLocalizedPath strips the base from the incoming path before
+      // re-adding it, so the base must appear exactly once in the result.
+      const result = getLocalizedPath('/website-tunadao/en/citadao', 'pt');
+      // Expect: base prepended once, no /website-tunadao/website-tunadao/
+      const doubleBase = result.includes('/website-tunadao/website-tunadao');
+      expect(doubleBase, `Double base detected in: ${result}`).toBe(false);
+      // The citadao segment must still be present
+      expect(result).toContain('citadao');
+    });
+
+    it('builds correct EN path under a subdirectory base', () => {
+      vi.stubEnv('BASE_URL', '/website-tunadao/');
+      const result = getLocalizedPath('/citadao', 'en');
+      // Should be /website-tunadao/en/citadao — single base, /en/ prefix
+      expect(result).toBe('/website-tunadao/en/citadao');
     });
   });
 
