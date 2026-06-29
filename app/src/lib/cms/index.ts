@@ -105,7 +105,7 @@ function isTunaPopulated(tuna: CMSTuna | number | string): tuna is CMSTuna {
  * Helper to extract clean short name (removes timestamp suffix if present)
  * e.g., "eul-1769429567906" -> "EUL"
  */
-function cleanShortName(shortName: string): string {
+export function cleanShortName(shortName: string): string {
   // Check if it has a timestamp suffix (slug-timestamp pattern)
   const match = shortName.match(/^(.+)-\d{10,}$/);
   if (match) {
@@ -169,7 +169,7 @@ function getVenueName(venue: CMSVenue | number): string {
 /**
  * Format date range for display
  */
-function formatDateRange(startDate: string, endDate: string): string {
+export function formatDateRange(startDate: string, endDate: string): string {
   const start = new Date(startDate);
   const end = new Date(endDate);
 
@@ -213,9 +213,13 @@ function transformCitadaoEdition(
   });
 
   // Separate contestants and guests
-  const tunas = editionParticipants.filter((p) => p.type === 'contestant').map((p) => transformTunaWithLogo(p.tuna));
+  const tunas = editionParticipants
+    .filter((p) => p.type === 'contestant')
+    .map((p) => transformTunaWithLogo(p.tuna));
 
-  const guests = editionParticipants.filter((p) => p.type === 'guest').map((p) => transformTunaWithLogo(p.tuna));
+  const guests = editionParticipants
+    .filter((p) => p.type === 'guest')
+    .map((p) => transformTunaWithLogo(p.tuna));
 
   // Filter awards for this edition and transform to Record<string, string>
   const editionAwards = awards.filter((a) => {
@@ -257,7 +261,9 @@ export async function getCitadaoEditions(): Promise<FrontendCitadaoEdition[]> {
     client.getCitadaoAwards(),
   ]);
 
-  const editions = cmsEditions.map((edition) => transformCitadaoEdition(edition, participants, awards));
+  const editions = cmsEditions.map((edition) =>
+    transformCitadaoEdition(edition, participants, awards)
+  );
 
   // Sort by year descending (newest first)
   return editions.sort((a, b) => b.year - a.year);
@@ -349,7 +355,7 @@ export async function getVideos(): Promise<FrontendVideo[]> {
 // ALBUMS
 // =============================================================================
 
-function extractSpotifyAlbumId(spotifyUrl: string | undefined): string | undefined {
+export function extractSpotifyAlbumId(spotifyUrl: string | undefined): string | undefined {
   if (!spotifyUrl) return undefined;
 
   // Extract album ID from Spotify URL
@@ -381,12 +387,13 @@ export async function getAlbums(): Promise<FrontendAlbum[]> {
 // =============================================================================
 
 export async function getPalmaresYears(): Promise<FrontendPalmaresYear[]> {
-  const [cmsFestivals, cmsFestivalAwards, cmsAwardTypes, cmsFestivalParticipants] = await Promise.all([
-    client.getFestivals(),
-    client.getFestivalAwards(),
-    client.getAwardTypes(),
-    client.getFestivalParticipants(),
-  ]);
+  const [cmsFestivals, cmsFestivalAwards, cmsAwardTypes, cmsFestivalParticipants] =
+    await Promise.all([
+      client.getFestivals(),
+      client.getFestivalAwards(),
+      client.getAwardTypes(),
+      client.getFestivalParticipants(),
+    ]);
 
   // Create a map of award type IDs to { slug, name }
   const awardTypesMap = new Map<number, { slug: string; name: string }>();
@@ -407,9 +414,8 @@ export async function getPalmaresYears(): Promise<FrontendPalmaresYear[]> {
   // Create a map of festival IDs to their participants
   const festivalParticipantsMap = new Map<number, CMSFestivalParticipant[]>();
   for (const participant of cmsFestivalParticipants) {
-    const festivalId = typeof participant.festival === 'number'
-      ? participant.festival
-      : participant.festival.id;
+    const festivalId =
+      typeof participant.festival === 'number' ? participant.festival : participant.festival.id;
     if (!festivalParticipantsMap.has(festivalId)) {
       festivalParticipantsMap.set(festivalId, []);
     }
@@ -436,9 +442,10 @@ export async function getPalmaresYears(): Promise<FrontendPalmaresYear[]> {
         // Transform organizing tuna if present
         let organizingTuna: FrontendPalmaresYear['festivals'][0]['organizingTuna'] = undefined;
         if (festival.organizingTuna) {
-          const tuna = typeof festival.organizingTuna === 'number'
-            ? null // ID not resolved, shouldn't happen with depth=2
-            : festival.organizingTuna as CMSTuna;
+          const tuna =
+            typeof festival.organizingTuna === 'number'
+              ? null // ID not resolved, shouldn't happen with depth=2
+              : (festival.organizingTuna as CMSTuna);
           if (tuna) {
             organizingTuna = {
               shortName: cleanShortName(tuna.shortName),
@@ -459,11 +466,11 @@ export async function getPalmaresYears(): Promise<FrontendPalmaresYear[]> {
         // Get participants for this festival
         const participants = festivalParticipantsMap.get(festival.id) || [];
         const contestants = participants
-          .filter(p => p.type === 'contestant')
-          .map(p => transformTunaWithLogo(p.tuna));
+          .filter((p) => p.type === 'contestant')
+          .map((p) => transformTunaWithLogo(p.tuna));
         const guests = participants
-          .filter(p => p.type === 'guest')
-          .map(p => transformTunaWithLogo(p.tuna));
+          .filter((p) => p.type === 'guest')
+          .map((p) => transformTunaWithLogo(p.tuna));
 
         return {
           name: festival.name,
