@@ -3,7 +3,7 @@ import Layout from '@layouts/Layout.astro';
 import HeroSection from '@components/HeroSection.astro';
 import Section from '@components/Section.astro';
 import SectionText from '@components/SectionText.astro';
-import { useTranslations, type Language, defaultLang } from '@i18n/index';
+import { useTranslations, ordinal, type Language, defaultLang } from '@i18n/index';
 import { getCitadaoEditions } from '@lib/cms';
 import Lightbox from '@components/Lightbox.astro';
 import EditionCard from '@components/citadao/EditionCard.astro';
@@ -35,9 +35,18 @@ const allYears = editions.map((edition) => edition.year);
   </Section>
 
   <!-- Year Navigation -->
-  <VerticalTimeline years={allYears} ariaLabel={t('citadao.jumpToYear') || 'Jump to edition'} sectionSelector="#editions-section" />
+  <VerticalTimeline
+    years={allYears}
+    ariaLabel={t('citadao.jumpToYear') || 'Jump to edition'}
+    sectionSelector="#editions-section"
+  />
 
-  <Section layout="single-column" background="alt" title={t('citadao.editionsTitle')} id="editions-section">
+  <Section
+    layout="single-column"
+    background="alt"
+    title={t('citadao.editionsTitle')}
+    id="editions-section"
+  >
     <div class="editions__list">
       {
         editions.map((edition) => (
@@ -46,7 +55,7 @@ const allYears = editions.map((edition) => edition.year);
               edition={edition}
               lang={currentLang}
               labels={{
-                edition: t('citadao.edition'),
+                edition: `${ordinal(edition.edition, currentLang)} ${t('citadao.edition')}`,
                 viewDetails: t('citadao.viewDetails'),
                 venue: t('citadao.venue'),
               }}
@@ -59,7 +68,6 @@ const allYears = editions.map((edition) => edition.year);
 
   <Lightbox closeLabel={t('common.close')} />
 </Layout>
-
 
 <style>
   /* Editions List Grid */

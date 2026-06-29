@@ -8,6 +8,7 @@ import EditionNavigation from '@components/citadao/EditionNavigation.astro';
 import {
   useTranslations,
   getLocalizedPath,
+  ordinal,
   type Language,
   defaultLang,
   type DotPaths,
@@ -59,17 +60,15 @@ const contestants = tunasWithoutPrizes.map(({ tuna }) => tuna);
 
 // Poster
 const posterPublicId = edition.posterUrl ? extractPublicId(edition.posterUrl) : null;
+
+const editionLabel = `${ordinal(edition.edition, currentLang)} ${t('citadao.edition')}`;
 ---
 
 <Layout
-  title={`${edition.edition}${t('citadao.edition')} CITADÃO ${edition.year} | Tunadão 1998`}
-  description={`CITADÃO ${edition.year} - ${edition.edition}${t('citadao.edition')} ${t('citadao.editionDescription')}`}
+  title={`${editionLabel} CITADÃO ${edition.year} | Tunadão 1998`}
+  description={`CITADÃO ${edition.year} - ${editionLabel} ${t('citadao.editionDescription')}`}
 >
-  <EditionHero
-    edition={edition}
-    editionLabel={t('citadao.edition')}
-    posterPublicId={posterPublicId}
-  />
+  <EditionHero edition={edition} editionLabel={editionLabel} posterPublicId={posterPublicId} />
 
   <!-- Participants Section -->
   {

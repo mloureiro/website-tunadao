@@ -20,36 +20,38 @@ const { edition, editionLabel, posterPublicId } = Astro.props;
 
 <section class="hero" aria-labelledby="edition-title">
   <div class="hero-container">
-    {edition.posterUrl && (
-      <div class="hero-poster">
-        <button
-          type="button"
-          class="poster-button"
-          data-poster-url={edition.posterUrl}
-          data-poster-alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-        >
-          {posterPublicId ? (
-            <ResponsiveImage
-              publicId={posterPublicId}
-              alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-              class="poster-image"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
-              aspectRatio="2/3"
-            />
-          ) : (
-            <img
-              src={edition.posterUrl}
-              alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-              class="poster-image"
-              loading="lazy"
-            />
-          )}
-        </button>
-      </div>
-    )}
+    {
+      edition.posterUrl && (
+        <div class="hero-poster">
+          <button
+            type="button"
+            class="poster-button"
+            data-poster-url={edition.posterUrl}
+            data-poster-alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+          >
+            {posterPublicId ? (
+              <ResponsiveImage
+                publicId={posterPublicId}
+                alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+                class="poster-image"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
+                aspectRatio="2/3"
+              />
+            ) : (
+              <img
+                src={edition.posterUrl}
+                alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+                class="poster-image"
+                loading="lazy"
+              />
+            )}
+          </button>
+        </div>
+      )
+    }
     <div class="hero-content">
       <div class="hero-badge" aria-hidden="true">
-        {edition.edition}{editionLabel}
+        {editionLabel}
       </div>
       <h1 id="edition-title" class="hero-title">
         CITADÃO {edition.year}
@@ -59,12 +61,14 @@ const { edition, editionLabel, posterPublicId } = Astro.props;
           <Icon name="calendar" size={20} class="detail-icon" />
           <span>{edition.date}</span>
         </div>
-        {edition.venue && (
-          <div class="detail-item">
-            <Icon name="map-pin" size={20} class="detail-icon" />
-            <span>{edition.venue}</span>
-          </div>
-        )}
+        {
+          edition.venue && (
+            <div class="detail-item">
+              <Icon name="map-pin" size={20} class="detail-icon" />
+              <span>{edition.venue}</span>
+            </div>
+          )
+        }
       </div>
       {edition.notes && <p class="hero-notes">{edition.notes}</p>}
     </div>
@@ -102,7 +106,9 @@ const { edition, editionLabel, posterPublicId } = Astro.props;
     border-radius: var(--radius-xl);
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    transition:
+      transform var(--transition-fast),
+      box-shadow var(--transition-fast);
   }
 
   .poster-button:hover {
