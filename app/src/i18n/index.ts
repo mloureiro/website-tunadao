@@ -44,8 +44,11 @@ export type DotPaths<T> = T extends string
 /**
  * Walk a translation tree by an array of keys.
  * Returns the leaf string value, or undefined on any miss.
+ *
+ * @internal Exported for testing the fallback cascade with asymmetric stubs.
+ * Not part of the public i18n API; do not use in application code.
  */
-function resolve(tree: unknown, keys: string[]): string | undefined {
+export function resolve(tree: unknown, keys: string[]): string | undefined {
   let node: unknown = tree;
   for (const k of keys) {
     if (node && typeof node === 'object' && k in (node as Record<string, unknown>)) {
