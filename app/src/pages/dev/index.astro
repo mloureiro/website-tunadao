@@ -1,8 +1,9 @@
 ---
 import { Icon as AstroIcon } from 'astro-icon/components';
 import DevLayout from '@layouts/DevLayout.astro';
+import { normalizeBase } from '@utils/url';
 
-const base = import.meta.env.BASE_URL;
+const base = normalizeBase(import.meta.env.BASE_URL);
 
 const devPages = [
   {

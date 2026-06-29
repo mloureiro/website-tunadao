@@ -3,3 +3,6 @@ node_modules/
 .astro/
 .payload/
 package-lock.json
+# Inline scripts with define:vars cause a parser failure in the current
+# prettier/astro-plugin version; tracked upstream.
+src/layouts/DevLayout.astro

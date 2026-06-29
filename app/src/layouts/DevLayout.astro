@@ -1,6 +1,7 @@
 ---
 import '@styles/global.css';
 import ThemeToggle from '@components/ThemeToggle.astro';
+import { normalizeBase } from '@utils/url';
 
 interface Props {
   title: string;
@@ -10,7 +11,7 @@ interface Props {
 const { title, currentPage } = Astro.props;
 const isProd = import.meta.env.PROD;
 
-const base = import.meta.env.BASE_URL;
+const base = normalizeBase(import.meta.env.BASE_URL);
 const navItems = [
   { href: `${base}dev/`, label: 'Overview', key: 'index' },
   { href: `${base}dev/components/`, label: 'Components', key: 'components' },

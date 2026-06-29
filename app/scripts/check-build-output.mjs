@@ -169,6 +169,51 @@ if (!phantomFound) {
   pass(`No phantom hosts (${PHANTOM_HOSTS.join(', ')}) found in dist/`);
 }
 
+// ── 5. No dropped-slash base joins ───────────────────────────────────────────
+//
+// When BASE_PATH is set (e.g. /website-tunadao) and Astro emits BASE_URL
+// without a trailing slash, a naïve `${BASE_URL}asset.ext` join produces
+// `/website-tunadaoasset.ext` — a 404.  We detect any href/src/content
+// attribute value that starts with the base path immediately followed by a
+// non-slash character.
+//
+// Only meaningful when the base is non-root (i.e. not just '/').
+//
+// Example of a bad value: /website-tunadaoimages/logo/tunadao-logo.svg
+// Example of a good value: /website-tunadao/images/logo/tunadao-logo.svg
+
+const BASE_WITHOUT_SLASH = EXPECTED_BASE.replace(/\/$/, ''); // '/website-tunadao'
+
+if (BASE_WITHOUT_SLASH && BASE_WITHOUT_SLASH !== '') {
+  // Regex matches: href="/website-tunadaoXXX", src="/website-tunadaoXXX",
+  // content="/website-tunadaoXXX" — where XXX is not '/' or '"'
+  const droppedSlashRe = new RegExp(
+    `(?:href|src|content)="${BASE_WITHOUT_SLASH}[^/"']`,
+    'g'
+  );
+
+  const htmlFiles = walkDir(DIST).filter((f) => path.extname(f).toLowerCase() === '.html');
+
+  let droppedSlashFound = false;
+  for (const file of htmlFiles) {
+    const content = fs.readFileSync(file, 'utf8');
+    const matches = content.match(droppedSlashRe);
+    if (matches) {
+      for (const m of matches) {
+        fail(
+          `Dropped-slash base join in ${path.relative(DIST, file)}: ${m.slice(0, 80)}`
+        );
+        droppedSlashFound = true;
+      }
+    }
+  }
+  if (!droppedSlashFound) {
+    pass(`No dropped-slash base joins found in dist/**/*.html`);
+  }
+} else {
+  pass(`Skipping dropped-slash check (base is root "/", no join ambiguity)`);
+}
+
 // ── Summary ───────────────────────────────────────────────────────────────────
 
 if (failed) {
