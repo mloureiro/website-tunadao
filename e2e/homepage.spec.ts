@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from './pages/HomePage';
+import { t } from './support/i18n';
 
 test.describe('Homepage', () => {
   let home: HomePage;
@@ -34,7 +35,7 @@ test.describe('Homepage', () => {
     await expect(skipLink).toBeAttached();
   });
 
-  test('should have stats bar', async () => {
+  test('should display exactly 5 stats items in the stats bar', async () => {
     await expect(home.statsBar()).toBeVisible();
     await expect(home.statsItems()).toHaveCount(5);
   });
@@ -45,10 +46,29 @@ test.describe('Homepage', () => {
     await expect(home.palmaresPreview()).toBeAttached();
     await expect(home.musicCta()).toBeAttached();
   });
+
+  test('a main nav link click resolves to the correct URL', async ({ page, isMobile }) => {
+    if (isMobile) {
+      // Open the mobile menu first
+      await expect(home.mobileMenuButton()).toBeVisible();
+      await home.mobileMenuButton().click();
+      // Wait for the mobile menu to become visible
+      const mobileMenu = page.locator('.header__mobile-menu');
+      await expect(mobileMenu).toHaveAttribute('aria-hidden', 'false');
+      // Click the "Citadão" link in the mobile menu (locale-aware label)
+      const citadaoLabel = t('nav.citadao', 'pt');
+      await page.locator('.header__mobile-link', { hasText: citadaoLabel }).click();
+    } else {
+      // Click the "Citadão" link in the desktop nav (locale-aware label)
+      const citadaoLabel = t('nav.citadao', 'pt');
+      await page.locator('.header__nav-link', { hasText: citadaoLabel }).click();
+    }
+    await expect(page).toHaveURL(/\/citadao\/?/);
+  });
 });
 
 test.describe('Navigation via section images', () => {
-  test('should navigate to Sobre page via section image', async ({ page }) => {
+  test('should navigate to Sobre page via section image and render its h1', async ({ page }) => {
     const home = new HomePage(page);
     await home.goto();
     await home.sobreLink().click();
@@ -56,7 +76,7 @@ test.describe('Navigation via section images', () => {
     await expect(page.locator('h1')).toContainText('Sobre Nós');
   });
 
-  test('should navigate to Citadão page via section image', async ({ page }) => {
+  test('should navigate to Citadão page via section image and render its h1', async ({ page }) => {
     const home = new HomePage(page);
     await home.goto();
     await home.citadaoLink().click();
@@ -64,7 +84,7 @@ test.describe('Navigation via section images', () => {
     await expect(page.locator('h1')).toContainText('Citadão');
   });
 
-  test('should navigate to Palmarés page via section image', async ({ page }) => {
+  test('should navigate to Palmarés page via section image and render its h1', async ({ page }) => {
     const home = new HomePage(page);
     await home.goto();
     await home.palmaresLink().click();
