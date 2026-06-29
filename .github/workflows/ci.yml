@@ -111,6 +111,9 @@ jobs:
       - name: Run ESLint
         run: npm run lint -w app
 
+      - name: Check CSS design tokens
+        run: npm run lint:tokens -w app
+
       - name: Run TypeScript check
         run: npm run typecheck -w app
 
