@@ -4,6 +4,9 @@ import {
   getLangFromUrl,
   useTranslations,
   getLocalizedPath,
+  getLang,
+  getAlternateLang,
+  resolve,
   defaultLang,
   flattenKeys,
   IDENTICAL_VALUE_ALLOWLIST,
@@ -192,5 +195,89 @@ describe('i18n value-parity guard', () => {
       }
     }
     expect(stale, 'Stale IDENTICAL_VALUE_ALLOWLIST entries (values now differ)').toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getLang / getAlternateLang [6poe][1vx5]
+// ---------------------------------------------------------------------------
+describe('getLang()', () => {
+  it('returns the known locale when astroLocale is a valid language key', () => {
+    expect(getLang('en')).toBe('en');
+    expect(getLang('pt')).toBe('pt');
+  });
+
+  it('falls back to URL-derived language when astroLocale is unknown', () => {
+    const url = new URL('https://example.com/en/about');
+    expect(getLang('xx', url)).toBe('en');
+  });
+
+  it('falls back to URL-derived language when astroLocale is undefined', () => {
+    const url = new URL('https://example.com/en/');
+    expect(getLang(undefined, url)).toBe('en');
+  });
+
+  it('returns default language when astroLocale is unknown and no URL given', () => {
+    expect(getLang('fr')).toBe(defaultLang);
+  });
+
+  it('returns default language when astroLocale is undefined and no URL given', () => {
+    expect(getLang(undefined)).toBe(defaultLang);
+  });
+});
+
+describe('getAlternateLang()', () => {
+  it('returns EN for PT', () => {
+    expect(getAlternateLang('pt')).toBe('en');
+  });
+
+  it('returns PT for EN', () => {
+    expect(getAlternateLang('en')).toBe('pt');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Fallback cascade [dfzt] — tested with asymmetric stubs via resolve()
+// ---------------------------------------------------------------------------
+describe('t() deep fallback cascade', () => {
+  // resolve() is exported @internal so we can test the cascade logic directly
+  // without depending on the real (symmetric) JSON files.
+
+  it('resolve() returns undefined when a key is missing in the tree', () => {
+    const tree = { nav: { home: 'Início' } };
+    expect(resolve(tree, ['nav', 'missing'])).toBeUndefined();
+    expect(resolve(tree, ['missing'])).toBeUndefined();
+    expect(resolve(tree, ['nav', 'home', 'deeper'])).toBeUndefined();
+  });
+
+  it('resolve() returns the string value for an exact match', () => {
+    const tree = { nav: { home: 'Home', about: 'About' } };
+    expect(resolve(tree, ['nav', 'home'])).toBe('Home');
+    expect(resolve(tree, ['nav', 'about'])).toBe('About');
+  });
+
+  it('t() interpolation: {count} replaced in PT', () => {
+    // citadao.about.p2 contains {count} in both locales
+    const result = t('citadao.about.p2', 'pt', { count: 21 });
+    expect(result).toContain('21');
+    expect(result).not.toContain('{count}');
+  });
+
+  it('t() interpolation: {count} replaced in EN', () => {
+    const result = t('citadao.about.p2', 'en', { count: 21 });
+    expect(result).toContain('21');
+    expect(result).not.toContain('{count}');
+  });
+
+  it('t() leaves unmatched {token} literal when vars omitted', () => {
+    // Calling t() without vars should leave {count} as-is (no-op)
+    const result = t('citadao.about.p2', 'pt');
+    expect(result).toContain('{count}');
+  });
+
+  it('t() returns raw key for a completely unknown key (both langs miss)', () => {
+    // @ts-expect-error — intentional: testing runtime miss behavior for deep missing key
+    const result = t('this.key.does.not.exist.anywhere');
+    expect(result).toBe('this.key.does.not.exist.anywhere');
   });
 });
