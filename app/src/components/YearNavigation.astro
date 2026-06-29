@@ -20,17 +20,15 @@ const sortedYears = [...years].sort((a, b) => b - a);
 <nav class="year-navigation" aria-label={ariaLabel}>
   <div class="year-navigation__container">
     <ul class="year-navigation__list" role="list">
-      {sortedYears.map((year) => (
-        <li class="year-navigation__item">
-          <a
-            href={`#${idPrefix}-${year}`}
-            class="year-navigation__link"
-            data-year={year}
-          >
-            {year}
-          </a>
-        </li>
-      ))}
+      {
+        sortedYears.map((year) => (
+          <li class="year-navigation__item">
+            <a href={`#${idPrefix}-${year}`} class="year-navigation__link" data-year={year}>
+              {year}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 </nav>
@@ -41,7 +39,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
 </div>
 
 <script>
-  (function() {
+  (function () {
     function initYearNavigation() {
       const nav = document.querySelector('.year-navigation');
       const indicator = document.querySelector('.year-indicator');
@@ -53,7 +51,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
       const yearLinks = nav.querySelectorAll('.year-navigation__link');
       const yearSections: Element[] = [];
 
-      yearLinks.forEach(link => {
+      yearLinks.forEach((link) => {
         const href = link.getAttribute('href');
         if (href) {
           const section = document.querySelector(href);
@@ -66,51 +64,58 @@ const sortedYears = [...years].sort((a, b) => b - a);
       // Intersection Observer for tracking current year
       let currentYear: string | null = null;
 
-      const observer = new IntersectionObserver((entries) => {
-        // Find the topmost visible section
-        const visibleEntries = entries.filter(e => e.isIntersecting);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          // Find the topmost visible section
+          const visibleEntries = entries.filter((e) => e.isIntersecting);
 
-        if (visibleEntries.length > 0) {
-          // Sort by position to get topmost
-          visibleEntries.sort((a, b) =>
-            a.boundingClientRect.top - b.boundingClientRect.top
-          );
+          if (visibleEntries.length > 0) {
+            // Sort by position to get topmost
+            visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
-          const topSection = visibleEntries[0].target;
-          const year = topSection.id.replace(/^year-/, '');
+            const topSection = visibleEntries[0].target;
+            const year = topSection.id.replace(/^year-/, '');
 
-          if (year !== currentYear) {
-            currentYear = year;
-            indicatorText.textContent = year;
-            indicator.classList.add('year-indicator--visible');
+            if (year !== currentYear) {
+              currentYear = year;
+              indicatorText.textContent = year;
+              indicator.classList.add('year-indicator--visible');
 
-            // Update active state in nav
-            yearLinks.forEach(link => {
-              const linkYear = link.getAttribute('data-year');
-              link.classList.toggle('year-navigation__link--active', linkYear === year);
-            });
+              // Update active state in nav
+              yearLinks.forEach((link) => {
+                const linkYear = link.getAttribute('data-year');
+                link.classList.toggle('year-navigation__link--active', linkYear === year);
+              });
+            }
           }
+        },
+        {
+          rootMargin: '-10% 0px -80% 0px',
+          threshold: 0,
         }
-      }, {
-        rootMargin: '-10% 0px -80% 0px',
-        threshold: 0
-      });
+      );
 
-      yearSections.forEach(section => observer.observe(section));
+      yearSections.forEach((section) => observer.observe(section));
 
       // Hide indicator when at top of page
-      const hideObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          indicator.classList.remove('year-indicator--visible');
-        }
-      }, { threshold: 0.5 });
+      const hideObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            indicator.classList.remove('year-indicator--visible');
+          }
+        },
+        { threshold: 0.5 }
+      );
 
       hideObserver.observe(nav);
 
       // Make navigation sticky when scrolled past
-      const stickyObserver = new IntersectionObserver((entries) => {
-        nav.classList.toggle('year-navigation--sticky', !entries[0].isIntersecting);
-      }, { threshold: 0, rootMargin: '-1px 0px 0px 0px' });
+      const stickyObserver = new IntersectionObserver(
+        (entries) => {
+          nav.classList.toggle('year-navigation--sticky', !entries[0].isIntersecting);
+        },
+        { threshold: 0, rootMargin: '-1px 0px 0px 0px' }
+      );
 
       // Create a sentinel element for sticky detection
       const sentinel = document.createElement('div');
@@ -120,7 +125,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
       stickyObserver.observe(sentinel);
 
       // Smooth scroll with offset
-      yearLinks.forEach(link => {
+      yearLinks.forEach((link) => {
         link.addEventListener('click', (e) => {
           e.preventDefault();
           const href = link.getAttribute('href');
@@ -135,11 +140,12 @@ const sortedYears = [...years].sort((a, b) => b - a);
             : 0;
 
           const offset = 20; // Extra padding
-          const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - offset;
+          const targetPosition =
+            target.getBoundingClientRect().top + window.pageYOffset - navHeight - offset;
 
           window.scrollTo({
             top: targetPosition,
-            behavior: 'smooth'
+            behavior: 'smooth',
           });
         });
       });
@@ -193,7 +199,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
     justify-content: center;
     min-width: 3.5rem;
     padding: var(--space-1) var(--space-2);
-    font-size: var(--text-sm);
+    font-size: var(--font-size-sm);
     font-weight: 500;
     color: var(--color-text-muted);
     background-color: var(--color-background);
@@ -229,12 +235,14 @@ const sortedYears = [...years].sort((a, b) => b - a);
     color: var(--color-text-inverted);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-full);
-    font-size: var(--text-lg);
+    font-size: var(--font-size-lg);
     font-weight: 700;
     box-shadow: var(--shadow-lg);
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity var(--transition-base), transform var(--transition-base);
+    transition:
+      opacity var(--transition-base),
+      transform var(--transition-base);
     pointer-events: none;
     z-index: 50;
   }
@@ -248,14 +256,14 @@ const sortedYears = [...years].sort((a, b) => b - a);
     .year-navigation__link {
       min-width: 3rem;
       padding: var(--space-1);
-      font-size: var(--text-xs);
+      font-size: var(--font-size-xs);
     }
 
     .year-indicator {
       bottom: var(--space-4);
       right: var(--space-4);
       padding: var(--space-1) var(--space-3);
-      font-size: var(--text-base);
+      font-size: var(--font-size-base);
     }
   }
 </style>

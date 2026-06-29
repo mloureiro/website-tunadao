@@ -23,26 +23,28 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
 <article class="edition-card">
   <a href={detailPath} class="edition-link">
     <div class="edition-poster">
-      {posterPublicId ? (
-        <ResponsiveImage
-          publicId={posterPublicId}
-          alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-          class="poster-image"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          aspectRatio="2/3"
-        />
-      ) : edition.posterUrl ? (
-        <img
-          src={edition.posterUrl}
-          alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-          class="poster-image-fallback"
-          loading="lazy"
-        />
-      ) : (
-        <div class="poster-placeholder" aria-hidden="true">
-          <span class="edition-number-large">{edition.edition}</span>
-        </div>
-      )}
+      {
+        posterPublicId ? (
+          <ResponsiveImage
+            publicId={posterPublicId}
+            alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+            class="poster-image"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            aspectRatio="2/3"
+          />
+        ) : edition.posterUrl ? (
+          <img
+            src={edition.posterUrl}
+            alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+            class="poster-image-fallback"
+            loading="lazy"
+          />
+        ) : (
+          <div class="poster-placeholder" aria-hidden="true">
+            <span class="edition-number-large">{edition.edition}</span>
+          </div>
+        )
+      }
     </div>
     <div class="edition-content">
       <div class="edition-header">
@@ -51,11 +53,13 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
         </h3>
         <p class="edition-year">{edition.year}</p>
       </div>
-      {edition.venue && (
-        <p class="edition-venue">
-          <span class="venue-label">{labels.venue}:</span> {edition.venue}
-        </p>
-      )}
+      {
+        edition.venue && (
+          <p class="edition-venue">
+            <span class="venue-label">{labels.venue}:</span> {edition.venue}
+          </p>
+        )
+      }
       <div class="edition-cta">
         <span class="cta-text">{labels.viewDetails}</span>
         <Icon name="arrow-right" size={20} class="cta-arrow" />
@@ -70,7 +74,9 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     background-color: var(--color-surface);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
     height: 100%;
   }
 
@@ -149,7 +155,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
   }
 
   .edition-title {
-    font-size: var(--text-xl);
+    font-size: var(--font-size-xl);
     font-weight: 800;
     color: var(--color-primary);
     margin: 0 0 var(--space-1) 0;
@@ -161,14 +167,14 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
   }
 
   .edition-year {
-    font-size: var(--text-base);
+    font-size: var(--font-size-base);
     font-weight: 600;
     color: var(--color-text-muted);
     margin: 0;
   }
 
   .edition-venue {
-    font-size: var(--text-sm);
+    font-size: var(--font-size-sm);
     color: var(--color-text);
     margin: 0 0 var(--space-3) 0;
   }
@@ -185,7 +191,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     gap: var(--space-2);
     color: var(--color-primary);
     font-weight: 600;
-    font-size: var(--text-sm);
+    font-size: var(--font-size-sm);
     transition: gap 0.2s ease;
   }
 
@@ -211,7 +217,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     }
 
     .edition-title {
-      font-size: var(--text-lg);
+      font-size: var(--font-size-lg);
     }
 
     .edition-number-large {
