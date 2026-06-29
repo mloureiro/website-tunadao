@@ -16,7 +16,8 @@ describe('i18n', () => {
       expect(t('home.cta.about', 'en')).toBe('Discover our history');
     });
 
-    it('should return key when translation not found', () => {
+    it('should return key when translation not found (compile-time catch)', () => {
+      // @ts-expect-error — intentional invalid key to document compile-time enforcement
       expect(t('non.existent.key')).toBe('non.existent.key');
     });
   });

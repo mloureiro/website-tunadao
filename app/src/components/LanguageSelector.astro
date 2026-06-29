@@ -18,7 +18,7 @@ const { lang = defaultLang, currentPath = '/' } = Astro.props;
 // Generate URLs for each language
 const languageUrls = Object.keys(languages).reduce(
   (acc, code) => {
-    acc[code] = getLocalizedPath(currentPath, code as Language, lang);
+    acc[code] = getLocalizedPath(currentPath, code as Language);
     return acc;
   },
   {} as Record<string, string>

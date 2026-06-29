@@ -2,16 +2,18 @@
  * Centralized navigation configuration
  * Used by Header and Footer components
  */
+import type { DotPaths } from '@i18n/index';
+import pt from '@i18n/pt.json';
 
 export interface NavItem {
-  labelKey: string;
+  labelKey: DotPaths<typeof pt>;
   href: string;
   /** Hidden items are excluded from navigation until content is ready */
   hidden?: boolean;
 }
 
 export interface NavSection {
-  titleKey: string;
+  titleKey: DotPaths<typeof pt>;
   items: NavItem[];
 }
 

@@ -231,7 +231,8 @@
       "awards": "Awards",
       "festivals": "Festivals",
       "bestTuna": "Best Tuna",
-      "yearsOfAwards": "Years of Awards"
+      "yearsOfAwards": "Years of Awards",
+      "ariaLabel": "Awards Statistics"
     },
     "awardsCount": "awards"
   },
@@ -263,6 +264,7 @@
     "tags": "Tags",
     "relatedPosts": "Related posts",
     "backToBlog": "Back to Blog",
+    "filterByCategory": "Filter by category",
     "categories": {
       "all": "All",
       "news": "News",
@@ -282,6 +284,7 @@
       "citadao": "Citadão",
       "outro": "Other"
     },
+    "filterByCategory": "Filter by category",
     "watchOn": "Watch on YouTube",
     "youtubeCta": {
       "title": "Subscribe to our channel",
