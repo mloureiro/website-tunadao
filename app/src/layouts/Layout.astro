@@ -2,7 +2,7 @@
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
 import '@styles/global.css';
-import { getLang, type Language } from '@i18n/index';
+import { getLang, langBcp47, getLocalizedPath, type Language } from '@i18n/index';
 import { normalizeBase } from '@utils/url';
 
 interface Props {
@@ -30,10 +30,18 @@ const {
 
 const lang: Language = getLang(Astro.currentLocale, Astro.url);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Hreflang alternates — absolute URLs derived from Astro.site (env-driven, no hardcoded host)
+const path = Astro.url.pathname;
+const alternates = [
+  { hreflang: langBcp47.pt, href: new URL(getLocalizedPath(path, 'pt'), Astro.site) },
+  { hreflang: langBcp47.en, href: new URL(getLocalizedPath(path, 'en'), Astro.site) },
+  { hreflang: 'x-default', href: new URL(getLocalizedPath(path, 'pt'), Astro.site) },
+];
 ---
 
 <!doctype html>
-<html lang={lang === 'en' ? 'en' : 'pt'} data-lang={lang}>
+<html lang={langBcp47[lang]} data-lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,6 +53,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Canonical -->
     <link rel="canonical" href={canonicalURL} />
+
+    <!-- hreflang alternates (pt-PT / en-US / x-default) -->
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={baseAsset('favicon.svg')} />
