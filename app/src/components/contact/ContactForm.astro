@@ -60,9 +60,11 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
       <label for="subject">{labels.subject} *</label>
       <select id="subject" name="subject" required aria-required="true">
         <option value="">{labels.subjectPlaceholder}</option>
-        {Object.entries(labels.subjectOptions).map(([key, value]) => (
-          <option value={key}>{value}</option>
-        ))}
+        {
+          Object.entries(labels.subjectOptions).map(([key, value]) => (
+            <option value={key}>{value}</option>
+          ))
+        }
       </select>
     </div>
 
@@ -123,7 +125,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 
   .form-group label {
     display: block;
-    font-size: var(--text-sm);
+    font-size: var(--font-size-sm);
     font-weight: 500;
     color: var(--color-text);
     margin-bottom: var(--space-2);
@@ -134,7 +136,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
   .form-group textarea {
     width: 100%;
     padding: var(--space-3);
-    font-size: var(--text-base);
+    font-size: var(--font-size-base);
     color: var(--color-text);
     background-color: var(--color-background);
     border: 1px solid var(--color-border);
@@ -259,7 +261,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
         // Read the Turnstile token from the hidden input the widget injects.
         // Turnstile writes `cf-turnstile-response` automatically when the challenge completes.
         const turnstileToken =
-          (form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value) ?? '';
+          form.querySelector<HTMLInputElement>('[name="cf-turnstile-response"]')?.value ?? '';
 
         // Guard: do not POST if the Turnstile widget has not yet produced a token
         // (e.g. user clicked submit before the challenge resolved).

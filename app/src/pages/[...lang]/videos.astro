@@ -43,15 +43,15 @@ const categories = [
   <section class="videos">
     <div class="container">
       <div class="videos__grid">
-        {videos.map((video) => (
-          <VideoCard video={video} watchOnLabel={t('videos.watchOn')} />
-        ))}
+        {videos.map((video) => <VideoCard video={video} watchOnLabel={t('videos.watchOn')} />)}
       </div>
-      {videos.length === 0 && (
-        <div class="videos__empty">
-          <p>{t('common.noResults')}</p>
-        </div>
-      )}
+      {
+        videos.length === 0 && (
+          <div class="videos__empty">
+            <p>{t('common.noResults')}</p>
+          </div>
+        )
+      }
     </div>
   </section>
 
@@ -61,7 +61,12 @@ const categories = [
         <Icon name="youtube" size={48} />
         <h2>{t('videos.youtubeCta.title')}</h2>
         <p>{t('videos.youtubeCta.description')}</p>
-        <Button href="https://www.youtube.com/@TUNADAO1998" variant="primary" size="lg" target="_blank">
+        <Button
+          href="https://www.youtube.com/@TUNADAO1998"
+          variant="primary"
+          size="lg"
+          target="_blank"
+        >
           {t('videos.youtubeCta.button')}
         </Button>
       </div>
@@ -118,13 +123,13 @@ const categories = [
   }
 
   .youtube-cta__content h2 {
-    font-size: var(--text-3xl);
+    font-size: var(--font-size-3xl);
     font-weight: 700;
     margin-bottom: var(--space-3);
   }
 
   .youtube-cta__content p {
-    font-size: var(--text-lg);
+    font-size: var(--font-size-lg);
     opacity: 0.9;
     margin-bottom: var(--space-6);
   }
