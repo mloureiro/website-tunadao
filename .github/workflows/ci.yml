@@ -8,20 +8,20 @@ on:
   workflow_dispatch:
     inputs:
       deploy_target:
-        description: 'What to deploy'
+        description: "What to deploy"
         type: choice
-        default: 'auto'
+        default: "auto"
         options:
-          - auto        # Deploy based on changed files
-          - app-only    # Deploy only the Astro app
-          - cms-only    # Deploy only the CMS (triggers Render)
-          - both        # Deploy both app and CMS
+          - auto # Deploy based on changed files
+          - app-only # Deploy only the Astro app
+          - cms-only # Deploy only the CMS (triggers Render)
+          - both # Deploy both app and CMS
 
 permissions:
   contents: read
 
 concurrency:
-  group: 'pages-${{ github.ref }}'
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -97,8 +97,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -123,8 +123,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -146,8 +146,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -156,16 +156,20 @@ jobs:
       - name: Build site (with test fixtures)
         run: npm run build -w app
         env:
-          USE_TEST_FIXTURES: 'true'
+          USE_TEST_FIXTURES: "true"
           # PUBLIC_CMS_URL must be non-empty so the contact form script is compiled
           # with a POST target. The actual request is intercepted by Playwright route
           # interception in the contact spec, so no live CMS is needed.
-          PUBLIC_CMS_URL: 'http://localhost:3000'
+          PUBLIC_CMS_URL: "http://localhost:3000"
           # Cloudflare Turnstile always-pass test site key — inlined at build time
           # so the widget div renders with a data-sitekey attribute and the form
           # script compiles correctly. The real Turnstile api.js is intercepted by
           # Playwright in the contact spec, so no Cloudflare network call is made.
-          PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA'
+          PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA"
+          # Deterministic interim origin for build-output assertions in Iteration 2.
+          # Final origin is repo vars only — no code change needed. See DEPLOY.md / bead sax7.
+          SITE_URL: "http://loureiro.me"
+          BASE_PATH: "/website-tunadao"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -202,8 +206,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
@@ -256,11 +260,18 @@ jobs:
             exit 1
           fi
 
+      - name: Assert deploy origin is configured
+        run: |
+          test -n "${{ vars.SITE_URL }}" || { echo "::error::vars.SITE_URL is required for deploy"; exit 1; }
+
+      # Origin is driven by repo vars only — interim: SITE_URL=http://loureiro.me, BASE_PATH=/website-tunadao
+      # Going live at root: set vars.SITE_URL=https://tunadao1998.ipv.pt and clear vars.BASE_PATH — no code change needed.
+      # See DEPLOY.md / bead sax7.
       - name: Build site
         run: npm run build -w app
         env:
-          BASE_PATH: ${{ vars.BASE_PATH || '/tunadao-public-site/' }}
-          SITE_URL: ${{ vars.SITE_URL || 'https://www.loureiro.me' }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+          SITE_URL: ${{ vars.SITE_URL }}
           CMS_URL: ${{ steps.cms-check.outputs.available == 'true' && secrets.CMS_URL || '' }}
 
       - name: Setup Pages
