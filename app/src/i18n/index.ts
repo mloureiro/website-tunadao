@@ -184,6 +184,49 @@ export function getAlternateLang(lang: Language): Language {
 }
 
 /**
+ * Dot-paths whose PT and EN values are intentionally identical.
+ * These are proper nouns, brand names, or universal terms that must NOT be
+ * "translated" — they are correct in both languages as-is.
+ *
+ * A value-parity lint MUST treat these as allowed; do not translate them.
+ * If a path's values diverge in the future it should be REMOVED from this
+ * list (the value-parity guard will flag stale entries).
+ *
+ * To audit: run the value-parity guard test and add each legitimate duplicate
+ * it reports. Keys that are untranslated EN strings (bugs) must NOT be here.
+ */
+export const IDENTICAL_VALUE_ALLOWLIST: readonly DotPaths<typeof pt>[] = [
+  // Proper nouns — festival and group names
+  'nav.citadao', // "Citadão" — festival name, not translatable
+  'home.title', // "Tunadão 1998" — group name
+  'home.sections.citadaoPreview.title', // "CITADÃO" — festival name
+  'citadao.title', // "Citadão" — festival name
+  'videos.categories.citadao', // "Citadão" — festival name
+  'contact.form.subjectOptions.citadao', // "CITADÃO - Festival" — proper-noun label
+
+  // Universal terms (same in PT and EN)
+  'nav.blog', // "Blog"
+  'blog.title', // "Blog"
+  'blog.tags', // "Tags"
+  'contact.form.email', // "Email"
+  'contact.info.email', // "Email"
+  'home.sections.citadaoPreview.badge', // "Festival"
+  'citadao.tunasCount', // "tunas" — cultural term used in EN too
+
+  // Proper noun — group member term used in EN tuna culture
+  'about.hierarchy.tunos', // "Tunos" — the group members' title
+
+  // Proper noun — group name used as section divider label
+  'about.sections.history.dividerLabel', // "Tunadão 1998"
+  'about.sections.mission.dividerLabel', // "Tunadão 1998"
+
+  // TODO(iter4): citadao.subtitle EN is untranslated PT — remove from allowlist
+  // once en.json citadao.subtitle is set to "International Competition of
+  // Academic Tunas of Dão" (finding [efft]).
+  'citadao.subtitle',
+];
+
+/**
  * Flatten a nested translation object to a sorted array of dot-path strings.
  * Only string leaves are included; intermediate objects are not.
  * Used by the key-parity test to assert PT and EN trees have identical keys.

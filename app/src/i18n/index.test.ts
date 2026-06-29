@@ -6,6 +6,7 @@ import {
   getLocalizedPath,
   defaultLang,
   flattenKeys,
+  IDENTICAL_VALUE_ALLOWLIST,
 } from './index';
 import pt from './pt.json';
 import en from './en.json';
@@ -94,5 +95,53 @@ describe('i18n key parity', () => {
     const enKeys = flattenKeys(en as unknown as Record<string, unknown>);
     // Deep-equal: both sorted arrays must be identical length + same keys
     expect(ptKeys).toEqual(enKeys);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Value-parity guard + allowlist [jdeb]
+// ---------------------------------------------------------------------------
+describe('i18n value-parity guard', () => {
+  const ptFlat = new Map(
+    flattenKeys(pt as unknown as Record<string, unknown>).map((k) => [
+      k,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      k.split('.').reduce((o: any, seg) => o?.[seg], pt) as string,
+    ])
+  );
+  const enFlat = new Map(
+    flattenKeys(en as unknown as Record<string, unknown>).map((k) => [
+      k,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      k.split('.').reduce((o: any, seg) => o?.[seg], en) as string,
+    ])
+  );
+
+  it('every path with identical PT/EN value is in IDENTICAL_VALUE_ALLOWLIST', () => {
+    // A new accidental untranslated EN string (identical to PT, not on the
+    // allowlist) must fail this test. Add to allowlist only if it is a
+    // genuine proper noun / brand / universal term.
+    const unlisted: string[] = [];
+    for (const [path, ptVal] of ptFlat) {
+      const enVal = enFlat.get(path);
+      if (ptVal === enVal && !(IDENTICAL_VALUE_ALLOWLIST as readonly string[]).includes(path)) {
+        unlisted.push(`${path}: ${JSON.stringify(ptVal)}`);
+      }
+    }
+    expect(unlisted, 'Identical PT/EN values not in IDENTICAL_VALUE_ALLOWLIST').toEqual([]);
+  });
+
+  it('IDENTICAL_VALUE_ALLOWLIST has no stale entries (all listed paths still have equal values)', () => {
+    // An allowlisted path whose PT and EN values have diverged means the
+    // allowlist is outdated — the path should be removed.
+    const stale: string[] = [];
+    for (const path of IDENTICAL_VALUE_ALLOWLIST) {
+      const ptVal = ptFlat.get(path);
+      const enVal = enFlat.get(path);
+      if (ptVal !== enVal) {
+        stale.push(`${path}: PT=${JSON.stringify(ptVal)} EN=${JSON.stringify(enVal)}`);
+      }
+    }
+    expect(stale, 'Stale IDENTICAL_VALUE_ALLOWLIST entries (values now differ)').toEqual([]);
   });
 });
