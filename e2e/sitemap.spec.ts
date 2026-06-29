@@ -34,11 +34,11 @@ test.describe('Sitemap', () => {
 
     const body = await response.text();
 
-    // At least one <loc> whose path does NOT carry the /en/ prefix — a PT URL.
-    // Match a <loc> element whose content is the site root or a PT-only path.
-    // Use a regex that matches `<loc>` + anything that is NOT an `/en/` path.
-    // The simplest reliable check: the root URL (always emitted for PT, no /en/).
-    expect(body).toMatch(/<loc>[^<]*\/(?!en\/)[^<]*<\/loc>/);
+    // At least one <loc> whose ENTIRE content contains no /en/ segment — a true PT URL.
+    // Uses a tempered greedy trick: each char inside <loc>…</loc> must not start a
+    // /en/ sequence, so an all-EN sitemap (every loc contains /en/) correctly fails.
+    // Host-agnostic: works regardless of build-time SITE_URL (localhost, tunadao.pt, …).
+    expect(body).toMatch(/<loc>(?:(?!\/en\/)[^<])*<\/loc>/);
   });
 
   test('sitemap-0.xml contains EN locs', async ({ page }) => {
