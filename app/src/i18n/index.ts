@@ -182,3 +182,26 @@ export function getLocalizedPath(path: string, lang: Language): string {
 export function getAlternateLang(lang: Language): Language {
   return lang === 'pt' ? 'en' : 'pt';
 }
+
+/**
+ * Flatten a nested translation object to a sorted array of dot-path strings.
+ * Only string leaves are included; intermediate objects are not.
+ * Used by the key-parity test to assert PT and EN trees have identical keys.
+ *
+ * @example
+ * flattenKeys({ nav: { home: 'Início', about: 'Sobre Nós' } })
+ * // → ['nav.about', 'nav.home']
+ */
+export function flattenKeys(obj: Record<string, unknown>, prefix = ''): string[] {
+  const keys: string[] = [];
+  for (const k of Object.keys(obj)) {
+    const path = prefix ? `${prefix}.${k}` : k;
+    const value = (obj as Record<string, unknown>)[k];
+    if (typeof value === 'string') {
+      keys.push(path);
+    } else if (typeof value === 'object' && value !== null) {
+      keys.push(...flattenKeys(value as Record<string, unknown>, path));
+    }
+  }
+  return keys.sort();
+}
