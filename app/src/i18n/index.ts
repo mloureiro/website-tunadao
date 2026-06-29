@@ -222,11 +222,6 @@ export const IDENTICAL_VALUE_ALLOWLIST: readonly DotPaths<typeof pt>[] = [
   // Proper noun — group name used as section divider label
   'about.sections.history.dividerLabel', // "Tunadão 1998"
   'about.sections.mission.dividerLabel', // "Tunadão 1998"
-
-  // TODO(iter4): citadao.subtitle EN is untranslated PT — remove from allowlist
-  // once en.json citadao.subtitle is set to "International Competition of
-  // Academic Tunas of Dão" (finding [efft]).
-  'citadao.subtitle',
 ];
 
 /**
