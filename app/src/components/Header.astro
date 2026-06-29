@@ -3,6 +3,7 @@ import ThemeToggle from './ThemeToggle.astro';
 import LanguageSelector from './LanguageSelector.astro';
 import { useTranslations, getLocalizedPath, type Language, defaultLang } from '@i18n/index';
 import { navItems as navItemsConfig } from '@data/navigation';
+import { normalizeBase } from '@utils/url';
 
 interface Props {
   lang?: Language;
@@ -25,7 +26,7 @@ const currentPath = Astro.url.pathname;
   <div class="header__container container">
     <a href={getLocalizedPath('/', lang)} class="header__logo">
       <img
-        src={`${import.meta.env.BASE_URL}images/logo/tunadao-logo.svg`}
+        src={`${normalizeBase(import.meta.env.BASE_URL)}images/logo/tunadao-logo.svg`}
         alt="Tunadão 1998"
         class="header__logo-img"
         width="48"
