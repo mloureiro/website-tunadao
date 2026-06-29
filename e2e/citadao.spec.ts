@@ -1,27 +1,29 @@
 import { test, expect } from '@playwright/test';
+import { CitadaoPage } from './pages/CitadaoPage';
 
 test.describe('Citadão Page', () => {
+  let citadao: CitadaoPage;
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/citadao/');
+    citadao = new CitadaoPage(page);
+    await citadao.goto();
   });
 
-  test('should display the main title', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Citadão');
+  test('should display the main title', async () => {
+    await expect(citadao.heading()).toContainText('Citadão');
   });
 
-  test('should display editions list', async ({ page }) => {
-    const editions = page.locator('.edition-card');
-    await expect(editions.first()).toBeVisible();
+  test('should display editions list', async () => {
+    await expect(citadao.editionCards().first()).toBeVisible();
   });
 
-  test('should display edition information', async ({ page }) => {
-    const editionCard = page.locator('.edition-card').first();
+  test('should display edition information', async () => {
+    const editionCard = citadao.editionCards().first();
     await expect(editionCard).toBeVisible();
     await expect(editionCard.locator('h3')).toContainText('CITADÃO');
   });
 
-  test('should navigate to edition detail page', async ({ page }) => {
-    const editionLink = page.locator('.edition-link').first();
-    await expect(editionLink).toBeVisible();
+  test('should navigate to edition detail page', async () => {
+    await expect(citadao.editionLinks().first()).toBeVisible();
   });
 });
