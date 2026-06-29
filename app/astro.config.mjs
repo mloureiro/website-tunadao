@@ -2,11 +2,15 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import icon from 'astro-icon';
 
-// Use BASE_PATH env var for deployments, defaults to '/' for local dev
+// Single source of truth for the public origin: SITE_URL + BASE_PATH (env vars only).
+// Deploys MUST supply these via CI repo vars — defaults below are local-dev placeholders only.
+// Interim target: vars.SITE_URL=http://loureiro.me, vars.BASE_PATH=/website-tunadao
+// Final target:   vars.SITE_URL=https://tunadao1998.ipv.pt, vars.BASE_PATH= (root)
+// Switching origin is a vars change only — no code edit needed. See DEPLOY.md / bead sax7.
 const base = process.env.BASE_PATH || '/';
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://tunadao.pt',
+  site: process.env.SITE_URL || 'http://localhost:4321',
   base,
   output: 'static',
   srcDir: './src',
