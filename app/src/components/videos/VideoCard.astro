@@ -49,8 +49,8 @@ const { video, watchOnLabel } = Astro.props;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition:
-      transform var(--transition-normal),
-      box-shadow var(--transition-normal);
+      transform var(--transition-base),
+      box-shadow var(--transition-base);
   }
 
   .video-card:hover {
@@ -68,7 +68,7 @@ const { video, watchOnLabel } = Astro.props;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform var(--transition-normal);
+    transition: transform var(--transition-base);
   }
 
   .video-card:hover .video-card__thumbnail img {
@@ -83,7 +83,7 @@ const { video, watchOnLabel } = Astro.props;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.3);
     opacity: 0;
-    transition: opacity var(--transition-normal);
+    transition: opacity var(--transition-base);
   }
 
   .video-card:hover .video-card__overlay {
