@@ -15,7 +15,8 @@
     "typecheck": "astro check && tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:build-output": "node scripts/check-build-output.mjs"
   },
   "keywords": [
     "tuna",
