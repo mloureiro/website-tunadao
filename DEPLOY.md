@@ -328,7 +328,7 @@ on:
     inputs:
       deploy_target: # ...existing input definition...
   schedule:
-    - cron: "0 */6 * * *" # Every 6 hours
+    - cron: '0 */6 * * *' # Every 6 hours
 ```
 
 ---
@@ -374,14 +374,13 @@ schema on a fresh local DB.
 
 The frontend uses these environment variables for CMS integration:
 
-| Variable                    | Description                                    | Default / Notes                                                                                                                                                    |
-| --------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `CMS_URL`                   | PayloadCMS API URL (build-time data fetching)  | `http://localhost:3000`                                                                                                                                            |
-| `PUBLIC_CMS_URL`            | CMS base URL for client-side contact form POST | `http://localhost:3000` — **must be set in the prod build env** (GitHub Actions). Distinct from `CMS_URL`: this is inlined into the client bundle.                 |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (client widget)  | Always-pass test key `1x00000000000000000000AA` for dev/CI — **must be replaced with the real key in the prod build env** (GitHub Actions). Inlined at build time. |
-| `USE_CMS`                   | Enable CMS fetching at build time              | `true`                                                                                                                                                             |
-| `USE_TEST_FIXTURES`         | Use static fixtures (CI/E2E builds)            | `false`                                                                                                                                                            |
-| `FORCE_PROD_CMS`            | Require live CMS (throw if down)               | `false`                                                                                                                                                            |
+| Variable                    | Description                                                     | Default / Notes                                                                                                                                                    |
+| --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CMS_URL`                   | PayloadCMS API URL (build-time data fetching)                   | `http://localhost:3000`                                                                                                                                            |
+| `PUBLIC_CMS_URL`            | CMS base URL for client-side contact form POST                  | `http://localhost:3000` — **must be set in the prod build env** (GitHub Actions). Distinct from `CMS_URL`: this is inlined into the client bundle.                 |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (client widget)                   | Always-pass test key `1x00000000000000000000AA` for dev/CI — **must be replaced with the real key in the prod build env** (GitHub Actions). Inlined at build time. |
+| `USE_TEST_FIXTURES`         | Force static fixtures — no CMS network calls (CI/E2E builds)    | `false`                                                                                                                                                            |
+| `FORCE_PROD_CMS`            | Require live CMS; build throws `CMSError` if CMS is unreachable | `false`                                                                                                                                                            |
 
 See `app/.env.example` for the full list.
 
@@ -396,8 +395,8 @@ PUBLIC_CMS_URL=https://your-cms.onrender.com \
 PUBLIC_TURNSTILE_SITE_KEY=<real-site-key> \
 npm run build -w app
 
-# Build with fallback data only (no CMS) — contact form still requires PUBLIC_CMS_URL at runtime
-USE_CMS=false npm run build
+# Build with static fixtures only (no CMS) — contact form still requires PUBLIC_CMS_URL at build time
+USE_TEST_FIXTURES=true npm run build -w app
 ```
 
 ---
