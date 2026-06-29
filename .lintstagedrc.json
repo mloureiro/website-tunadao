@@ -4,9 +4,14 @@
     "bash -c 'cd app && prettier --write \"$@\"' --"
   ],
   "app/**/*.astro": ["bash -c 'cd app && prettier --write \"$@\"' --"],
+  "app/**/*.{json,md,yml,yaml}": ["bash -c 'cd app && prettier --write \"$@\"' --"],
   "cms/**/*.{ts,tsx}": [
     "bash -c 'cd cms && eslint --fix --no-warn-ignored \"$@\"' --",
     "bash -c 'cd cms && prettier --write \"$@\"' --"
   ],
-  "*.{json,md,yml,yaml}": ["prettier --write"]
+  "cms/**/*.{json,md,yml,yaml}": ["bash -c 'cd cms && prettier --write \"$@\"' --"],
+  "*.{json,md,yml,yaml}": ["bash -c 'prettier --config .prettierrc.json --write \"$@\"' --"],
+  ".github/**/*.{json,md,yml,yaml}": [
+    "bash -c 'prettier --config .prettierrc.json --write \"$@\"' --"
+  ]
 }
