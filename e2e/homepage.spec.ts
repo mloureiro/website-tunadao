@@ -1,68 +1,73 @@
 import { test, expect } from '@playwright/test';
+import { HomePage } from './pages/HomePage';
 
 test.describe('Homepage', () => {
+  let home: HomePage;
+
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    home = new HomePage(page);
+    await home.goto();
   });
 
-  test('should display the main title', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText('Tunadão 1998');
+  test('should display the main title', async () => {
+    await expect(home.heading()).toContainText('Tunadão 1998');
   });
 
-  test('should have navigation', async ({ page, isMobile }) => {
+  test('should have navigation', async ({ isMobile }) => {
     if (isMobile) {
-      // On mobile, navigation is behind hamburger menu
-      const menuBtn = page.locator('.header__menu-btn');
-      await expect(menuBtn).toBeVisible();
+      // On mobile, desktop nav is hidden — only the hamburger button is visible.
+      await expect(home.mobileMenuButton()).toBeVisible();
     } else {
-      // On desktop, navigation is visible
-      const nav = page.getByRole('navigation', { name: 'Navegação principal' });
-      await expect(nav).toBeAttached();
+      // On desktop, the main <nav> element is attached (may be display:none on
+      // narrower breakpoints, but the element is in the DOM).
+      await expect(home.nav()).toBeAttached();
     }
   });
 
-  test('should have footer', async ({ page }) => {
-    const footer = page.locator('footer');
-    await expect(footer).toBeVisible();
+  test('should have footer', async () => {
+    await expect(home.footer()).toBeVisible();
   });
 
   test('should have skip to content link for accessibility', async ({ page }) => {
-    const skipLink = page.getByRole('link', { name: /ir para conteúdo/i });
+    // Locate by stable class + href rather than a hardcoded locale-specific label.
+    const skipLink = page.locator('a.skip-link[href="#main-content"]');
     await expect(skipLink).toBeAttached();
   });
 
-  test('should have stats bar', async ({ page }) => {
-    const statsBar = page.locator('.stats-bar').first();
-    await expect(statsBar).toBeVisible();
-    await expect(statsBar.locator('.stats-bar__item')).toHaveCount(5);
+  test('should have stats bar', async () => {
+    await expect(home.statsBar()).toBeVisible();
+    await expect(home.statsItems()).toHaveCount(5);
   });
 
-  test('should have section links to main pages', async ({ page }) => {
-    await expect(page.locator('#sobre-preview')).toBeAttached();
-    await expect(page.locator('#citadao-preview')).toBeAttached();
-    await expect(page.locator('#palmares-preview')).toBeAttached();
-    await expect(page.locator('#music-cta')).toBeAttached();
+  test('should have section links to main pages', async () => {
+    await expect(home.sobrePreview()).toBeAttached();
+    await expect(home.citadaoPreview()).toBeAttached();
+    await expect(home.palmaresPreview()).toBeAttached();
+    await expect(home.musicCta()).toBeAttached();
   });
 });
 
 test.describe('Navigation via section images', () => {
   test('should navigate to Sobre page via section image', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('#sobre-preview .section-image a').click();
+    const home = new HomePage(page);
+    await home.goto();
+    await home.sobreLink().click();
     await expect(page).toHaveURL(/\/sobre\/?$/);
     await expect(page.locator('h1')).toContainText('Sobre Nós');
   });
 
   test('should navigate to Citadão page via section image', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('#citadao-preview .section-image a').click();
+    const home = new HomePage(page);
+    await home.goto();
+    await home.citadaoLink().click();
     await expect(page).toHaveURL(/\/citadao\/?$/);
     await expect(page.locator('h1')).toContainText('Citadão');
   });
 
   test('should navigate to Palmarés page via section image', async ({ page }) => {
-    await page.goto('/');
-    await page.locator('#palmares-preview .section-image a').click();
+    const home = new HomePage(page);
+    await home.goto();
+    await home.palmaresLink().click();
     await expect(page).toHaveURL(/\/palmares\/?$/);
     await expect(page.locator('h1')).toContainText('Palmarés');
   });
