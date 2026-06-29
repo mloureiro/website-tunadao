@@ -30,7 +30,7 @@ const allYears = editions.map((edition) => edition.year);
   <Section layout="single-column" title={t('citadao.about.title')}>
     <SectionText>
       <p set:html={t('citadao.about.p1')} />
-      <p set:html={t('citadao.about.p2').replace('{count}', String(editions.length))} />
+      <p set:html={t('citadao.about.p2', { count: editions.length })} />
     </SectionText>
   </Section>
 
