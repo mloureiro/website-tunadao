@@ -3,6 +3,7 @@ import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
 import '@styles/global.css';
 import { getLang, type Language } from '@i18n/index';
+import { normalizeBase } from '@utils/url';
 
 interface Props {
   title: string;
@@ -10,11 +11,21 @@ interface Props {
   image?: string;
 }
 
-const base = import.meta.env.BASE_URL;
+// import.meta.env.BASE_URL can lack a trailing slash when BASE_PATH is supplied
+// without one (e.g. BASE_PATH=/website-tunadao). We normalise it to always have
+// a trailing slash so that asset URL joins are always correct.
+const normBase = normalizeBase(import.meta.env.BASE_URL);
+const siteOrigin = (Astro.site?.href ?? '').replace(/\/+$/, '');
+
+// Build an absolute URL for a root-level asset (favicon, og-image, …) by
+// joining the normalised base with the filename against the site origin.
+// e.g. baseAsset('favicon.svg') → 'http://loureiro.me/website-tunadao/favicon.svg'
+const baseAsset = (file: string): string => `${siteOrigin}${normBase}${file}`;
+
 const {
   title,
   description = 'Tunadão 1998 - Tuna do Instituto Politécnico de Viseu. Desde 1998 a representar a academia e a cidade de Viseu.',
-  image = `${base}og-image.jpg`,
+  image = baseAsset('og-image.jpg'),
 } = Astro.props;
 
 const lang: Language = getLang(Astro.currentLocale, Astro.url);
@@ -36,15 +47,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonicalURL} />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-    <link rel="apple-touch-icon" sizes="180x180" href={`${base}apple-touch-icon.png`} />
+    <link rel="icon" type="image/svg+xml" href={baseAsset('favicon.svg')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={baseAsset('apple-touch-icon.png')} />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:image" content={image} />
     <meta property="og:locale" content="pt_PT" />
 
     <!-- Twitter -->
@@ -52,7 +63,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="twitter:url" content={Astro.url} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <meta property="twitter:image" content={image} />
 
     <!-- Theme Color -->
     <meta name="theme-color" content="#29166f" />
