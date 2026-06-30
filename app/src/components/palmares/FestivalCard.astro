@@ -16,6 +16,7 @@ interface Props {
   participationLabel?: string;
   contestantsLabel?: string;
   guestsLabel?: string;
+  posterAlt?: string;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   participationLabel = 'Participação',
   contestantsLabel = 'A Concurso',
   guestsLabel = 'Convidados',
+  posterAlt = `Cartaz ${festival.name}`,
 } = Astro.props;
 
 const sortedAwards = sortAwards(festival.awards);
@@ -42,12 +44,12 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
             type="button"
             class="festival-card__poster-button"
             data-poster-url={festival.posterUrl}
-            data-poster-alt={`Cartaz ${festival.name}`}
+            data-poster-alt={posterAlt}
           >
             {posterPublicId ? (
               <ResponsiveImage
                 publicId={posterPublicId}
-                alt={`Cartaz ${festival.name}`}
+                alt={posterAlt}
                 class="festival-card__poster-image"
                 sizes="(max-width: 768px) 100vw, 400px"
                 aspectRatio="3/4"
@@ -55,7 +57,7 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
             ) : (
               <img
                 src={festival.posterUrl}
-                alt={`Cartaz ${festival.name}`}
+                alt={posterAlt}
                 class="festival-card__poster-image"
                 loading="lazy"
               />
