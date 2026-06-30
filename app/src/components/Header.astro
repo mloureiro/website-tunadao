@@ -30,10 +30,10 @@ const currentPath = normalizePath(Astro.url.pathname);
 
 <header class="header">
   <div class="header__container container">
-    <a href={getLocalizedPath('/', lang)} class="header__logo">
+    <a href={getLocalizedPath('/', lang)} class="header__logo" aria-label="Tunadão 1998">
       <img
         src={`${normalizeBase(import.meta.env.BASE_URL)}images/logo/tunadao-logo.svg`}
-        alt="Tunadão 1998"
+        alt=""
         class="header__logo-img"
         width="48"
         height="48"
