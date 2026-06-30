@@ -33,22 +33,34 @@ test.describe('Lightbox dialog — /citadao/2024', () => {
   }) => {
     const trigger = page.locator('.poster-button');
     await expect(trigger).toBeEnabled();
-    await trigger.click();
 
     const dialog = page.locator('#poster-lightbox');
+
+    // Retry the click + open check together so that a click landing before the
+    // JS handler is bound (Firefox parallel-load race) simply re-fires until the
+    // dialog becomes visible. toPass() is the right tool: it re-executes the
+    // entire callback until it succeeds or times out.
+    await expect(async () => {
+      await trigger.click();
+      await expect(dialog).toHaveClass(/is-open/);
+    }).toPass({ timeout: 10_000 });
+
     await expect(dialog).toHaveAttribute('role', 'dialog');
     await expect(dialog).toHaveAttribute('aria-modal', 'true');
-    await expect(dialog).toHaveClass(/is-open/);
     await expect(dialog).toHaveAttribute('aria-hidden', 'false');
   });
 
   test('Escape closes the lightbox', async ({ page }) => {
     const trigger = page.locator('.poster-button');
     await expect(trigger).toBeEnabled();
-    await trigger.click();
 
     const dialog = page.locator('#poster-lightbox');
-    await expect(dialog).toHaveClass(/is-open/);
+
+    // Same pre-hydration guard as the open test above.
+    await expect(async () => {
+      await trigger.click();
+      await expect(dialog).toHaveClass(/is-open/);
+    }).toPass({ timeout: 10_000 });
 
     await page.keyboard.press('Escape');
 
@@ -138,20 +150,29 @@ test.describe('VideoModal dialog — /videos/', () => {
 
   test('clicking play opens a dialog with role=dialog and aria-modal=true', async ({ page }) => {
     const firstPlay = videos.playButtons().first();
-    await firstPlay.click();
+    const modal = videos.videoModal();
 
-    const modal = page.getByRole('dialog');
-    await expect(modal).toBeVisible();
-    await expect(videos.videoModal()).toHaveAttribute('aria-modal', 'true');
-    await expect(videos.videoModal()).toHaveClass(/active/);
+    // Retry the click + open check together to handle the pre-hydration race
+    // (same pattern as the Lightbox above). If the click lands before the JS
+    // handler is attached the dialog never opens; toPass() re-fires until it does.
+    await expect(async () => {
+      await firstPlay.click();
+      await expect(modal).toHaveClass(/active/);
+    }).toPass({ timeout: 10_000 });
+
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(modal).toHaveAttribute('aria-modal', 'true');
   });
 
   test('Escape closes the VideoModal', async ({ page }) => {
     const firstPlay = videos.playButtons().first();
-    await firstPlay.click();
-
     const modal = videos.videoModal();
-    await expect(modal).toHaveClass(/active/);
+
+    // Same pre-hydration guard: retry click until modal opens.
+    await expect(async () => {
+      await firstPlay.click();
+      await expect(modal).toHaveClass(/active/);
+    }).toPass({ timeout: 10_000 });
 
     await page.keyboard.press('Escape');
 
