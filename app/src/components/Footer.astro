@@ -28,9 +28,6 @@ const footerLinks = footerSections
       })),
   }))
   .filter((section) => section.links.length > 0);
-
-const yearsText = lang === 'en' ? 'years of history' : 'anos de história';
-const sinceText = lang === 'en' ? 'Since' : 'Desde';
 ---
 
 <footer class="footer">
@@ -43,9 +40,9 @@ const sinceText = lang === 'en' ? 'Since' : 'Desde';
         </a>
         <p class="footer__tagline">{t('home.subtitle')}</p>
         <p class="footer__history">
-          {sinceText}
+          {t('footer.since')}
           {foundingYear} • {currentYear - foundingYear}
-          {yearsText}
+          {t('footer.yearsOfHistory')}
         </p>
         <SocialLinks />
       </div>
