@@ -16,7 +16,11 @@ interface Props {
   participationLabel?: string;
 }
 
-const { festival, organizerLabel = 'Organização', participationLabel = 'Participação' } = Astro.props;
+const {
+  festival,
+  organizerLabel = 'Organização',
+  participationLabel = 'Participação',
+} = Astro.props;
 
 const sortedAwards = sortAwards(festival.awards);
 const hasNoAwards = sortedAwards.length === 0;
@@ -27,135 +31,167 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
 <article class="festival-card">
   {/* Poster Section */}
   <div class="festival-card__poster">
-    {festival.posterUrl ? (
-      <button
-        type="button"
-        class="festival-card__poster-button"
-        data-poster-url={festival.posterUrl}
-        data-poster-alt={`Cartaz ${festival.name}`}
-      >
-        {posterPublicId ? (
-          <ResponsiveImage
-            publicId={posterPublicId}
-            alt={`Cartaz ${festival.name}`}
-            class="festival-card__poster-image"
-            sizes="(max-width: 768px) 100vw, 400px"
-            aspectRatio="3/4"
-          />
-        ) : (
-          <img
-            src={festival.posterUrl}
-            alt={`Cartaz ${festival.name}`}
-            class="festival-card__poster-image"
-            loading="lazy"
-          />
-        )}
-        <span class="festival-card__poster-zoom">
-          <Icon name="zoom-in" size={20} />
-        </span>
-      </button>
-    ) : (
-      <div class="festival-card__poster-placeholder">
-        <div class="festival-card__poster-pattern">
-          <span class="festival-card__poster-initial">{festivalInitial}</span>
+    {
+      festival.posterUrl ? (
+        <>
+          <button
+            type="button"
+            class="festival-card__poster-button"
+            data-poster-url={festival.posterUrl}
+            data-poster-alt={`Cartaz ${festival.name}`}
+          >
+            {posterPublicId ? (
+              <ResponsiveImage
+                publicId={posterPublicId}
+                alt={`Cartaz ${festival.name}`}
+                class="festival-card__poster-image"
+                sizes="(max-width: 768px) 100vw, 400px"
+                aspectRatio="3/4"
+              />
+            ) : (
+              <img
+                src={festival.posterUrl}
+                alt={`Cartaz ${festival.name}`}
+                class="festival-card__poster-image"
+                loading="lazy"
+              />
+            )}
+            <span class="festival-card__poster-zoom">
+              <Icon name="zoom-in" size={20} />
+            </span>
+          </button>
+          {/* Fallback placeholder — hidden until poster image fails to load */}
+          <div
+            class="festival-card__poster-placeholder festival-card__poster-placeholder--fallback"
+            aria-label={`Cartaz ${festival.name} (imagem indisponível)`}
+            aria-hidden="true"
+          >
+            <div class="festival-card__poster-pattern">
+              <span class="festival-card__poster-initial">{festivalInitial}</span>
+            </div>
+            <div class="festival-card__poster-notes">
+              <span>♪</span>
+              <span>♫</span>
+              <span>♪</span>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div class="festival-card__poster-placeholder">
+          <div class="festival-card__poster-pattern">
+            <span class="festival-card__poster-initial">{festivalInitial}</span>
+          </div>
+          <div class="festival-card__poster-notes">
+            <span>♪</span>
+            <span>♫</span>
+            <span>♪</span>
+          </div>
         </div>
-        <div class="festival-card__poster-notes">
-          <span>♪</span>
-          <span>♫</span>
-          <span>♪</span>
-        </div>
-      </div>
-    )}
+      )
+    }
   </div>
 
   {/* Content Section */}
   <div class="festival-card__content">
     <header class="festival-card__header">
       <h3 class="festival-card__name">{festival.name}</h3>
-      {festival.location && (
-        <p class="festival-card__location">
-          <Icon name="map-pin" size={14} />
-          <span>{festival.location}</span>
-        </p>
-      )}
+      {
+        festival.location && (
+          <p class="festival-card__location">
+            <Icon name="map-pin" size={14} />
+            <span>{festival.location}</span>
+          </p>
+        )
+      }
     </header>
 
     {/* Organizer */}
-    {festival.organizingTuna && (
-      <div class="festival-card__organizer">
-        <div class="festival-card__organizer-avatar">
-          {festival.organizingTuna.logoUrl ? (
-            <img
-              src={festival.organizingTuna.logoUrl}
-              alt={festival.organizingTuna.shortName}
-              loading="lazy"
-            />
-          ) : (
-            <span class="festival-card__organizer-initial">
-              {festival.organizingTuna.shortName.charAt(0)}
-            </span>
-          )}
+    {
+      festival.organizingTuna && (
+        <div class="festival-card__organizer">
+          <div class="festival-card__organizer-avatar">
+            {festival.organizingTuna.logoUrl ? (
+              <img
+                src={festival.organizingTuna.logoUrl}
+                alt={festival.organizingTuna.shortName}
+                loading="lazy"
+              />
+            ) : (
+              <span class="festival-card__organizer-initial">
+                {festival.organizingTuna.shortName.charAt(0)}
+              </span>
+            )}
+          </div>
+          <div class="festival-card__organizer-info">
+            <span class="festival-card__organizer-label">{organizerLabel}</span>
+            {festival.organizingTuna.website ? (
+              <a
+                href={festival.organizingTuna.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="festival-card__organizer-name"
+                title={festival.organizingTuna.fullName}
+              >
+                {festival.organizingTuna.shortName}
+              </a>
+            ) : (
+              <span class="festival-card__organizer-name" title={festival.organizingTuna.fullName}>
+                {festival.organizingTuna.shortName}
+              </span>
+            )}
+          </div>
         </div>
-        <div class="festival-card__organizer-info">
-          <span class="festival-card__organizer-label">{organizerLabel}</span>
-          {festival.organizingTuna.website ? (
-            <a
-              href={festival.organizingTuna.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="festival-card__organizer-name"
-              title={festival.organizingTuna.fullName}
-            >
-              {festival.organizingTuna.shortName}
-            </a>
-          ) : (
-            <span class="festival-card__organizer-name" title={festival.organizingTuna.fullName}>
-              {festival.organizingTuna.shortName}
-            </span>
-          )}
-        </div>
-      </div>
-    )}
+      )
+    }
 
     {/* Participants */}
-    {(festival.contestants && festival.contestants.length > 0 || festival.guests && festival.guests.length > 0) && (
-      <div class="festival-card__participants">
-        {festival.contestants && festival.contestants.length > 0 && (
-          <div class="festival-card__participant-group">
-            <span class="festival-card__participant-label">A Concurso</span>
-            <ul class="festival-card__participant-list">
-              {festival.contestants.map((tuna) => (
-                <li class="festival-card__participant-item" title={tuna.fullName}>
-                  {tuna.shortName}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {festival.guests && festival.guests.length > 0 && (
-          <div class="festival-card__participant-group">
-            <span class="festival-card__participant-label">Convidados</span>
-            <ul class="festival-card__participant-list">
-              {festival.guests.map((tuna) => (
-                <li class="festival-card__participant-item" title={tuna.fullName}>
-                  {tuna.shortName}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    )}
+    {
+      ((festival.contestants && festival.contestants.length > 0) ||
+        (festival.guests && festival.guests.length > 0)) && (
+        <div class="festival-card__participants">
+          {festival.contestants && festival.contestants.length > 0 && (
+            <div class="festival-card__participant-group">
+              <span class="festival-card__participant-label">A Concurso</span>
+              <ul class="festival-card__participant-list">
+                {festival.contestants.map((tuna) => (
+                  <li class="festival-card__participant-item" title={tuna.fullName}>
+                    {tuna.shortName}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {festival.guests && festival.guests.length > 0 && (
+            <div class="festival-card__participant-group">
+              <span class="festival-card__participant-label">Convidados</span>
+              <ul class="festival-card__participant-list">
+                {festival.guests.map((tuna) => (
+                  <li class="festival-card__participant-item" title={tuna.fullName}>
+                    {tuna.shortName}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )
+    }
 
     {/* Awards */}
     <footer class="festival-card__awards">
-      {hasNoAwards ? (
-        <Award awardKey="premio-participacao" size="sm">{participationLabel}</Award>
-      ) : (
-        sortedAwards.map((award) => (
-          <Award awardKey={award.slug} size="sm">{award.name}</Award>
-        ))
-      )}
+      {
+        hasNoAwards ? (
+          <Award awardKey="premio-participacao" size="sm">
+            {participationLabel}
+          </Award>
+        ) : (
+          sortedAwards.map((award) => (
+            <Award awardKey={award.slug} size="sm">
+              {award.name}
+            </Award>
+          ))
+        )
+      }
     </footer>
   </div>
 </article>
@@ -187,7 +223,6 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
     box-shadow: var(--shadow-lg);
     border-color: var(--color-border);
   }
-
 
   /* Poster Section */
   .festival-card__poster {
@@ -240,7 +275,9 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
     border-radius: var(--radius-full);
     opacity: 0;
     transform: scale(0.8);
-    transition: opacity var(--transition-base), transform var(--transition-base);
+    transition:
+      opacity var(--transition-base),
+      transform var(--transition-base);
   }
 
   .festival-card__poster-button:hover .festival-card__poster-zoom,
@@ -258,11 +295,7 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
     align-items: center;
     justify-content: center;
     position: relative;
-    background: linear-gradient(
-      135deg,
-      var(--color-primary) 0%,
-      var(--color-primary-dark) 100%
-    );
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
     overflow: hidden;
   }
 
@@ -496,4 +529,60 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
   .festival-card__awards:empty {
     display: none;
   }
+
+  /* Poster-load-error: hide the broken image button, reveal the pre-rendered placeholder */
+  .festival-card__poster-placeholder--fallback {
+    display: none;
+  }
+
+  [data-poster-failed] .festival-card__poster-button {
+    display: none;
+  }
+
+  [data-poster-failed] .festival-card__poster-placeholder--fallback {
+    display: flex;
+  }
 </style>
+
+<script>
+  /**
+   * Festival poster error fallback.
+   * When a poster <img> (or <img> inside a <picture>) fails to load,
+   * mark its ancestor .festival-card__poster with [data-poster-failed]
+   * so CSS swaps in the pre-rendered placeholder and hides the zoom button.
+   * Also removes data-poster-url from the button to prevent the lightbox
+   * from opening with a broken URL.
+   */
+  document.querySelectorAll<HTMLElement>('.festival-card__poster-button').forEach((btn) => {
+    const img = btn.querySelector<HTMLImageElement>('.festival-card__poster-image');
+    if (!img) return;
+
+    function handleError() {
+      const posterEl = btn.closest<HTMLElement>('.festival-card__poster');
+      if (!posterEl) return;
+
+      // Mark the poster section — CSS takes over from here
+      posterEl.dataset.posterFailed = '';
+
+      // Unhide the fallback placeholder for AT (it's aria-hidden by default)
+      const fallback = posterEl.querySelector<HTMLElement>(
+        '.festival-card__poster-placeholder--fallback'
+      );
+      if (fallback) {
+        fallback.removeAttribute('aria-hidden');
+      }
+
+      // Prevent the lightbox from firing on a dead button click
+      btn.removeAttribute('data-poster-url');
+      btn.setAttribute('aria-disabled', 'true');
+      btn.setAttribute('tabindex', '-1');
+    }
+
+    if (img.complete && img.naturalWidth === 0) {
+      // Already failed (e.g. cached 404)
+      handleError();
+    } else {
+      img.addEventListener('error', handleError, { once: true });
+    }
+  });
+</script>
