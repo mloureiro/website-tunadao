@@ -1,8 +1,22 @@
 ---
 import { Icon } from '@ui/icons';
+import { useTranslations, type Language, defaultLang } from '@i18n/index';
+
+interface Props {
+  lang?: Language;
+}
+
+const { lang = defaultLang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
-<button class="theme-toggle" aria-label="Alternar modo escuro" title="Alternar modo escuro">
+<button
+  class="theme-toggle"
+  data-label-light={t('common.switchToLight')}
+  data-label-dark={t('common.switchToDark')}
+  aria-label={t('common.toggleDarkMode')}
+  title={t('common.toggleDarkMode')}
+>
   <Icon name="sun" size={20} class="theme-toggle__icon theme-toggle__icon--sun" />
   <Icon name="moon" size={20} class="theme-toggle__icon theme-toggle__icon--moon" />
 </button>
@@ -52,7 +66,7 @@ import { Icon } from '@ui/icons';
 
 <script>
   // Theme toggle functionality
-  const themeToggle = document.querySelector('.theme-toggle');
+  const themeToggle = document.querySelector<HTMLElement>('.theme-toggle');
 
   // Get initial theme
   const getTheme = (): 'light' | 'dark' => {
@@ -65,6 +79,14 @@ import { Icon } from '@ui/icons';
   const applyTheme = (theme: 'light' | 'dark') => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    const btn = themeToggle;
+    if (btn) {
+      const next = theme === 'dark' ? btn.dataset.labelLight : btn.dataset.labelDark;
+      if (next) {
+        btn.setAttribute('aria-label', next);
+        btn.setAttribute('title', next);
+      }
+    }
   };
 
   // Initialize
