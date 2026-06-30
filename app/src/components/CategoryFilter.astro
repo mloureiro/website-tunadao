@@ -31,6 +31,7 @@ const {
             class="category-filter__btn"
             class:list={{ 'category-filter__btn--active': index === 0 }}
             data-category={category.key}
+            aria-pressed={index === 0 ? 'true' : 'false'}
           >
             {category.label}
           </button>
@@ -92,8 +93,12 @@ const {
 
       btns.forEach((btn) => {
         btn.addEventListener('click', () => {
-          btns.forEach((b) => b.classList.remove('category-filter__btn--active'));
+          btns.forEach((b) => {
+            b.classList.remove('category-filter__btn--active');
+            b.setAttribute('aria-pressed', 'false');
+          });
           btn.classList.add('category-filter__btn--active');
+          btn.setAttribute('aria-pressed', 'true');
 
           const category = btn.getAttribute('data-category');
 
