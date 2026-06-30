@@ -2,6 +2,7 @@
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import ScrollIndicator from '@components/ScrollIndicator.astro';
+import { type Language, defaultLang } from '@i18n/index';
 
 interface Props {
   title: string;
@@ -9,9 +10,10 @@ interface Props {
   text: string;
   heroPhoto: ImageMetadata;
   heroAlt: string;
+  lang?: Language;
 }
 
-const { title, subtitle, text, heroPhoto, heroAlt } = Astro.props;
+const { title, subtitle, text, heroPhoto, heroAlt, lang = defaultLang } = Astro.props;
 ---
 
 <section class="hero" aria-label={title}>
@@ -32,7 +34,7 @@ const { title, subtitle, text, heroPhoto, heroAlt } = Astro.props;
     <p class="hero__text animate-fade-in-delay-2">{text}</p>
   </div>
 
-  <ScrollIndicator />
+  <ScrollIndicator lang={lang} />
 </section>
 
 <style>
