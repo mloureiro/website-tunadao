@@ -334,14 +334,38 @@ const currentPath = Astro.url.pathname;
 </style>
 
 <script>
-  const menuBtn = document.querySelector('.header__menu-btn');
-  const mobileMenu = document.querySelector('.header__mobile-menu');
+  import { createFocusTrap } from '../scripts/focus-trap';
+
+  const menuBtn = document.querySelector<HTMLElement>('.header__menu-btn');
+  const mobileMenu = document.querySelector<HTMLElement>('.header__mobile-menu');
 
   if (menuBtn && mobileMenu) {
+    const trap = createFocusTrap(mobileMenu);
+
+    function openMenu(): void {
+      menuBtn!.setAttribute('aria-expanded', 'true');
+      mobileMenu!.setAttribute('aria-hidden', 'false');
+      trap.activate();
+    }
+
+    function closeMenu(): void {
+      menuBtn!.setAttribute('aria-expanded', 'false');
+      mobileMenu!.setAttribute('aria-hidden', 'true');
+      trap.deactivate();
+    }
+
     menuBtn.addEventListener('click', () => {
-      const isExpanded = menuBtn.getAttribute('aria-expanded') === 'true';
-      menuBtn.setAttribute('aria-expanded', String(!isExpanded));
-      mobileMenu.setAttribute('aria-hidden', String(isExpanded));
+      if (menuBtn.getAttribute('aria-expanded') === 'true') {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && menuBtn.getAttribute('aria-expanded') === 'true') {
+        closeMenu();
+      }
     });
   }
 </script>
