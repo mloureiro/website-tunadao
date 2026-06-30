@@ -14,12 +14,16 @@ interface Props {
   festival: FrontendPalmaresFestival;
   organizerLabel?: string;
   participationLabel?: string;
+  contestantsLabel?: string;
+  guestsLabel?: string;
 }
 
 const {
   festival,
   organizerLabel = 'Organização',
   participationLabel = 'Participação',
+  contestantsLabel = 'A Concurso',
+  guestsLabel = 'Convidados',
 } = Astro.props;
 
 const sortedAwards = sortAwards(festival.awards);
@@ -151,7 +155,7 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
         <div class="festival-card__participants">
           {festival.contestants && festival.contestants.length > 0 && (
             <div class="festival-card__participant-group">
-              <span class="festival-card__participant-label">A Concurso</span>
+              <span class="festival-card__participant-label">{contestantsLabel}</span>
               <ul class="festival-card__participant-list">
                 {festival.contestants.map((tuna) => (
                   <li class="festival-card__participant-item" title={tuna.fullName}>
@@ -163,7 +167,7 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
           )}
           {festival.guests && festival.guests.length > 0 && (
             <div class="festival-card__participant-group">
-              <span class="festival-card__participant-label">Convidados</span>
+              <span class="festival-card__participant-label">{guestsLabel}</span>
               <ul class="festival-card__participant-list">
                 {festival.guests.map((tuna) => (
                   <li class="festival-card__participant-item" title={tuna.fullName}>

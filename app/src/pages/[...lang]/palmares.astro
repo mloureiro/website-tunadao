@@ -44,9 +44,8 @@ const melhorTunaCount = palmaresData.reduce((total, year) => {
 }, 0);
 
 // Calculate years since first award
-const firstAwardYear = palmaresData.length > 0
-  ? Math.min(...palmaresData.map(y => y.year))
-  : new Date().getFullYear();
+const firstAwardYear =
+  palmaresData.length > 0 ? Math.min(...palmaresData.map((y) => y.year)) : new Date().getFullYear();
 const yearsSinceFirst = new Date().getFullYear() - firstAwardYear;
 
 // Build stats array for PalmaresStatsBar
@@ -59,19 +58,27 @@ const stats = [
 ---
 
 <Layout title={`${t('palmares.title')} | Tunadão 1998`} description={t('palmares.description')}>
-  <HeroSection
-    title={t('palmares.title')}
-    subtitle={t('palmares.subtitle')}
+  <HeroSection title={t('palmares.title')} subtitle={t('palmares.subtitle')} />
+
+  <StatsBar
+    variant="light"
+    stats={stats}
+    columns={4}
+    ariaLabel={t('palmares.stats.ariaLabel') || 'Statistics'}
   />
 
-  <StatsBar variant="light" stats={stats} columns={4} ariaLabel={t('palmares.stats.ariaLabel') || 'Statistics'} />
-
   <!-- Year Navigation -->
-  {useVerticalTimeline ? (
-    <VerticalTimeline years={allYears} ariaLabel={t('palmares.jumpToYear') || 'Jump to year'} sectionSelector=".palmares-timeline" />
-  ) : (
-    <YearNavigation years={allYears} ariaLabel={t('palmares.jumpToYear') || 'Jump to year'} />
-  )}
+  {
+    useVerticalTimeline ? (
+      <VerticalTimeline
+        years={allYears}
+        ariaLabel={t('palmares.jumpToYear') || 'Jump to year'}
+        sectionSelector=".palmares-timeline"
+      />
+    ) : (
+      <YearNavigation years={allYears} ariaLabel={t('palmares.jumpToYear') || 'Jump to year'} />
+    )
+  }
 
   <!-- Timeline Section -->
   <section class="palmares-timeline">
@@ -85,6 +92,8 @@ const stats = [
                 <FestivalCard
                   festival={festival}
                   organizerLabel={t('palmares.festival')}
+                  contestantsLabel={t('palmares.contestants')}
+                  guestsLabel={t('palmares.guests')}
                 />
               ))}
             </div>
@@ -96,7 +105,6 @@ const stats = [
 
   <Lightbox closeLabel={t('common.close')} />
 </Layout>
-
 
 <style>
   /* Palmares Timeline */
