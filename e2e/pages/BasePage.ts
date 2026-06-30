@@ -59,4 +59,14 @@ export class BasePage {
   heading(): Locator {
     return this.page.locator('h1');
   }
+
+  /** Theme toggle button. */
+  themeToggle(): Locator {
+    return this.page.locator('.theme-toggle');
+  }
+
+  /** Skip link (first focusable in <body>). */
+  skipLink(): Locator {
+    return this.page.locator('a.skip-link');
+  }
 }
