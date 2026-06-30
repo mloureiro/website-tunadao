@@ -7,7 +7,9 @@
     "blog": "Blog",
     "videos": "Videos",
     "music": "Music",
-    "contact": "Contact"
+    "contact": "Contact",
+    "mainNavigation": "Main navigation",
+    "mobileMenu": "Navigation menu"
   },
   "stats": {
     "founded": "Founded",
@@ -40,7 +42,12 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "toggleDarkMode": "Toggle dark mode",
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "selectLanguage": "Select language",
+    "scroll": "Scroll",
+    "jumpToYearN": "Jump to {year}"
   },
   "home": {
     "title": "Tunadão 1998",
@@ -198,6 +205,7 @@
     "subtitle": "International Competition of Academic Tunas of Dão",
     "description": "CITADÃO - Certame Internacional de Tunas Académicas do Dão. The tuna festival organized by Tunadão since 2004.",
     "jumpToYear": "Jump to edition",
+    "posterAlt": "Poster of the {edition} CITADÃO ({year})",
     "editionDescription": "of CITADÃO",
     "edition": "Edition",
     "year": "Year",
@@ -234,7 +242,11 @@
       "yearsOfAwards": "Years of Awards",
       "ariaLabel": "Awards Statistics"
     },
-    "awardsCount": "awards"
+    "awardsCount": "awards",
+    "currentYearNav": "Year navigation",
+    "contestants": "Contestants",
+    "guests": "Guests",
+    "posterAlt": "Poster of {festival}"
   },
   "awards": {
     "melhor-tuna": "Best Tuna",
@@ -350,7 +362,9 @@
     "content": "Content",
     "contact": "Contact",
     "followUs": "Follow us",
-    "copyright": "All rights reserved"
+    "copyright": "All rights reserved",
+    "since": "Since",
+    "yearsOfHistory": "years of history"
   },
   "error": {
     "404": {
