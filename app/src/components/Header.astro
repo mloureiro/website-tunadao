@@ -44,7 +44,7 @@ const currentPath = normalizePath(Astro.url.pathname);
       </div>
     </a>
 
-    <nav class="header__nav" aria-label="Navegação principal">
+    <nav class="header__nav" aria-label={t('nav.mainNavigation')}>
       <ul class="header__nav-list">
         {
           navItems.map((item) => (
@@ -76,7 +76,7 @@ const currentPath = normalizePath(Astro.url.pathname);
 
   <!-- Mobile menu -->
   <div class="header__mobile-menu" aria-hidden="true">
-    <nav aria-label="Menu mobile">
+    <nav aria-label={t('nav.mobileMenu')}>
       <ul class="header__mobile-list">
         {
           navItems.map((item) => (
