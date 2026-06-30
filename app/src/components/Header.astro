@@ -67,7 +67,7 @@ const currentPath = normalizePath(Astro.url.pathname);
 
     <div class="header__actions">
       <LanguageSelector lang={lang} currentPath={Astro.url.pathname} />
-      <ThemeToggle />
+      <ThemeToggle lang={lang} />
       <button class="header__menu-btn" aria-label="Abrir menu" aria-expanded="false">
         <span class="header__menu-icon"></span>
       </button>
