@@ -75,6 +75,7 @@ const currentPath = Astro.url.pathname;
               <a
                 href={item.href}
                 class:list={['header__mobile-link', { active: currentPath === item.href }]}
+                aria-current={currentPath === item.href ? 'page' : undefined}
               >
                 {item.label}
               </a>
