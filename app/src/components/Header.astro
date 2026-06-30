@@ -68,7 +68,13 @@ const currentPath = normalizePath(Astro.url.pathname);
     <div class="header__actions">
       <LanguageSelector lang={lang} currentPath={Astro.url.pathname} />
       <ThemeToggle lang={lang} />
-      <button class="header__menu-btn" aria-label="Abrir menu" aria-expanded="false">
+      <button
+        class="header__menu-btn"
+        aria-label={t('common.openMenu')}
+        data-label-open={t('common.openMenu')}
+        data-label-close={t('common.closeMenu')}
+        aria-expanded="false"
+      >
         <span class="header__menu-icon"></span>
       </button>
     </div>
@@ -358,12 +364,20 @@ const currentPath = normalizePath(Astro.url.pathname);
       menuBtn!.setAttribute('aria-expanded', 'true');
       mobileMenu!.setAttribute('aria-hidden', 'false');
       trap.activate();
+      menuBtn!.setAttribute(
+        'aria-label',
+        menuBtn!.dataset.labelClose ?? menuBtn!.getAttribute('aria-label')!
+      );
     }
 
     function closeMenu(): void {
       menuBtn!.setAttribute('aria-expanded', 'false');
       mobileMenu!.setAttribute('aria-hidden', 'true');
       trap.deactivate();
+      menuBtn!.setAttribute(
+        'aria-label',
+        menuBtn!.dataset.labelOpen ?? menuBtn!.getAttribute('aria-label')!
+      );
     }
 
     menuBtn.addEventListener('click', () => {
