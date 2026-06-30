@@ -17,67 +17,73 @@
 
 interface Props {
   closeLabel?: string;
+  /** Accessible name for the dialog. Defaults to 'Poster'. Localization is handled by the w593 bead. */
+  dialogLabel?: string;
 }
 
-const { closeLabel = 'Fechar' } = Astro.props;
+const { closeLabel = 'Fechar', dialogLabel = 'Poster' } = Astro.props;
 ---
 
-<div id="poster-lightbox" class="lightbox" aria-hidden="true">
+<div
+  id="poster-lightbox"
+  class="lightbox"
+  role="dialog"
+  aria-modal="true"
+  aria-label={dialogLabel}
+  aria-hidden="true"
+>
   <button type="button" class="lightbox__close" aria-label={closeLabel}>&times;</button>
   <div class="lightbox__content">
     <img src="" alt="" class="lightbox__image" />
   </div>
 </div>
 
-<script is:inline>
-  (function() {
-    function initLightbox() {
-      const lightbox = document.getElementById('poster-lightbox');
-      const lightboxImage = lightbox?.querySelector('.lightbox__image');
-      const closeButton = lightbox?.querySelector('.lightbox__close');
+<script>
+  import { createFocusTrap } from '../scripts/focus-trap';
 
-      if (!lightbox || !lightboxImage) return;
+  const lightbox = document.getElementById('poster-lightbox') as HTMLElement | null;
+  const lightboxImage = lightbox?.querySelector<HTMLImageElement>('.lightbox__image');
+  const closeButton = lightbox?.querySelector<HTMLButtonElement>('.lightbox__close');
 
-      // Open lightbox when clicking on elements with data-poster-url
-      document.querySelectorAll('[data-poster-url]').forEach(function(element) {
-        element.addEventListener('click', function() {
-          const url = element.getAttribute('data-poster-url');
-          const alt = element.getAttribute('data-poster-alt') || '';
-          if (url) {
-            lightboxImage.src = url;
-            lightboxImage.alt = alt;
-            lightbox.classList.add('is-open');
-            lightbox.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-          }
-        });
+  if (lightbox && lightboxImage) {
+    const trap = createFocusTrap(lightbox);
+
+    function closeLightbox(): void {
+      trap.deactivate();
+      lightbox!.classList.remove('is-open');
+      lightbox!.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    // Open lightbox when clicking on elements with data-poster-url.
+    // Reads data-poster-url at click time so FestivalCard's broken-image strip
+    // (which removes the attribute before the handler fires) is a no-op.
+    document.querySelectorAll<HTMLElement>('[data-poster-url]').forEach((element) => {
+      element.addEventListener('click', () => {
+        const url = element.getAttribute('data-poster-url');
+        const alt = element.getAttribute('data-poster-alt') ?? '';
+        if (!url) return; // stripped by FestivalCard broken-image handler → no-op
+        lightboxImage.src = url;
+        lightboxImage.alt = alt;
+        lightbox!.classList.add('is-open');
+        lightbox!.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        trap.activate(); // captures the clicked button as restore target; focus → close button
       });
+    });
 
-      // Close lightbox
-      function closeLightbox() {
-        lightbox.classList.remove('is-open');
-        lightbox.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+    closeButton?.addEventListener('click', closeLightbox);
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox!.classList.contains('is-open')) {
+        closeLightbox();
       }
-
-      closeButton?.addEventListener('click', closeLightbox);
-      lightbox.addEventListener('click', function(e) {
-        if (e.target === lightbox) closeLightbox();
-      });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && lightbox.classList.contains('is-open')) {
-          closeLightbox();
-        }
-      });
-    }
-
-    // Run when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initLightbox);
-    } else {
-      initLightbox();
-    }
-  })();
+    });
+  }
 </script>
 
 <style>
