@@ -19,7 +19,13 @@ const navItems = navItemsConfig
     href: getLocalizedPath(item.href, lang),
   }));
 
-const currentPath = Astro.url.pathname;
+// Normalize a path for active-link comparison: strip trailing slash,
+// but keep the root "/" as-is to avoid matching empty string.
+function normalizePath(p: string): string {
+  return p.length > 1 ? p.replace(/\/$/, '') : p;
+}
+
+const currentPath = normalizePath(Astro.url.pathname);
 ---
 
 <header class="header">
@@ -45,8 +51,11 @@ const currentPath = Astro.url.pathname;
             <li class="header__nav-item">
               <a
                 href={item.href}
-                class:list={['header__nav-link', { active: currentPath === item.href }]}
-                aria-current={currentPath === item.href ? 'page' : undefined}
+                class:list={[
+                  'header__nav-link',
+                  { active: currentPath === normalizePath(item.href) },
+                ]}
+                aria-current={currentPath === normalizePath(item.href) ? 'page' : undefined}
               >
                 {item.label}
               </a>
@@ -74,8 +83,11 @@ const currentPath = Astro.url.pathname;
             <li>
               <a
                 href={item.href}
-                class:list={['header__mobile-link', { active: currentPath === item.href }]}
-                aria-current={currentPath === item.href ? 'page' : undefined}
+                class:list={[
+                  'header__mobile-link',
+                  { active: currentPath === normalizePath(item.href) },
+                ]}
+                aria-current={currentPath === normalizePath(item.href) ? 'page' : undefined}
               >
                 {item.label}
               </a>
