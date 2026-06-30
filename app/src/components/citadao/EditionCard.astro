@@ -12,6 +12,7 @@ interface Props {
     edition: string;
     viewDetails: string;
     venue: string;
+    posterAlt: string;
   };
 }
 
@@ -27,7 +28,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
         posterPublicId ? (
           <ResponsiveImage
             publicId={posterPublicId}
-            alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+            alt={labels.posterAlt}
             class="poster-image"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             aspectRatio="2/3"
@@ -35,7 +36,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
         ) : edition.posterUrl ? (
           <img
             src={edition.posterUrl}
-            alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+            alt={labels.posterAlt}
             class="poster-image-fallback"
             loading="lazy"
           />

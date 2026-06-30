@@ -58,6 +58,10 @@ const allYears = editions.map((edition) => edition.year);
                 edition: `${ordinal(edition.edition, currentLang)} ${t('citadao.edition')}`,
                 viewDetails: t('citadao.viewDetails'),
                 venue: t('citadao.venue'),
+                posterAlt: t('citadao.posterAlt', {
+                  edition: `${ordinal(edition.edition, currentLang)} ${t('citadao.edition')}`,
+                  year: edition.year,
+                }),
               }}
             />
           </div>

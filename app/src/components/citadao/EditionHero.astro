@@ -13,9 +13,10 @@ interface Props {
   };
   editionLabel: string;
   posterPublicId: string | null;
+  posterAlt: string;
 }
 
-const { edition, editionLabel, posterPublicId } = Astro.props;
+const { edition, editionLabel, posterPublicId, posterAlt } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="edition-title">
@@ -27,23 +28,18 @@ const { edition, editionLabel, posterPublicId } = Astro.props;
             type="button"
             class="poster-button"
             data-poster-url={edition.posterUrl}
-            data-poster-alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+            data-poster-alt={posterAlt}
           >
             {posterPublicId ? (
               <ResponsiveImage
                 publicId={posterPublicId}
-                alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
+                alt={posterAlt}
                 class="poster-image"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
                 aspectRatio="2/3"
               />
             ) : (
-              <img
-                src={edition.posterUrl}
-                alt={`Cartaz do ${edition.edition}º Citadão (${edition.year})`}
-                class="poster-image"
-                loading="lazy"
-              />
+              <img src={edition.posterUrl} alt={posterAlt} class="poster-image" loading="lazy" />
             )}
           </button>
         </div>
