@@ -4,13 +4,20 @@
  * Covers findings: iym, j3d, h4ox, xdv, ocmz, oyz, zg9u, ogei (creu bead).
  * NOT covered: 1tj4 (decorative emoji — nothing observable, static-only fix).
  *
- * Activation strategy: use `locator.focus()` + `keyboard.press('Enter')` rather
- * than `.click()` to trigger dialogs. This ensures the focus trap captures the
- * correct trigger element on all three browser engines (Chromium, Firefox, WebKit).
- * WebKit does not focus `<button>` elements on pointer click, so keyboard activation
- * is necessary for focus-restoration assertions.
+ * Activation strategy: ALL dialog-open steps use `locator.focus()` +
+ * `keyboard.press('Enter')` (single fire, no retry loop). This is the only
+ * reliable approach across all three browser engines:
+ *  - Keyboard activation hits the button's own handler directly, regardless of
+ *    whether a fullscreen overlay is present.
+ *  - A `toPass()` re-click loop was removed because once the dialog opens, its
+ *    fullscreen backdrop (position:fixed; inset:0; z-index:1000) intercepts
+ *    subsequent pointer clicks and calls closeLightbox(), causing the dialog to
+ *    oscillate open/closed and never settle.
+ *  - WebKit does not focus `<button>` elements on pointer click, making keyboard
+ *    activation necessary for cross-engine focus-restoration assertions anyway.
  *
- * Run stability check: npx playwright test e2e/a11y-interactive.spec.ts --repeat-each=3 --retries=0
+ * Run stability check:
+ *   npx playwright test e2e/a11y-interactive.spec.ts --repeat-each=5 --retries=0
  */
 
 import { test, expect } from '@playwright/test';
@@ -28,7 +35,7 @@ test.describe('Lightbox dialog — /citadao/2024', () => {
     await expect(trigger).toBeEnabled();
   });
 
-  test('clicking poster opens a dialog with role=dialog and aria-modal=true', async ({
+  test('poster button opens a dialog with role=dialog and aria-modal=true (keyboard activation)', async ({
     page,
   }) => {
     const trigger = page.locator('.poster-button');
@@ -36,31 +43,28 @@ test.describe('Lightbox dialog — /citadao/2024', () => {
 
     const dialog = page.locator('#poster-lightbox');
 
-    // Retry the click + open check together so that a click landing before the
-    // JS handler is bound (Firefox parallel-load race) simply re-fires until the
-    // dialog becomes visible. toPass() is the right tool: it re-executes the
-    // entire callback until it succeeds or times out.
-    await expect(async () => {
-      await trigger.click();
-      await expect(dialog).toHaveClass(/is-open/);
-    }).toPass({ timeout: 10_000 });
+    // Open via keyboard: focus then Enter. Single fire — no retry loop.
+    // Avoids the overlay-re-click oscillation (once open, the fullscreen backdrop
+    // intercepts pointer events and closeLightbox() fires on each re-click).
+    await trigger.focus();
+    await page.keyboard.press('Enter');
 
+    await expect(dialog).toHaveClass(/is-open/);
     await expect(dialog).toHaveAttribute('role', 'dialog');
     await expect(dialog).toHaveAttribute('aria-modal', 'true');
     await expect(dialog).toHaveAttribute('aria-hidden', 'false');
   });
 
-  test('Escape closes the lightbox', async ({ page }) => {
+  test('Escape closes the lightbox (keyboard activation)', async ({ page }) => {
     const trigger = page.locator('.poster-button');
     await expect(trigger).toBeEnabled();
 
     const dialog = page.locator('#poster-lightbox');
 
-    // Same pre-hydration guard as the open test above.
-    await expect(async () => {
-      await trigger.click();
-      await expect(dialog).toHaveClass(/is-open/);
-    }).toPass({ timeout: 10_000 });
+    // Open via keyboard activation (single fire — no retry loop).
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toHaveClass(/is-open/);
 
     await page.keyboard.press('Escape');
 
@@ -148,31 +152,29 @@ test.describe('VideoModal dialog — /videos/', () => {
     await expect(videos.playButtons().first()).toBeVisible();
   });
 
-  test('clicking play opens a dialog with role=dialog and aria-modal=true', async ({ page }) => {
+  test('play button opens a dialog with role=dialog and aria-modal=true (keyboard activation)', async ({ page }) => {
     const firstPlay = videos.playButtons().first();
     const modal = videos.videoModal();
 
-    // Retry the click + open check together to handle the pre-hydration race
-    // (same pattern as the Lightbox above). If the click lands before the JS
-    // handler is attached the dialog never opens; toPass() re-fires until it does.
-    await expect(async () => {
-      await firstPlay.click();
-      await expect(modal).toHaveClass(/active/);
-    }).toPass({ timeout: 10_000 });
+    // Open via keyboard activation (single fire — no retry loop).
+    // Avoids the overlay-re-click oscillation: once the modal backdrop is visible
+    // it intercepts pointer events and the close handler fires on each re-click.
+    await firstPlay.focus();
+    await page.keyboard.press('Enter');
 
+    await expect(modal).toHaveClass(/active/);
     await expect(page.getByRole('dialog')).toBeVisible();
     await expect(modal).toHaveAttribute('aria-modal', 'true');
   });
 
-  test('Escape closes the VideoModal', async ({ page }) => {
+  test('Escape closes the VideoModal (keyboard activation)', async ({ page }) => {
     const firstPlay = videos.playButtons().first();
     const modal = videos.videoModal();
 
-    // Same pre-hydration guard: retry click until modal opens.
-    await expect(async () => {
-      await firstPlay.click();
-      await expect(modal).toHaveClass(/active/);
-    }).toPass({ timeout: 10_000 });
+    // Open via keyboard activation (single fire — no retry loop).
+    await firstPlay.focus();
+    await page.keyboard.press('Enter');
+    await expect(modal).toHaveClass(/active/);
 
     await page.keyboard.press('Escape');
 
