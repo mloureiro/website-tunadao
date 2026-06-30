@@ -10,7 +10,14 @@ export interface MasterTuna {
   website?: string;
   /** Cloudinary public ID for logo (without extension) */
   logoPublicId?: string;
-  type?: 'tuna' | 'tuna-feminina' | 'tuna-veterana' | 'tuna-senior' | 'international' | 'group' | 'soloist';
+  type?:
+    | 'tuna'
+    | 'tuna-feminina'
+    | 'tuna-veterana'
+    | 'tuna-senior'
+    | 'international'
+    | 'group'
+    | 'soloist';
 }
 
 /**
@@ -151,7 +158,6 @@ export const MASTER_TUNAS: MasterTuna[] = [
     shortName: 'EACB',
     fullName: 'Estudantina Academica de Castelo Branco',
     city: 'Castelo Branco',
-    website: 'https://estudantinacb.pt/',
     logoPublicId: 'tunadao/tunas/estudantina-academica-castelo-branco',
   },
   {
@@ -178,7 +184,8 @@ export const MASTER_TUNAS: MasterTuna[] = [
   },
   {
     shortName: 'ESTunaCB',
-    fullName: 'Tuna Academica Masculina da Escola Superior de Tecnologia do Instituto Politecnico de Castelo Branco',
+    fullName:
+      'Tuna Academica Masculina da Escola Superior de Tecnologia do Instituto Politecnico de Castelo Branco',
     city: 'Castelo Branco',
   },
   {
@@ -234,7 +241,6 @@ export const MASTER_TUNAS: MasterTuna[] = [
     shortName: 'Hinoportuna',
     fullName: 'Tuna Academica do Instituto Politecnico de Viana do Castelo',
     city: 'Viana do Castelo',
-    website: 'https://hinoportuna.ipvc.pt/',
     logoPublicId: 'tunadao/tunas/hinoportuna',
   },
 
@@ -701,7 +707,6 @@ export const MASTER_TUNAS: MasterTuna[] = [
     shortName: 'TUSA',
     fullName: 'T.U.S.A. - Tuna Universitas Scientiarum Agrariarum',
     city: 'Angra do Heroismo',
-    website: 'https://www.tunas.es/tunas/portugal/tusa-acores.asp',
     logoPublicId: 'tunadao/tunas/tusa',
   },
   {
@@ -726,7 +731,6 @@ export const MASTER_TUNAS: MasterTuna[] = [
     shortName: 'Versus Tuna',
     fullName: 'Tuna Academica da Universidade do Algarve',
     city: 'Faro',
-    website: 'https://www.versustuna.pt/',
     logoPublicId: 'tunadao/tunas/versus-tuna',
   },
   {
