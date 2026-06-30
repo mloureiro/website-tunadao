@@ -174,9 +174,7 @@ const fallbackTunas: CMSTuna[] = [
   { id: 4, shortName: 'Afonsina', fullName: 'Afonsina - Tuna Académica da UC' },
 ];
 
-const fallbackVenues: CMSVenue[] = [
-  { id: 1, name: 'Aula Magna IPV' },
-];
+const fallbackVenues: CMSVenue[] = [{ id: 1, name: 'Aula Magna IPV' }];
 
 const fallbackCitadaoEditions: CMSCitadaoEdition[] = [
   {
@@ -185,6 +183,15 @@ const fallbackCitadaoEditions: CMSCitadaoEdition[] = [
     editionNumber: 18,
     startDate: '2024-05-04',
     endDate: '2024-05-04',
+    // poster field enables .poster-button on the 2024 detail page for E2E a11y specs.
+    // Using a self-hosted path that resolves against the Astro dev/preview server.
+    poster: {
+      id: 100,
+      filename: 'og-image.jpg',
+      url: '/og-image.jpg',
+      alt: 'Cartaz XVIII CITADÃO',
+      mimeType: 'image/jpeg',
+    },
     schedule: [{ date: '2024-05-04', venue: fallbackVenues[0] }],
     status: 'published',
   },
@@ -207,14 +214,45 @@ const fallbackCitadaoParticipants: CMSCitadaoParticipant[] = [
 ];
 
 const fallbackCitadaoAwards: CMSCitadaoAward[] = [
-  { id: 1, edition: fallbackCitadaoEditions[0], award: fallbackAwardTypes[0], tuna: fallbackTunas[3] },
-  { id: 2, edition: fallbackCitadaoEditions[1], award: fallbackAwardTypes[0], tuna: fallbackTunas[1] },
+  {
+    id: 1,
+    edition: fallbackCitadaoEditions[0],
+    award: fallbackAwardTypes[0],
+    tuna: fallbackTunas[3],
+  },
+  {
+    id: 2,
+    edition: fallbackCitadaoEditions[1],
+    award: fallbackAwardTypes[0],
+    tuna: fallbackTunas[1],
+  },
 ];
 
 const fallbackFestivals: CMSFestival[] = [];
 const fallbackFestivalAwards: CMSFestivalAward[] = [];
 const fallbackBlogPosts: CMSBlogPost[] = [];
-const fallbackVideos: CMSVideo[] = [];
+const fallbackVideos: CMSVideo[] = [
+  {
+    id: 1,
+    title: 'Tunadão no CITADÃO 2024',
+    youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    youtubeId: 'dQw4w9WgXcQ',
+    category: 'citadao',
+    featured: true,
+    publishedAt: '2024-05-10T00:00:00.000Z',
+    status: 'published',
+  },
+  {
+    id: 2,
+    title: 'Serenata na Aula Magna',
+    youtubeUrl: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
+    youtubeId: '9bZkp7q19f0',
+    category: 'serenata',
+    featured: false,
+    publishedAt: '2023-11-15T00:00:00.000Z',
+    status: 'published',
+  },
+];
 const fallbackAlbums: CMSAlbum[] = [
   {
     id: 1,
