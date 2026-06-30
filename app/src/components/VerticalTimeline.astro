@@ -1,5 +1,6 @@
 ---
 import { Icon as AstroIcon } from 'astro-icon/components';
+import { useTranslations, type Language, defaultLang } from '@i18n/index';
 
 /**
  * VerticalTimeline - Modern vertical year navigation
@@ -15,64 +16,79 @@ interface Props {
   ariaLabel?: string;
   /** CSS selector for the section that scopes timeline visibility */
   sectionSelector?: string;
+  /** Active language for localized aria-labels */
+  lang?: Language;
 }
 
-const { years, idPrefix = 'year', ariaLabel = 'Jump to year', sectionSelector } = Astro.props;
+const {
+  years,
+  idPrefix = 'year',
+  ariaLabel = 'Jump to year',
+  sectionSelector,
+  lang = defaultLang,
+} = Astro.props;
+const t = useTranslations(lang);
 
 // Sort years descending (most recent first)
 const sortedYears = [...years].sort((a, b) => b - a);
 ---
 
 <!-- Desktop: Vertical sidebar timeline -->
-<nav class="vertical-timeline" aria-label={ariaLabel} data-id-prefix={idPrefix} data-section-selector={sectionSelector}>
+<nav
+  class="vertical-timeline"
+  aria-label={ariaLabel}
+  data-id-prefix={idPrefix}
+  data-section-selector={sectionSelector}
+>
   <div class="vertical-timeline__track">
     <div class="vertical-timeline__line" aria-hidden="true"></div>
     <ul class="vertical-timeline__list" role="list">
-      {sortedYears.map((year, index) => {
-        const t = sortedYears.length > 1 ? index / (sortedYears.length - 1) : 0;
+      {
+        sortedYears.map((year, index) => {
+          const gradientPos = sortedYears.length > 1 ? index / (sortedYears.length - 1) : 0;
 
-        return (
-          <li class="vertical-timeline__item" style={`--t: ${t};`}>
-            <a
-              href={`#${idPrefix}-${year}`}
-              class="vertical-timeline__link"
-              data-year={year}
-              aria-label={`Jump to ${year}`}
-            >
-              <span
-                class="vertical-timeline__dot"
-                aria-hidden="true"
-              ></span>
-              <span class="vertical-timeline__label">{year}</span>
-            </a>
-          </li>
-        );
-      })}
+          return (
+            <li class="vertical-timeline__item" style={`--t: ${gradientPos};`}>
+              <a
+                href={`#${idPrefix}-${year}`}
+                class="vertical-timeline__link"
+                data-year={year}
+                aria-label={t('common.jumpToYearN', { year })}
+              >
+                <span class="vertical-timeline__dot" aria-hidden="true" />
+                <span class="vertical-timeline__label">{year}</span>
+              </a>
+            </li>
+          );
+        })
+      }
     </ul>
   </div>
 </nav>
 
 <!-- Mobile: Floating year indicator -->
 <div class="year-indicator" aria-hidden="true">
-  <button class="year-indicator__button" type="button" aria-label="Current year navigation">
+  <button class="year-indicator__button" type="button" aria-label={t('palmares.currentYearNav')}>
     <span class="year-indicator__text"></span>
     <AstroIcon name="lucide:chevron-down" class:list={['year-indicator__icon']} size={16} />
   </button>
   <div class="year-indicator__dropdown">
     <ul class="year-indicator__list" role="list">
-      {sortedYears.map((year) => (
-        <li>
-          <a href={`#${idPrefix}-${year}`} class="year-indicator__dropdown-link" data-year={year}>
-            {year}
-          </a>
-        </li>
-      ))}
+      {
+        sortedYears.map((year) => (
+          <li>
+            <a href={`#${idPrefix}-${year}`} class="year-indicator__dropdown-link" data-year={year}>
+              {year}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </div>
 </div>
 
 <script>
-  (function() {
+  (function () {
     function initVerticalTimeline() {
       const navEl = document.querySelector('.vertical-timeline');
       if (!navEl) return;
@@ -89,7 +105,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
       const dropdownLinks = indicator?.querySelectorAll('.year-indicator__dropdown-link');
       const yearSections: Element[] = [];
 
-      yearLinks.forEach(link => {
+      yearLinks.forEach((link) => {
         const href = link.getAttribute('href');
         if (href) {
           const section = document.querySelector(href);
@@ -111,7 +127,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
         currentYear = year;
 
         // Update timeline
-        yearLinks.forEach(link => {
+        yearLinks.forEach((link) => {
           const linkYear = link.getAttribute('data-year');
           const isActive = linkYear === year;
           link.classList.toggle('vertical-timeline__link--active', isActive);
@@ -124,45 +140,49 @@ const sortedYears = [...years].sort((a, b) => b - a);
         }
 
         // Update dropdown links
-        dropdownLinks?.forEach(link => {
+        dropdownLinks?.forEach((link) => {
           const linkYear = link.getAttribute('data-year');
           link.classList.toggle('year-indicator__dropdown-link--active', linkYear === year);
         });
       }
 
       // Intersection Observer for tracking current year
-      const observer = new IntersectionObserver((entries) => {
-        const visibleEntries = entries.filter(e => e.isIntersecting);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visibleEntries = entries.filter((e) => e.isIntersecting);
 
-        if (visibleEntries.length > 0) {
-          visibleEntries.sort((a, b) =>
-            a.boundingClientRect.top - b.boundingClientRect.top
-          );
+          if (visibleEntries.length > 0) {
+            visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
 
-          const topSection = visibleEntries[0].target;
-          const year = topSection.id.replace(new RegExp(`^${idPrefix}-`), '');
-          updateActiveYear(year);
+            const topSection = visibleEntries[0].target;
+            const year = topSection.id.replace(new RegExp(`^${idPrefix}-`), '');
+            updateActiveYear(year);
+          }
+        },
+        {
+          rootMargin: '-20% 0px -60% 0px',
+          threshold: 0,
         }
-      }, {
-        rootMargin: '-20% 0px -60% 0px',
-        threshold: 0
-      });
+      );
 
-      yearSections.forEach(section => observer.observe(section));
+      yearSections.forEach((section) => observer.observe(section));
 
       // Show/hide based on scoped section visibility
       if (scopeSection) {
-        const sectionObserver = new IntersectionObserver((entries) => {
-          const isVisible = entries[0].isIntersecting;
-          indicator?.classList.toggle('year-indicator--visible', isVisible);
-          nav.classList.toggle('vertical-timeline--active', isVisible);
-          if (isVisible) {
-            updateTimelinePosition();
-          } else {
-            nav.style.top = '';
-            nav.style.transform = '';
-          }
-        }, { threshold: 0 });
+        const sectionObserver = new IntersectionObserver(
+          (entries) => {
+            const isVisible = entries[0].isIntersecting;
+            indicator?.classList.toggle('year-indicator--visible', isVisible);
+            nav.classList.toggle('vertical-timeline--active', isVisible);
+            if (isVisible) {
+              updateTimelinePosition();
+            } else {
+              nav.style.top = '';
+              nav.style.transform = '';
+            }
+          },
+          { threshold: 0 }
+        );
 
         sectionObserver.observe(scopeSection);
 
@@ -191,11 +211,14 @@ const sortedYears = [...years].sort((a, b) => b - a);
         window.addEventListener('resize', updateTimelinePosition, { passive: true });
       } else {
         // Fallback: original behavior (show when first section scrolls past)
-        const showObserver = new IntersectionObserver((entries) => {
-          const isNavVisible = entries[0].isIntersecting;
-          indicator?.classList.toggle('year-indicator--visible', !isNavVisible);
-          nav.classList.toggle('vertical-timeline--active', !isNavVisible);
-        }, { threshold: 0.5 });
+        const showObserver = new IntersectionObserver(
+          (entries) => {
+            const isNavVisible = entries[0].isIntersecting;
+            indicator?.classList.toggle('year-indicator--visible', !isNavVisible);
+            nav.classList.toggle('vertical-timeline--active', !isNavVisible);
+          },
+          { threshold: 0.5 }
+        );
 
         if (yearSections[0]) {
           showObserver.observe(yearSections[0]);
@@ -220,12 +243,12 @@ const sortedYears = [...years].sort((a, b) => b - a);
 
         window.scrollTo({
           top: targetPosition,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       }
 
-      yearLinks.forEach(link => link.addEventListener('click', handleLinkClick));
-      dropdownLinks?.forEach(link => link.addEventListener('click', handleLinkClick));
+      yearLinks.forEach((link) => link.addEventListener('click', handleLinkClick));
+      dropdownLinks?.forEach((link) => link.addEventListener('click', handleLinkClick));
 
       // Toggle dropdown
       indicatorButton?.addEventListener('click', () => {
@@ -243,7 +266,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
       nav.addEventListener('keydown', (event) => {
         const e = event as KeyboardEvent;
         const links = Array.from(yearLinks);
-        const currentIndex = links.findIndex(link => link === document.activeElement);
+        const currentIndex = links.findIndex((link) => link === document.activeElement);
 
         if (currentIndex === -1) return;
 
@@ -328,11 +351,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
     bottom: 0;
     width: 2px;
     z-index: 0;
-    background: linear-gradient(
-      to bottom,
-      var(--color-primary),
-      var(--color-accent-gold)
-    );
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-accent-gold));
   }
 
   .vertical-timeline__list {
