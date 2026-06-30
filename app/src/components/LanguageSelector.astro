@@ -3,6 +3,7 @@ import {
   languages,
   languageFlags,
   getLocalizedPath,
+  useTranslations,
   type Language,
   defaultLang,
 } from '@i18n/index';
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const { lang = defaultLang, currentPath = '/' } = Astro.props;
+const t = useTranslations(lang);
 
 // Generate URLs for each language
 const languageUrls = Object.keys(languages).reduce(
@@ -26,7 +28,7 @@ const languageUrls = Object.keys(languages).reduce(
 ---
 
 <div class="lang-selector">
-  <button class="lang-selector__btn" aria-label="Selecionar idioma" aria-expanded="false">
+  <button class="lang-selector__btn" aria-label={t('common.selectLanguage')} aria-expanded="false">
     <span class="lang-selector__flag">{languageFlags[lang]}</span>
     <span class="lang-selector__current">{lang.toUpperCase()}</span>
     <Icon name="chevron-down" size={14} class="lang-selector__icon" />
