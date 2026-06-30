@@ -22,43 +22,72 @@ interface Props {
   height?: 'default' | '60vh' | 'full';
 }
 
-const { title, subtitle, icon, backgroundImage, backgroundAlt, subtitleColor = 'default', height = 'default' } = Astro.props;
+const {
+  title,
+  subtitle,
+  icon,
+  backgroundImage,
+  backgroundAlt,
+  subtitleColor = 'default',
+  height = 'default',
+} = Astro.props;
 ---
 
-<section class:list={['hero', { 'hero--image': backgroundImage, 'hero--60vh': height === '60vh', 'hero--full': height === 'full' }]}>
-  {backgroundImage ? (
-    <>
-      <div class="hero__image-bg">
-        <Image
-          src={backgroundImage}
-          alt={backgroundAlt || ''}
-          widths={[640, 1024, 1920]}
-          sizes="100vw"
-          loading="eager"
-        />
-        <div class="hero__image-overlay"></div>
-      </div>
-      <div class="container hero__content">
-        <h1 class:list={['hero__title', 'animate-fade-in']}>{title}</h1>
-        {subtitle && (
-          <p class:list={['hero__subtitle', 'animate-fade-in-delay-1', { 'hero__subtitle--gold': subtitleColor === 'gold' }]}>
-            {subtitle}
-          </p>
-        )}
-      </div>
-    </>
-  ) : (
-    <>
-      <div class="hero__backdrop" aria-hidden="true"></div>
-      <div class="container">
-        <div class="hero__content">
-          {icon && <span class="hero__icon">{icon}</span>}
-          <h1 class="hero__title">{title}</h1>
-          {subtitle && <p class="hero__subtitle">{subtitle}</p>}
+<section
+  class:list={[
+    'hero',
+    {
+      'hero--image': backgroundImage,
+      'hero--60vh': height === '60vh',
+      'hero--full': height === 'full',
+    },
+  ]}
+>
+  {
+    backgroundImage ? (
+      <>
+        <div class="hero__image-bg">
+          <Image
+            src={backgroundImage}
+            alt={backgroundAlt || ''}
+            widths={[640, 1024, 1920]}
+            sizes="100vw"
+            loading="eager"
+          />
+          <div class="hero__image-overlay" />
         </div>
-      </div>
-    </>
-  )}
+        <div class="container hero__content">
+          <h1 class:list={['hero__title', 'animate-fade-in']}>{title}</h1>
+          {subtitle && (
+            <p
+              class:list={[
+                'hero__subtitle',
+                'animate-fade-in-delay-1',
+                { 'hero__subtitle--gold': subtitleColor === 'gold' },
+              ]}
+            >
+              {subtitle}
+            </p>
+          )}
+        </div>
+      </>
+    ) : (
+      <>
+        <div class="hero__backdrop" aria-hidden="true" />
+        <div class="container">
+          <div class="hero__content">
+            {icon && (
+              <span class="hero__icon" aria-hidden="true">
+                {icon}
+              </span>
+            )}
+            <h1 class="hero__title">{title}</h1>
+            {subtitle && <p class="hero__subtitle">{subtitle}</p>}
+          </div>
+        </div>
+      </>
+    )
+  }
 </section>
 
 <style>
@@ -107,7 +136,12 @@ const { title, subtitle, icon, backgroundImage, backgroundAlt, subtitleColor = '
   .hero__image-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.8) 100%);
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
   }
 
   /* Image mode content positioning */
