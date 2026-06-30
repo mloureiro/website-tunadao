@@ -2,7 +2,7 @@
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
 import '@styles/global.css';
-import { getLang, langBcp47, getLocalizedPath, type Language } from '@i18n/index';
+import { getLang, langBcp47, getLocalizedPath, useTranslations, type Language } from '@i18n/index';
 import { normalizeBase } from '@utils/url';
 
 interface Props {
@@ -29,6 +29,7 @@ const {
 } = Astro.props;
 
 const lang: Language = getLang(Astro.currentLocale, Astro.url);
+const t = useTranslations(lang);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 // Hreflang alternates — absolute URLs derived from Astro.site (env-driven, no hardcoded host)
@@ -98,7 +99,7 @@ const alternates = [
     </script>
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Ir para conteúdo principal</a>
+    <a href="#main-content" class="skip-link">{t('common.skipToContent')}</a>
 
     <Header lang={lang} />
 
