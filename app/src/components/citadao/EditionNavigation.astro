@@ -18,18 +18,22 @@ const { prevYear, nextYear, allEditionsLabel, allEditionsHref } = Astro.props;
       <span>{allEditionsLabel}</span>
     </a>
     <div class="nav-pagination">
-      {prevYear && (
-        <a href={`${allEditionsHref}/${prevYear}`} class="nav-link nav-prev" rel="prev">
-          <Icon name="chevron-left" size={20} class="nav-icon" />
-          <span>CITADÃO {prevYear}</span>
-        </a>
-      )}
-      {nextYear && (
-        <a href={`${allEditionsHref}/${nextYear}`} class="nav-link nav-next" rel="next">
-          <span>CITADÃO {nextYear}</span>
-          <Icon name="chevron-right" size={20} class="nav-icon" />
-        </a>
-      )}
+      {
+        prevYear && (
+          <a href={`${allEditionsHref}/${prevYear}`} class="nav-link nav-prev" rel="prev">
+            <Icon name="chevron-left" size={20} class="nav-icon" />
+            <span>CITADÃO {prevYear}</span>
+          </a>
+        )
+      }
+      {
+        nextYear && (
+          <a href={`${allEditionsHref}/${nextYear}`} class="nav-link nav-next" rel="next">
+            <span>CITADÃO {nextYear}</span>
+            <Icon name="chevron-right" size={20} class="nav-icon" />
+          </a>
+        )
+      }
     </div>
   </div>
 </section>
@@ -43,7 +47,7 @@ const { prevYear, nextYear, allEditionsLabel, allEditionsHref } = Astro.props;
   }
 
   .navigation-container {
-    max-width: 1280px;
+    max-width: var(--container-max-width-wide);
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -61,7 +65,10 @@ const { prevYear, nextYear, allEditionsLabel, allEditionsHref } = Astro.props;
     border-radius: var(--radius-md);
     font-weight: 600;
     text-decoration: none;
-    transition: background-color var(--transition-fast), transform var(--transition-fast), color var(--transition-fast);
+    transition:
+      background-color var(--transition-fast),
+      transform var(--transition-fast),
+      color var(--transition-fast);
   }
 
   [data-theme='dark'] .nav-link {
