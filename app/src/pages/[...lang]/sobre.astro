@@ -46,9 +46,12 @@ const milestones = [
 
   <!-- 2. History Section -->
   <!-- Row 1: text left, image right (default position) -->
-  <Section imagePosition="right" showGoldFrame
+  <Section
+    imagePosition="right"
+    showGoldFrame
     divider={t('about.sections.history.dividerLabel')}
-    title={t('about.history')}>
+    title={t('about.history')}
+  >
     <SectionText>
       <p>{t('about.historyText.p1')}</p>
       <p>{t('about.historyText.p2')}</p>
@@ -59,7 +62,8 @@ const milestones = [
         alt={t('about.sections.history.image1Alt')}
         widths={[400, 600, 800]}
         sizes="(max-width: 1024px) 100vw, 50vw"
-        style="aspect-ratio: 4/3; object-fit: cover;"
+        class="u-object-cover"
+        style="aspect-ratio: 4/3;"
       />
     </SectionImage>
   </Section>
@@ -76,7 +80,8 @@ const milestones = [
         alt={t('about.sections.history.image2Alt')}
         widths={[400, 600, 800]}
         sizes="(max-width: 1024px) 100vw, 50vw"
-        style="aspect-ratio: 4/3; object-fit: cover;"
+        class="u-object-cover"
+        style="aspect-ratio: 4/3;"
       />
     </SectionImage>
   </Section>

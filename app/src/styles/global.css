@@ -96,6 +96,11 @@ img {
   display: block;
 }
 
+/* Utility: object-fit */
+.u-object-cover {
+  object-fit: cover;
+}
+
 /* Buttons */
 button {
   font-family: inherit;

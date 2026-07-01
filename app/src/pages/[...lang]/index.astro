@@ -112,7 +112,8 @@ const achievementStats = [
           alt={t('home.sections.aboutPreview.imageAlt')}
           widths={[400, 600, 800]}
           sizes="(max-width: 1024px) 100vw, 50vw"
-          style="aspect-ratio: 3/2; object-fit: cover;"
+          class="u-object-cover"
+          style="aspect-ratio: 3/2;"
         />
       </a>
     </SectionImage>
@@ -142,7 +143,8 @@ const achievementStats = [
               src={latestEditionPosterUrl}
               alt={`CITADAO ${latestEditionYear} - ${t('home.sections.citadaoPreview.posterAlt')}`}
               loading="lazy"
-              style="aspect-ratio: 3/2; object-fit: cover; width: 100%;"
+              class="u-object-cover"
+              style="aspect-ratio: 3/2; width: 100%;"
             />
           ) : (
             <div class="citadao-placeholder">
