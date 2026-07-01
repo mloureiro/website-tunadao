@@ -141,7 +141,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
 
           const offset = 20; // Extra padding
           const targetPosition =
-            target.getBoundingClientRect().top + window.pageYOffset - navHeight - offset;
+            target.getBoundingClientRect().top + window.scrollY - navHeight - offset;
 
           window.scrollTo({
             top: targetPosition,
