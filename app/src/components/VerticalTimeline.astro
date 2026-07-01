@@ -239,7 +239,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
         dropdown?.classList.remove('year-indicator__dropdown--open');
 
         const offset = 100;
-        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
 
         window.scrollTo({
           top: targetPosition,
