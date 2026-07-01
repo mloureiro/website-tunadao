@@ -333,6 +333,9 @@ const sortedYears = [...years].sort((a, b) => b - a);
     pointer-events: auto;
   }
 
+  /* NOTE: intentional off-scale keep. 1200px is the mobile↔desktop-sidebar boundary;
+     snapping to 1024/1280 would move a real layout boundary (visible regression).
+     See wiki/website-tunadao-zmo5. */
   @media (min-width: 1200px) {
     .vertical-timeline {
       display: block;
@@ -452,6 +455,9 @@ const sortedYears = [...years].sort((a, b) => b - a);
     pointer-events: auto;
   }
 
+  /* NOTE: intentional off-scale keep. 1200px is the mobile↔desktop-sidebar boundary;
+     snapping to 1024/1280 would move a real layout boundary (visible regression).
+     See wiki/website-tunadao-zmo5. */
   @media (min-width: 1200px) {
     .year-indicator {
       display: none;
