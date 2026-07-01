@@ -148,6 +148,7 @@
 
   /* Layout */
   --container-max-width: 1200px;
+  --container-max-width-wide: 1280px; /* citadão edition surfaces (EditionHero, EditionNavigation, citadao/[year]) */
   --header-height: 5rem;
 }
 
