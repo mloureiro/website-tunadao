@@ -496,8 +496,7 @@ const sortedYears = [...years].sort((a, b) => b - a);
     transition: transform var(--transition-fast);
   }
 
-  .year-indicator__dropdown--open + .year-indicator__button .year-indicator__icon,
-  .year-indicator__dropdown--open ~ .year-indicator__button .year-indicator__icon {
+  .year-indicator:has(.year-indicator__dropdown--open) .year-indicator__icon {
     transform: rotate(180deg);
   }
 
