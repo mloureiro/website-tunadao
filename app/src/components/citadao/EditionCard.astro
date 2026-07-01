@@ -76,8 +76,8 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     border-radius: var(--radius-xl);
     overflow: hidden;
     transition:
-      transform 0.3s ease,
-      box-shadow 0.3s ease;
+      transform var(--transition-slow),
+      box-shadow var(--transition-slow);
     height: 100%;
   }
 
@@ -109,7 +109,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow);
   }
 
   .poster-image-fallback {
@@ -119,7 +119,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow);
   }
 
   .edition-card:hover .edition-poster :global(.poster-image),
