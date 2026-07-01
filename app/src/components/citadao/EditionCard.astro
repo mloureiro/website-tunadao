@@ -193,7 +193,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     color: var(--color-primary);
     font-weight: 600;
     font-size: var(--font-size-sm);
-    transition: gap 0.2s ease;
+    transition: gap var(--transition-base);
   }
 
   [data-theme='dark'] .edition-cta {
@@ -205,7 +205,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
   }
 
   .cta-arrow {
-    transition: transform 0.2s ease;
+    transition: transform var(--transition-base);
   }
 
   .edition-card:hover .cta-arrow {
