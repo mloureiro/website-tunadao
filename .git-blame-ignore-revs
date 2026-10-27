@@ -1,0 +1,3 @@
+# Repository-wide Prettier reformat; layout only. Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+7b0cad329e825572ac650f8df322d538d4876a03
