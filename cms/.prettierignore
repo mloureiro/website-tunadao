@@ -4,3 +4,5 @@ build/
 .next/
 *.db
 *.db-journal
+src/payload-types.ts
+src/migrations/
