@@ -39,7 +39,11 @@ export function t(key: string, lang: Language = defaultLang): string {
       // Fallback to default language
       value = translations[defaultLang];
       for (const fallbackKey of keys) {
-        if (value && typeof value === 'object' && fallbackKey in (value as Record<string, unknown>)) {
+        if (
+          value &&
+          typeof value === 'object' &&
+          fallbackKey in (value as Record<string, unknown>)
+        ) {
           value = (value as Record<string, unknown>)[fallbackKey];
         } else {
           return key;

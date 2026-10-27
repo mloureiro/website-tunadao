@@ -57,22 +57,16 @@ const levels = [
     <p class="hierarchy__intro">{intro}</p>
 
     <div class="hierarchy__pyramid" role="list" aria-label={title}>
-      {levels.map((level) => (
-        <div
-          role="listitem"
-          class="hierarchy__level"
-          data-tier={level.tier}
-        >
-          <div class="hierarchy__card">
-            <h3 class="hierarchy__card-title">
-              {t(level.titleKey)}
-            </h3>
-            <p class="hierarchy__card-desc">
-              {t(level.descKey)}
-            </p>
+      {
+        levels.map((level) => (
+          <div role="listitem" class="hierarchy__level" data-tier={level.tier}>
+            <div class="hierarchy__card">
+              <h3 class="hierarchy__card-title">{t(level.titleKey)}</h3>
+              <p class="hierarchy__card-desc">{t(level.descKey)}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>
@@ -126,12 +120,24 @@ const levels = [
   }
 
   /* Per-tier max-width (pyramid shape) */
-  .hierarchy__level[data-tier="1"] { max-width: 24rem; }
-  .hierarchy__level[data-tier="2"] { max-width: 28rem; }
-  .hierarchy__level[data-tier="3"] { max-width: 32rem; }
-  .hierarchy__level[data-tier="4"] { max-width: 36rem; }
-  .hierarchy__level[data-tier="5"] { max-width: 42rem; }
-  .hierarchy__level[data-tier="6"] { max-width: 48rem; }
+  .hierarchy__level[data-tier='1'] {
+    max-width: 24rem;
+  }
+  .hierarchy__level[data-tier='2'] {
+    max-width: 28rem;
+  }
+  .hierarchy__level[data-tier='3'] {
+    max-width: 32rem;
+  }
+  .hierarchy__level[data-tier='4'] {
+    max-width: 36rem;
+  }
+  .hierarchy__level[data-tier='5'] {
+    max-width: 42rem;
+  }
+  .hierarchy__level[data-tier='6'] {
+    max-width: 48rem;
+  }
 
   .hierarchy__level:hover {
     transform: translateY(-2px);
@@ -151,12 +157,24 @@ const levels = [
   }
 
   /* Per-tier card background colors */
-  .hierarchy__level[data-tier="1"] .hierarchy__card { background: var(--color-accent-gold); }
-  .hierarchy__level[data-tier="2"] .hierarchy__card { background: var(--color-primary); }
-  .hierarchy__level[data-tier="3"] .hierarchy__card { background: var(--color-primary-dark); }
-  .hierarchy__level[data-tier="4"] .hierarchy__card { background: var(--color-secondary-dark); }
-  .hierarchy__level[data-tier="5"] .hierarchy__card { background: var(--color-secondary); }
-  .hierarchy__level[data-tier="6"] .hierarchy__card { background: var(--color-neutral-600); }
+  .hierarchy__level[data-tier='1'] .hierarchy__card {
+    background: var(--color-accent-gold);
+  }
+  .hierarchy__level[data-tier='2'] .hierarchy__card {
+    background: var(--color-primary);
+  }
+  .hierarchy__level[data-tier='3'] .hierarchy__card {
+    background: var(--color-primary-dark);
+  }
+  .hierarchy__level[data-tier='4'] .hierarchy__card {
+    background: var(--color-secondary-dark);
+  }
+  .hierarchy__level[data-tier='5'] .hierarchy__card {
+    background: var(--color-secondary);
+  }
+  .hierarchy__level[data-tier='6'] .hierarchy__card {
+    background: var(--color-neutral-600);
+  }
 
   /* Per-tier text colors — all tiers use inverted (white); tier 3 uses a subtle tint */
   .hierarchy__card-title,
@@ -164,8 +182,8 @@ const levels = [
     color: var(--color-text-inverted);
   }
 
-  .hierarchy__level[data-tier="3"] .hierarchy__card-title,
-  .hierarchy__level[data-tier="3"] .hierarchy__card-desc {
+  .hierarchy__level[data-tier='3'] .hierarchy__card-title,
+  .hierarchy__level[data-tier='3'] .hierarchy__card-desc {
     color: color-mix(in srgb, var(--color-text-inverted) 94%, var(--color-primary));
   }
 
@@ -199,7 +217,7 @@ const levels = [
 
   /* Tier 5 — --color-secondary shifts to #ff4d6d in dark (~3.5:1 on white).
      Use the darker secondary fill for adequate contrast. */
-  [data-theme='dark'] .hierarchy__level[data-tier="5"] .hierarchy__card {
+  [data-theme='dark'] .hierarchy__level[data-tier='5'] .hierarchy__card {
     background: var(--color-secondary-dark);
   }
 </style>

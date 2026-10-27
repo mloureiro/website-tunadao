@@ -29,7 +29,7 @@ services:
         sync: false
       # Schema push safety (must be disabled in production)
       - key: PAYLOAD_DISABLE_PUSH
-        value: "true"
+        value: 'true'
       # Contact
       - key: CONTACT_EMAIL
         sync: false
@@ -41,9 +41,9 @@ services:
       - key: GITHUB_REPO
         sync: false
       - key: GITHUB_WORKFLOW_FILE
-        value: "ci.yml"
+        value: 'ci.yml'
       - key: GITHUB_REF
-        value: "main"
+        value: 'main'
       # Cloudinary Upload Widget (client-side)
       - key: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
         sync: false

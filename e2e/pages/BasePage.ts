@@ -12,7 +12,7 @@ import type { Language } from '../support/i18n';
 export class BasePage {
   constructor(
     readonly page: Page,
-    readonly lang: Language = 'pt',
+    readonly lang: Language = 'pt'
   ) {}
 
   /** Navigate to the page's canonical URL. Subclasses override `path()`. */

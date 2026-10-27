@@ -54,7 +54,7 @@ type HookArgs = Parameters<typeof beforeValidateHook>[0];
 function makeArgs(
   data: HookData,
   operation: 'create' | 'update' = 'create',
-  context: Record<string, unknown> = {},
+  context: Record<string, unknown> = {}
 ): HookArgs {
   return { data, operation, req: { context } } as HookArgs;
 }
@@ -64,7 +64,7 @@ type AfterChangeArgs = Parameters<typeof afterChangeHook>[0];
 function makeAfterChangeArgs(
   doc: Record<string, unknown>,
   sendEmail: (args: { to: string; subject: string; html: string }) => Promise<void>,
-  context: Record<string, unknown> = {},
+  context: Record<string, unknown> = {}
 ): AfterChangeArgs {
   return {
     doc,
@@ -261,28 +261,36 @@ describe('ContactSubmissions beforeValidate — Turnstile verification', () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { name: 'Test', email: 'test@example.com', message: 'Hello' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow('Validação falhou. Tenta novamente.');
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
+      'Validação falhou. Tenta novamente.'
+    );
   });
 
   it('throws a generic error when turnstileToken is an empty string', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: '' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow('Validação falhou. Tenta novamente.');
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
+      'Validação falhou. Tenta novamente.'
+    );
   });
 
   it('throws a generic error when token verification fails (invalid token)', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: 'invalid-token' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow('Validação falhou. Tenta novamente.');
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
+      'Validação falhou. Tenta novamente.'
+    );
   });
 
   it('throws a generic error when network fails (verifyTurnstileToken returns false)', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: 'some-token' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow('Validação falhou. Tenta novamente.');
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
+      'Validação falhou. Tenta novamente.'
+    );
   });
 
   it('strips turnstileToken from data when verification succeeds', async () => {
@@ -310,7 +318,11 @@ describe('ContactSubmissions beforeValidate — Turnstile verification', () => {
 
     const result = await turnstileHook(makeArgs(data));
 
-    expect(result).toMatchObject({ name: 'Test User', email: 'test@example.com', message: 'Hello there' });
+    expect(result).toMatchObject({
+      name: 'Test User',
+      email: 'test@example.com',
+      message: 'Hello there',
+    });
   });
 
   it('does NOT run Turnstile verification on update operations', async () => {
@@ -469,7 +481,9 @@ describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
     await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
 
     expect(sendEmail).toHaveBeenCalledOnce();
-    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    const { html } = (
+      sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }]
+    )[0];
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
   });
@@ -485,7 +499,9 @@ describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
 
     await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
 
-    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    const { html } = (
+      sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }]
+    )[0];
     expect(html).not.toContain('<a href=');
     expect(html).toContain('&lt;a ');
   });
@@ -502,7 +518,9 @@ describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
 
     await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
 
-    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    const { html } = (
+      sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }]
+    )[0];
     // Newline → <br>; < → &lt; (the <br> from conversion must NOT get re-escaped)
     expect(html).toContain('a<br>&lt;b&gt;');
     // The raw <b> tag must not appear unescaped in the HTML body
@@ -522,7 +540,9 @@ describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
 
     await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
 
-    const { html } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    const { html } = (
+      sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }]
+    )[0];
     expect(html).toContain('Alice &amp; Bob');
     expect(html).toContain('Cats &amp; Dogs');
     expect(html).toContain('fish &amp; chips');
@@ -541,7 +561,9 @@ describe('ContactSubmissions afterChange — HTML-escaped email body', () => {
 
     await afterChangeHook(makeAfterChangeArgs(doc, sendEmail));
 
-    const { subject } = (sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }])[0];
+    const { subject } = (
+      sendEmail.mock.calls[0] as [{ to: string; subject: string; html: string }]
+    )[0];
     expect(subject).not.toContain('\r');
     expect(subject).not.toContain('\n');
     expect(subject).toContain('Hello');

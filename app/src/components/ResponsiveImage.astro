@@ -73,26 +73,28 @@ const srcset = getPosterSrcSet(publicId);
 const style = aspectRatio ? `aspect-ratio: ${aspectRatio};` : undefined;
 ---
 
-{publicId ? (
-  <img
-    src={src}
-    srcset={srcset}
-    sizes={sizes}
-    alt={alt}
-    class:list={['responsive-image', className]}
-    loading={loading}
-    width={width}
-    height={height}
-    style={style}
-    decoding="async"
-  />
-) : (
-  <div
-    class:list={['responsive-image responsive-image--placeholder', className]}
-    style={style}
-    aria-label={alt}
-  />
-)}
+{
+  publicId ? (
+    <img
+      src={src}
+      srcset={srcset}
+      sizes={sizes}
+      alt={alt}
+      class:list={['responsive-image', className]}
+      loading={loading}
+      width={width}
+      height={height}
+      style={style}
+      decoding="async"
+    />
+  ) : (
+    <div
+      class:list={['responsive-image responsive-image--placeholder', className]}
+      style={style}
+      aria-label={alt}
+    />
+  )
+}
 
 <style>
   .responsive-image {

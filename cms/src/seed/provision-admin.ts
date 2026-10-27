@@ -32,7 +32,7 @@ const main = async () => {
   // Guard A: ADMIN_EMAIL and ADMIN_PASSWORD are required
   if (!adminEmail || !adminPassword) {
     console.error(
-      '[provision:admin] ERROR: provision:admin requires ADMIN_EMAIL and ADMIN_PASSWORD.',
+      '[provision:admin] ERROR: provision:admin requires ADMIN_EMAIL and ADMIN_PASSWORD.'
     );
     process.exit(1);
   }
@@ -41,7 +41,7 @@ const main = async () => {
   if (!tursoUrl && provisionAllowLocal !== 'true') {
     console.error(
       '[provision:admin] ERROR: Refusing to run: TURSO_DATABASE_URL is required.',
-      'Set PROVISION_ALLOW_LOCAL=true ONLY for local verification against a throwaway file DB.',
+      'Set PROVISION_ALLOW_LOCAL=true ONLY for local verification against a throwaway file DB.'
     );
     process.exit(1);
   }

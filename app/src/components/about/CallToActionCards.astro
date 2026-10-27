@@ -30,10 +30,7 @@ const { lang, title, description, dividerLabel, palmaresText, citadaoText } = As
 
     <div class="cta-cards__grid">
       <!-- Palmares Card -->
-      <a
-        href={getLocalizedPath('/palmares', lang)}
-        class="cta-card"
-      >
+      <a href={getLocalizedPath('/palmares', lang)} class="cta-card">
         <div class="cta-card__image-wrapper">
           <Image
             src={placaPhoto}
@@ -54,10 +51,7 @@ const { lang, title, description, dividerLabel, palmaresText, citadaoText } = As
       </a>
 
       <!-- Citadao Card -->
-      <a
-        href={getLocalizedPath('/citadao', lang)}
-        class="cta-card"
-      >
+      <a href={getLocalizedPath('/citadao', lang)} class="cta-card">
         <div class="cta-card__image-wrapper">
           <Image
             src={palcoPhoto}
@@ -161,7 +155,12 @@ const { lang, title, description, dividerLabel, palmaresText, citadaoText } = As
   .cta-card__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.8) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      transparent 100%
+    );
   }
 
   .cta-card__content {

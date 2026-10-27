@@ -41,9 +41,7 @@ function parseDateRange(
   // Find month
   let month = '05'; // default to May
   for (const [name, num] of Object.entries(months)) {
-    const normalizedMonth = name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+    const normalizedMonth = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     if (normalized.includes(normalizedMonth)) {
       month = num;
       break;
@@ -258,7 +256,9 @@ export const seedCitadaoEditions = async (
             }
           } catch (error) {
             const msg = error instanceof Error ? error.message : String(error);
-            console.error(`      Error adding award "${awardSlug}" -> "${winnerShortName}": ${msg}`);
+            console.error(
+              `      Error adding award "${awardSlug}" -> "${winnerShortName}": ${msg}`
+            );
           }
         }
       }

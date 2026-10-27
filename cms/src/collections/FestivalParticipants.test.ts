@@ -77,9 +77,9 @@ describe('FestivalParticipants afterChange guard', () => {
   it('resolves to doc (return value is unchanged)', async () => {
     const findByID = vi.fn().mockResolvedValue({ status: 'published' });
     const doc = makeDoc(7);
-    const result = await hook(
-      { doc, operation: 'update', req: makeReq(findByID) } as Parameters<typeof hook>[0]
-    );
+    const result = await hook({ doc, operation: 'update', req: makeReq(findByID) } as Parameters<
+      typeof hook
+    >[0]);
 
     expect(result).toBe(doc);
   });

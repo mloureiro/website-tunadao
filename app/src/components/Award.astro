@@ -18,18 +18,18 @@ const { awardKey, size = 'sm', class: className = '' } = Astro.props;
 const DEFAULT_ICON = 'lucide:award';
 
 const AWARD_ICONS: Record<string, string> = {
-  'melhor-tuna':        'lucide:trophy',
+  'melhor-tuna': 'lucide:trophy',
   'segunda-melhor-tuna': 'lucide:medal',
   'terceira-melhor-tuna': 'lucide:medal',
-  'tuna-mais-tuna':     'lucide:drama',
-  'tuna-do-publico':    'lucide:heart',
-  'melhor-serenata':    'lucide:music',
+  'tuna-mais-tuna': 'lucide:drama',
+  'tuna-do-publico': 'lucide:heart',
+  'melhor-serenata': 'lucide:music',
   'melhor-passacalles': 'lucide:footprints',
-  'melhor-pandeireta':  'lucide:drum',
+  'melhor-pandeireta': 'lucide:drum',
   'melhor-instrumental': 'lucide:guitar',
-  'melhor-solista':     'lucide:mic',
-  'melhor-original':    'lucide:sparkles',
-  'melhor-estandarte':  'lucide:flag',
+  'melhor-solista': 'lucide:mic',
+  'melhor-original': 'lucide:sparkles',
+  'melhor-estandarte': 'lucide:flag',
   'premio-participacao': 'lucide:music-2',
 };
 
@@ -100,12 +100,7 @@ const iconSize = size === 'sm' ? 14 : 20;
 
   /* Variant: special (tuna mais tuna - purple/violet) */
   .award--special {
-    background: linear-gradient(
-      135deg,
-      #8b5cf6 0%,
-      #a78bfa 50%,
-      #7c3aed 100%
-    );
+    background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 50%, #7c3aed 100%);
     border-color: #6d28d9;
     color: #ffffff;
     font-weight: 600;
@@ -114,12 +109,7 @@ const iconSize = size === 'sm' ? 14 : 20;
 
   /* Variant: public (tuna do publico - red/pink) */
   .award--public {
-    background: linear-gradient(
-      135deg,
-      #f43f5e 0%,
-      #fb7185 50%,
-      #e11d48 100%
-    );
+    background: linear-gradient(135deg, #f43f5e 0%, #fb7185 50%, #e11d48 100%);
     border-color: #be123c;
     color: #ffffff;
     font-weight: 600;

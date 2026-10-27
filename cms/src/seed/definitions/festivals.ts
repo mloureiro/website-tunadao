@@ -157,10 +157,7 @@ export const FESTIVALS: FestivalData[] = [
     date: '2023-05-26',
     location: 'Covilha',
     organizingTuna: 'Tuna-MUs',
-    awards: [
-      { slug: 'melhor-pandeireta' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-pandeireta' }, { slug: 'tuna-mais-tuna' }],
   },
   // 2022
   {
@@ -208,11 +205,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Braga',
     organizingTuna: 'TUM',
     posterPublicId: 'tunadao/festivais/xxix-fitu-bracara-augusta-2019',
-    awards: [
-      { slug: 'tuna-do-publico' },
-      { slug: 'melhor-pandeireta' },
-      { slug: 'melhor-tuna' },
-    ],
+    awards: [{ slug: 'tuna-do-publico' }, { slug: 'melhor-pandeireta' }, { slug: 'melhor-tuna' }],
     tunas: ['TMP', 'TunaTS', 'EUL', 'TUIST', 'TunaDerechoAlicante'],
     guests: ['Azeituna'],
   },
@@ -222,10 +215,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Castelo Branco',
     organizingTuna: 'EACB',
     posterPublicId: 'tunadao/festivais/xiii-fitucb-2019',
-    awards: [
-      { slug: 'melhor-estandarte' },
-      { slug: 'segunda-melhor-tuna' },
-    ],
+    awards: [{ slug: 'melhor-estandarte' }, { slug: 'segunda-melhor-tuna' }],
     tunas: ['anTUNiA', 'TEUP', 'TUIST'],
     guests: ['ArtintunaCopitusa', 'DArtatuna', 'TUSALBI', 'TUSALD', 'TFA'],
   },
@@ -236,10 +226,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Coimbra',
     organizingTuna: 'EUC',
     posterPublicId: 'tunadao/festivais/xxviii-festuna-2018',
-    awards: [
-      { slug: 'segunda-melhor-tuna' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'segunda-melhor-tuna' }, { slug: 'melhor-pandeireta' }],
   },
   {
     name: 'XIII Cidade de Berco',
@@ -275,10 +262,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Barcelos',
     organizingTuna: 'TAIPCA',
     posterPublicId: 'tunadao/festivais/xii-barca-celi-2017',
-    awards: [
-      { slug: 'melhor-original' },
-      { slug: 'melhor-tuna' },
-    ],
+    awards: [{ slug: 'melhor-original' }, { slug: 'melhor-tuna' }],
     tunas: ['Azeituna', 'TunaTS', 'Scalabituna'],
     guests: ['TFIPCA'],
   },
@@ -288,10 +272,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Braga',
     organizingTuna: 'TUM',
     posterPublicId: 'tunadao/festivais/xxvii-fitu-bracara-augusta-2017',
-    awards: [
-      { slug: 'melhor-pandeireta' },
-      { slug: 'terceira-melhor-tuna' },
-    ],
+    awards: [{ slug: 'melhor-pandeireta' }, { slug: 'terceira-melhor-tuna' }],
     tunas: ['TMP', 'TUA', 'TUCP', 'TMUC', 'anTUNiA', 'TunaDerechoValladolid'],
     guests: ['Azeituna', 'Jogralhos'],
   },
@@ -311,10 +292,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Coimbra',
     organizingTuna: 'TMUC',
     posterPublicId: 'tunadao/festivais/ix-cantar-de-estudante-2017',
-    awards: [
-      { slug: 'tuna-mais-tuna' },
-      { slug: 'tuna-do-publico' },
-    ],
+    awards: [{ slug: 'tuna-mais-tuna' }, { slug: 'tuna-do-publico' }],
   },
   // 2016
   {
@@ -357,11 +335,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Leiria',
     organizingTuna: 'Trovantina',
     posterPublicId: 'tunadao/festivais/vi-collipo-2015',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-serenata' },
-      { slug: 'tuna-do-publico' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-serenata' }, { slug: 'tuna-do-publico' }],
     tunas: ['TAUE', 'TAL', 'Versus Tuna'],
     guests: ['AteneuLeiria'],
   },
@@ -371,11 +345,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Covilha',
     organizingTuna: 'Tuna-MUs',
     posterPublicId: 'tunadao/festivais/iii-herminius-2015',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-serenata' },
-      { slug: 'tuna-do-publico' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-serenata' }, { slug: 'tuna-do-publico' }],
     tunas: ['EACB', 'Luz&Tuna', 'TMP'],
     guests: [],
   },
@@ -400,10 +370,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Coimbra',
     organizingTuna: 'TMUC',
     posterPublicId: 'tunadao/festivais/vii-cantar-de-estudante-2015',
-    awards: [
-      { slug: 'tuna-mais-tuna' },
-      { slug: 'tuna-do-publico' },
-    ],
+    awards: [{ slug: 'tuna-mais-tuna' }, { slug: 'tuna-do-publico' }],
   },
   // 2014
   {
@@ -484,11 +451,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Angra do Heroismo',
     organizingTuna: 'TUSA',
     posterPublicId: 'tunadao/festivais/ix-ciclone-2013',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-original' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-original' }, { slug: 'melhor-pandeireta' }],
     tunas: ['Versus Tuna', 'TunaTS', 'TAFUL', 'Bagatuna'],
     guests: ['TUSA'],
   },
@@ -499,10 +462,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Porto',
     organizingTuna: 'TAISEP',
     posterPublicId: 'tunadao/festivais/xix-fitisep-2012',
-    awards: [
-      { slug: 'segunda-melhor-tuna' },
-      { slug: 'melhor-estandarte' },
-    ],
+    awards: [{ slug: 'segunda-melhor-tuna' }, { slug: 'melhor-estandarte' }],
     tunas: ['Afonsina', 'TunaLusiadaFamalicao', 'TunaAgricolasSevilla', 'TMP'],
     guests: ['TunaFemininaISEP'],
   },
@@ -524,9 +484,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Covilha',
     organizingTuna: 'Desertuna',
     posterPublicId: 'tunadao/festivais/x-festubi-2012',
-    awards: [
-      { slug: 'tuno-mais-tuninho', customNote: 'Luis Filipe (BOOBOO)' },
-    ],
+    awards: [{ slug: 'tuno-mais-tuninho', customNote: 'Luis Filipe (BOOBOO)' }],
     tunas: ['TunaTS', 'TUM', 'Tunideos'],
     guests: ['Fado Livre'],
   },
@@ -536,10 +494,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Viana do Castelo',
     organizingTuna: 'Hinoportuna',
     posterPublicId: 'tunadao/festivais/xii-lethes-2012',
-    awards: [
-      { slug: 'melhor-pandeireta' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-pandeireta' }, { slug: 'tuna-mais-tuna' }],
     tunas: ['TEUP', 'TMUC', 'Azeituna', 'TUIST'],
     guests: ['TunaVeteranosViana'],
   },
@@ -574,11 +529,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Figueira da Foz',
     organizingTuna: 'Imperial Neptuna',
     posterPublicId: 'tunadao/festivais/xiv-fitaff-2011',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-serenata' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-serenata' }, { slug: 'melhor-pandeireta' }],
     tunas: ['TAISEP', 'TUM', 'TunaMagisterioCaceres'],
     guests: [],
   },
@@ -663,10 +614,7 @@ export const FESTIVALS: FestivalData[] = [
     date: '2009-06-15',
     location: 'Guarda',
     organizingTuna: "Copituna d'Oppidana",
-    awards: [
-      { slug: 'tuna-mais-tuna' },
-      { slug: 'melhor-tuna' },
-    ],
+    awards: [{ slug: 'tuna-mais-tuna' }, { slug: 'melhor-tuna' }],
   },
   {
     name: 'XIII FETUF',
@@ -684,10 +632,7 @@ export const FESTIVALS: FestivalData[] = [
     date: '2009-06-15',
     location: 'Porto',
     organizingTuna: 'TAISEP',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-pandeireta' }],
   },
   {
     name: 'XV FITUP-IDH',
@@ -695,11 +640,7 @@ export const FESTIVALS: FestivalData[] = [
     location: 'Porto',
     organizingTuna: 'TAUP',
     posterPublicId: 'tunadao/festivais/xv-fitup-idh-2009',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-pandeireta' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-pandeireta' }, { slug: 'tuna-mais-tuna' }],
   },
   {
     name: 'FITAs 2009',
@@ -764,11 +705,7 @@ export const FESTIVALS: FestivalData[] = [
     date: '2008-06-15',
     location: 'Figueira da Foz',
     organizingTuna: 'Bruna',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-instrumental' },
-      { slug: 'melhor-serenata' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-instrumental' }, { slug: 'melhor-serenata' }],
   },
   {
     name: 'XII FETUF',
@@ -801,22 +738,15 @@ export const FESTIVALS: FestivalData[] = [
     date: '2008-06-15',
     location: 'Sabugal',
     organizingTuna: null,
-    awards: [
-      { slug: 'melhor-passacalles' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'melhor-passacalles' }, { slug: 'melhor-pandeireta' }],
   },
   {
-    name: "II FITUCB",
+    name: 'II FITUCB',
     date: '2008-06-15',
     location: 'Castelo Branco',
     organizingTuna: 'EACB',
     posterPublicId: 'tunadao/festivais/ii-fitucb-2008',
-    awards: [
-      { slug: 'tuna-mais-tuna' },
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-instrumental' },
-    ],
+    awards: [{ slug: 'tuna-mais-tuna' }, { slug: 'melhor-tuna' }, { slug: 'melhor-instrumental' }],
     tunas: ["Copituna d'Oppidana", 'Tuna Templaria', 'Arrebitatuna'],
     guests: [],
   },
@@ -852,10 +782,7 @@ export const FESTIVALS: FestivalData[] = [
     date: '2007-06-15',
     location: 'Coimbra',
     organizingTuna: null,
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'tuna-mais-tuna' }],
   },
   {
     name: 'I Por Terras do Sado',
@@ -918,20 +845,14 @@ export const FESTIVALS: FestivalData[] = [
     date: '2005-06-15',
     location: 'Coimbra',
     organizingTuna: 'QFC',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'tuna-mais-tuna' }],
   },
   {
     name: 'VII FITAB 2005',
     date: '2005-06-15',
     location: 'Braganca',
     organizingTuna: 'RTUB',
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-serenata' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-serenata' }],
   },
   {
     name: 'III Festubi',
@@ -956,21 +877,14 @@ export const FESTIVALS: FestivalData[] = [
     date: '2004-06-15',
     location: 'Castelo de Paiva',
     organizingTuna: null,
-    awards: [
-      { slug: 'melhor-instrumental' },
-      { slug: 'melhor-solista' },
-    ],
+    awards: [{ slug: 'melhor-instrumental' }, { slug: 'melhor-solista' }],
   },
   {
     name: 'I FITACA',
     date: '2004-06-15',
     location: 'Mirandela',
     organizingTuna: null,
-    awards: [
-      { slug: 'melhor-tuna' },
-      { slug: 'melhor-instrumental' },
-      { slug: 'tuna-mais-tuna' },
-    ],
+    awards: [{ slug: 'melhor-tuna' }, { slug: 'melhor-instrumental' }, { slug: 'tuna-mais-tuna' }],
   },
   {
     name: 'I Collipo',
@@ -1001,9 +915,6 @@ export const FESTIVALS: FestivalData[] = [
     date: '1999-06-15',
     location: 'Freixo de Espada a Cinta',
     organizingTuna: null,
-    awards: [
-      { slug: 'terceira-melhor-tuna' },
-      { slug: 'melhor-pandeireta' },
-    ],
+    awards: [{ slug: 'terceira-melhor-tuna' }, { slug: 'melhor-pandeireta' }],
   },
 ];

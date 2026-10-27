@@ -40,7 +40,11 @@ function parseFilename(filename: string): { year: number; edition: number } | nu
  * Create a synthetic CloudinaryResource from a full public ID.
  * This is used when the Cloudinary CLI is not available (e.g., in CI).
  */
-function createSyntheticResourceFromPublicId(publicId: string, edition: number, year: number): CloudinaryResource {
+function createSyntheticResourceFromPublicId(
+  publicId: string,
+  edition: number,
+  year: number
+): CloudinaryResource {
   const secureUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
   const url = secureUrl.replace('https://', 'http://');
   const editionStr = String(edition).padStart(2, '0');
@@ -84,13 +88,17 @@ export const seedCitadaoPosters = async (payload: Payload) => {
     resources = cloudinaryData.resources;
     console.log(`  Found ${cloudinaryData.total_count} posters in Cloudinary`);
   } catch {
-    console.warn('  Cloudinary CLI not available, using poster public IDs from edition definitions');
+    console.warn(
+      '  Cloudinary CLI not available, using poster public IDs from edition definitions'
+    );
     usingSyntheticData = true;
 
     // Create synthetic resources from the posterPublicId defined in each edition
     for (const edition of CITADAO_EDITIONS) {
       if (edition.posterPublicId) {
-        resources.push(createSyntheticResourceFromPublicId(edition.posterPublicId, edition.edition, edition.year));
+        resources.push(
+          createSyntheticResourceFromPublicId(edition.posterPublicId, edition.edition, edition.year)
+        );
       }
     }
     console.log(`  Created ${resources.length} synthetic poster entries`);

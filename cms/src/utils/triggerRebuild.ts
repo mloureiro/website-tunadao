@@ -14,7 +14,7 @@ async function recordStatus(
     triggerOperation: string;
     httpStatus?: number;
     errorDetail?: string;
-  },
+  }
 ): Promise<void> {
   try {
     await payload.updateGlobal({
@@ -35,7 +35,7 @@ async function recordStatus(
 export async function triggerFrontendRebuild(
   payload: Payload,
   collection: string,
-  operation: string,
+  operation: string
 ): Promise<void> {
   const token = process.env.GITHUB_TOKEN;
   const owner = process.env.GITHUB_OWNER;
@@ -79,7 +79,9 @@ export async function triggerFrontendRebuild(
       });
     } else {
       const errorText = await response.text();
-      console.error(`[Rebuild] Failed (${response.status}) dispatching ${workflowFile}: ${errorText}`);
+      console.error(
+        `[Rebuild] Failed (${response.status}) dispatching ${workflowFile}: ${errorText}`
+      );
       await recordStatus(payload, {
         outcome: 'failure',
         workflowFile,

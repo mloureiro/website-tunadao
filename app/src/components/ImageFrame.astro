@@ -8,7 +8,8 @@ const { position = 'left', class: className = '' } = Astro.props;
 ---
 
 <div class:list={['image-frame', className]}>
-  <div class:list={['image-frame__border', `image-frame__border--${position}`]} aria-hidden="true"></div>
+  <div class:list={['image-frame__border', `image-frame__border--${position}`]} aria-hidden="true">
+  </div>
   <div class="image-frame__content">
     <slot />
   </div>

@@ -19,7 +19,7 @@ Transformações pré-definidas para consistência:
 
 | Nome            | Transformação                             | Uso                   |
 | --------------- | ----------------------------------------- | --------------------- |
-| `poster_thumb`  | `w_300,h_450,c_fill,g_auto,q_auto,f_auto`  | Thumbnails de posters |
+| `poster_thumb`  | `w_300,h_450,c_fill,g_auto,q_auto,f_auto` | Thumbnails de posters |
 | `poster_medium` | `w_600,h_900,c_limit,q_auto,f_auto`       | Cards/preview         |
 | `poster_full`   | `w_1200,h_1800,c_limit,q_auto,f_auto`     | Visualização completa |
 

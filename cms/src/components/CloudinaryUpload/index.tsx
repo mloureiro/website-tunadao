@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useField } from '@payloadcms/ui'
-import { useEffect, useCallback, useState } from 'react'
-import type { TextFieldClientProps } from 'payload'
-import './styles.scss'
+import { useField } from '@payloadcms/ui';
+import { useEffect, useCallback, useState } from 'react';
+import type { TextFieldClientProps } from 'payload';
+import './styles.scss';
 
 interface CloudinaryUploadResult {
-  public_id: string
-  secure_url: string
-  width: number
-  height: number
-  format: string
-  bytes: number
-  resource_type: string
+  public_id: string;
+  secure_url: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+  resource_type: string;
 }
 
 interface CloudinaryWidget {
-  open: () => void
-  destroy: () => void
+  open: () => void;
+  destroy: () => void;
 }
 
 declare global {
@@ -29,32 +29,29 @@ declare global {
           error: Error | null,
           result: { event: string; info: CloudinaryUploadResult }
         ) => void
-      ) => CloudinaryWidget
-    }
+      ) => CloudinaryWidget;
+    };
   }
 }
 
-export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({
-  field,
-  path,
-}) => {
-  const { value, setValue } = useField<CloudinaryUploadResult | null>({ path })
-  const [isWidgetLoaded, setIsWidgetLoaded] = useState(false)
+export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({ field, path }) => {
+  const { value, setValue } = useField<CloudinaryUploadResult | null>({ path });
+  const [isWidgetLoaded, setIsWidgetLoaded] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !window.cloudinary) {
-      const script = document.createElement('script')
-      script.src = 'https://upload-widget.cloudinary.com/latest/global/all.js'
-      script.async = true
-      script.onload = () => setIsWidgetLoaded(true)
-      document.body.appendChild(script)
+      const script = document.createElement('script');
+      script.src = 'https://upload-widget.cloudinary.com/latest/global/all.js';
+      script.async = true;
+      script.onload = () => setIsWidgetLoaded(true);
+      document.body.appendChild(script);
     } else if (window.cloudinary) {
-      setIsWidgetLoaded(true)
+      setIsWidgetLoaded(true);
     }
-  }, [])
+  }, []);
 
   const openWidget = useCallback(() => {
-    if (!window.cloudinary) return
+    if (!window.cloudinary) return;
 
     const widget = window.cloudinary.createUploadWidget(
       {
@@ -86,20 +83,10 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({
           },
         },
       },
-      (
-        error: Error | null,
-        result: { event: string; info: CloudinaryUploadResult }
-      ) => {
+      (error: Error | null, result: { event: string; info: CloudinaryUploadResult }) => {
         if (!error && result && result.event === 'success') {
-          const {
-            public_id,
-            secure_url,
-            width,
-            height,
-            format,
-            bytes,
-            resource_type,
-          } = result.info
+          const { public_id, secure_url, width, height, format, bytes, resource_type } =
+            result.info;
           setValue({
             public_id,
             secure_url,
@@ -108,20 +95,20 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({
             format,
             bytes,
             resource_type,
-          })
+          });
         }
       }
-    )
+    );
 
-    widget.open()
-  }, [setValue])
+    widget.open();
+  }, [setValue]);
 
   const handleRemove = useCallback(() => {
-    setValue(null)
-  }, [setValue])
+    setValue(null);
+  }, [setValue]);
 
-  const label = field?.label || 'Cloudinary Upload'
-  const required = field?.required
+  const label = field?.label || 'Cloudinary Upload';
+  const required = field?.required;
 
   return (
     <div className="cloudinary-upload-field">
@@ -138,11 +125,7 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({
           ) : (
             <div className="file-preview">
               <span>{value.format?.toUpperCase()}</span>
-              <a
-                href={value.secure_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={value.secure_url} target="_blank" rel="noopener noreferrer">
                 Ver ficheiro
               </a>
             </div>
@@ -183,7 +166,7 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({
         </button>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default CloudinaryUploadField
+export default CloudinaryUploadField;

@@ -11,38 +11,33 @@ interface Props {
 const { name, size = 24, class: className = '' } = Astro.props;
 
 const ICON_MAP: Record<IconName, string> = {
-  'instagram':      'simple-icons:instagram',
-  'facebook':       'simple-icons:facebook',
-  'tiktok':         'simple-icons:tiktok',
-  'youtube':        'simple-icons:youtube',
-  'spotify':        'simple-icons:spotify',
-  'sun':            'lucide:sun',
-  'moon':           'lucide:moon',
-  'chevron-down':   'lucide:chevron-down',
-  'music':          'lucide:music',
-  'trophy':         'lucide:trophy',
-  'users':          'lucide:users',
-  'play':           'lucide:play',
-  'external-link':  'lucide:external-link',
-  'close':          'lucide:x',
-  'mail':           'lucide:mail',
-  'phone':          'lucide:phone',
-  'map-pin':        'lucide:map-pin',
-  'calendar':       'lucide:calendar',
-  'image':          'lucide:image',
-  'zoom-in':        'lucide:zoom-in',
-  'arrow-right':    'lucide:arrow-right',
-  'arrow-left':     'lucide:arrow-left',
-  'chevron-left':   'lucide:chevron-left',
-  'chevron-right':  'lucide:chevron-right',
+  instagram: 'simple-icons:instagram',
+  facebook: 'simple-icons:facebook',
+  tiktok: 'simple-icons:tiktok',
+  youtube: 'simple-icons:youtube',
+  spotify: 'simple-icons:spotify',
+  sun: 'lucide:sun',
+  moon: 'lucide:moon',
+  'chevron-down': 'lucide:chevron-down',
+  music: 'lucide:music',
+  trophy: 'lucide:trophy',
+  users: 'lucide:users',
+  play: 'lucide:play',
+  'external-link': 'lucide:external-link',
+  close: 'lucide:x',
+  mail: 'lucide:mail',
+  phone: 'lucide:phone',
+  'map-pin': 'lucide:map-pin',
+  calendar: 'lucide:calendar',
+  image: 'lucide:image',
+  'zoom-in': 'lucide:zoom-in',
+  'arrow-right': 'lucide:arrow-right',
+  'arrow-left': 'lucide:arrow-left',
+  'chevron-left': 'lucide:chevron-left',
+  'chevron-right': 'lucide:chevron-right',
 };
 
 const iconName = ICON_MAP[name];
 ---
 
-<AstroIcon
-  name={iconName}
-  size={size}
-  class:list={[className]}
-  aria-hidden="true"
-/>
+<AstroIcon name={iconName} size={size} class:list={[className]} aria-hidden="true" />

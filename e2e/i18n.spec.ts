@@ -105,9 +105,7 @@ test.describe('Language switcher', () => {
     await expect(page.locator('footer .footer__link', { hasText: enLabel })).toBeVisible();
   });
 
-  test('switching from EN (/en/) to PT navigates to PT URL (no /en/ prefix)', async ({
-    page,
-  }) => {
+  test('switching from EN (/en/) to PT navigates to PT URL (no /en/ prefix)', async ({ page }) => {
     const home = new HomePage(page, 'en');
     await home.goto();
 

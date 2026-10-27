@@ -43,10 +43,7 @@ const isInline = variant === 'inline';
       data-variant={variant}
     >
       <div class:list={[variant === 'light' && 'container']}>
-        <div
-          class="stats-bar__grid"
-          style={columns ? `--stats-columns: ${columns}` : undefined}
-        >
+        <div class="stats-bar__grid" style={columns ? `--stats-columns: ${columns}` : undefined}>
           {stats.map((stat, index) => (
             <>
               {showDividers && index > 0 && <div class="stats-bar__divider" />}

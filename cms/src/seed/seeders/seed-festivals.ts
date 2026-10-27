@@ -37,7 +37,9 @@ export const seedFestivals = async (
           if (id) {
             organizingTunaId = id;
           } else {
-            console.log(`      Warning: Organizing tuna "${festivalData.organizingTuna}" not found for ${festivalData.name}`);
+            console.log(
+              `      Warning: Organizing tuna "${festivalData.organizingTuna}" not found for ${festivalData.name}`
+            );
           }
         }
 
@@ -62,7 +64,9 @@ export const seedFestivals = async (
           try {
             awardTypeId = awardRegistry.getAwardId(award.slug);
           } catch {
-            console.log(`      Warning: Award type "${award.slug}" not found for ${festivalData.name}`);
+            console.log(
+              `      Warning: Award type "${award.slug}" not found for ${festivalData.name}`
+            );
           }
 
           await payload.create({
@@ -83,7 +87,10 @@ export const seedFestivals = async (
       // Create festival participants
       // Always add Tunadao1998 as contestant for every festival
       await createParticipantIfNotExists(
-        payload, festivalId, tunaRegistry.getTunaId('Tunadao1998'), 'contestant'
+        payload,
+        festivalId,
+        tunaRegistry.getTunaId('Tunadao1998'),
+        'contestant'
       );
 
       // Create contestant records from tunas[]
@@ -119,7 +126,6 @@ export const seedFestivals = async (
         const guestCount = festivalData.guests?.length || 0;
         console.log(`      Participants: ${contestantCount} contestants, ${guestCount} guests`);
       }
-
     } catch (error) {
       console.error(`    Failed to create Festival "${festivalData.name}":`, error);
     }
@@ -139,10 +145,7 @@ async function createParticipantIfNotExists(
   const existing = await payload.find({
     collection: 'festival-participants',
     where: {
-      and: [
-        { festival: { equals: festivalId } },
-        { tuna: { equals: tunaId } },
-      ],
+      and: [{ festival: { equals: festivalId } }, { tuna: { equals: tunaId } }],
     },
     limit: 1,
   });

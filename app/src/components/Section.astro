@@ -36,12 +36,14 @@ const {
 >
   <div class="section__container container">
     <div class="section__body">
-      {(divider || title) && (
-        <div class="section__heading">
-          {divider && <SectionDivider label={divider} color={dividerColor} />}
-          {title && <h2 class="section__title">{title}</h2>}
-        </div>
-      )}
+      {
+        (divider || title) && (
+          <div class="section__heading">
+            {divider && <SectionDivider label={divider} color={dividerColor} />}
+            {title && <h2 class="section__title">{title}</h2>}
+          </div>
+        )
+      }
       <slot />
     </div>
   </div>
@@ -62,11 +64,7 @@ const {
   }
 
   .section--gradient {
-    background: linear-gradient(
-      to bottom right,
-      rgba(191, 0, 41, 0.1),
-      rgba(41, 22, 111, 0.1)
-    );
+    background: linear-gradient(to bottom right, rgba(191, 0, 41, 0.1), rgba(41, 22, 111, 0.1));
   }
 
   :global([data-theme='dark']) .section--gradient {
@@ -78,11 +76,7 @@ const {
   }
 
   .section--dark {
-    background: linear-gradient(
-      to bottom right,
-      var(--color-primary),
-      rgba(41, 22, 111, 0.8)
-    );
+    background: linear-gradient(to bottom right, var(--color-primary), rgba(41, 22, 111, 0.8));
     color: #ffffff;
   }
 

@@ -9,9 +9,9 @@ export const CLOUDINARY_CLOUD_NAME = 'tunadao-site';
  * @see cms/CLOUDINARY.md
  */
 export const POSTER_TRANSFORMATIONS = {
-  thumb: 'poster_thumb',    // w_300,h_450,c_fill,g_auto,q_auto,f_auto
-  medium: 'poster_medium',  // w_600,h_900,c_limit,q_auto,f_auto
-  full: 'poster_full',      // w_1200,h_1800,c_limit,q_auto,f_auto
+  thumb: 'poster_thumb', // w_300,h_450,c_fill,g_auto,q_auto,f_auto
+  medium: 'poster_medium', // w_600,h_900,c_limit,q_auto,f_auto
+  full: 'poster_full', // w_1200,h_1800,c_limit,q_auto,f_auto
 } as const;
 
 export type PosterTransformation = keyof typeof POSTER_TRANSFORMATIONS;

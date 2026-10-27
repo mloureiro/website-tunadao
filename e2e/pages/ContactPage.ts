@@ -74,7 +74,7 @@ export class ContactPage extends BasePage {
         status: 200,
         contentType: 'application/javascript',
         body: `window.turnstile = { render: () => {}, reset: () => {} };`,
-      }),
+      })
     );
   }
 
@@ -91,7 +91,7 @@ export class ContactPage extends BasePage {
         status: 201,
         contentType: 'application/json',
         body: JSON.stringify({ doc: { id: 1 } }),
-      }),
+      })
     );
   }
 

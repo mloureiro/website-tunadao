@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload';
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -46,7 +46,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.secure_url || ''
+            return siblingData?.cloudinary?.secure_url || '';
           },
         ],
       },
@@ -61,7 +61,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.public_id || ''
+            return siblingData?.cloudinary?.public_id || '';
           },
         ],
       },
@@ -75,7 +75,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.width || null
+            return siblingData?.cloudinary?.width || null;
           },
         ],
       },
@@ -89,7 +89,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.height || null
+            return siblingData?.cloudinary?.height || null;
           },
         ],
       },
@@ -104,7 +104,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.format || ''
+            return siblingData?.cloudinary?.format || '';
           },
         ],
       },
@@ -119,12 +119,12 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            const format = siblingData?.cloudinary?.format || ''
-            const resourceType = siblingData?.cloudinary?.resource_type || 'image'
+            const format = siblingData?.cloudinary?.format || '';
+            const resourceType = siblingData?.cloudinary?.resource_type || 'image';
             if (format) {
-              return `${resourceType}/${format}`
+              return `${resourceType}/${format}`;
             }
-            return ''
+            return '';
           },
         ],
       },
@@ -139,7 +139,7 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData }) => {
-            return siblingData?.cloudinary?.bytes || 0
+            return siblingData?.cloudinary?.bytes || 0;
           },
         ],
       },
@@ -160,4 +160,4 @@ export const Media: CollectionConfig = {
       },
     },
   ],
-}
+};
