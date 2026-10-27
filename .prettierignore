@@ -1,0 +1,3 @@
+# Payload regenerates these files (generate:types, migrate:create)
+cms/src/payload-types.ts
+cms/src/migrations/
