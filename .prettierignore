@@ -1,3 +1,6 @@
 # Payload regenerates these files (generate:types, migrate:create)
 cms/src/payload-types.ts
 cms/src/migrations/
+
+# Ignored only by the global gitignore, which Prettier does not read
+/AGENTS.md
