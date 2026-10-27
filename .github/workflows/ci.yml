@@ -108,6 +108,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check formatting
+        run: npm run format
+
       - name: Run ESLint
         run: npm run lint -w app
 
