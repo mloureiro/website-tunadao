@@ -10,9 +10,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 // Load translations relative to this file's location
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pt = require('../../app/src/i18n/pt.json') as Record<string, unknown>;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const en = require('../../app/src/i18n/en.json') as Record<string, unknown>;
 
 export const languages = {
