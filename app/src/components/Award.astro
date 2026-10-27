@@ -3,6 +3,8 @@ import { Icon as AstroIcon } from 'astro-icon/components';
 
 export type AwardVariant = 'default' | 'gold' | 'special' | 'public';
 
+// Kept on one line: Astro's compiler fails to parse a multi-line leading-pipe union exported from frontmatter
+// prettier-ignore
 export type AwardKey = 'melhor-tuna' | 'segunda-melhor-tuna' | 'terceira-melhor-tuna' | 'tuna-mais-tuna' | 'tuna-do-publico' | 'tuno-mais-tuninho' | 'tuna-mais-marafada' | 'tuna-mais-real' | 'tuna-mais-bebedora' | 'melhor-serenata' | 'melhor-passacalles' | 'melhor-pandeireta' | 'melhor-instrumental' | 'melhor-solista' | 'melhor-original' | 'melhor-estandarte' | 'mencao-honrosa' | 'premio-ibero-americano' | 'premio-participacao' | 'premio-tema-especial';
 
 interface Props {
