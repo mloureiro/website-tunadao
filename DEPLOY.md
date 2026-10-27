@@ -26,6 +26,21 @@ The frontend is a **static site** (SSG) that fetches data from the CMS **at buil
 
 The frontend automatically deploys to GitHub Pages when you push to the `main` branch.
 
+### Public origin (`SITE_URL` / `BASE_PATH`)
+
+The live site is served at **`https://www.loureiro.me/website-tunadao/`**. The origin is not in the code: the `deploy-app` job reads it from two GitHub repository variables (Settings → Secrets and variables → Actions → Variables).
+
+| Variable    | Live value                | Drives                                                        |
+| ----------- | ------------------------- | ------------------------------------------------------------- |
+| `SITE_URL`  | `https://www.loureiro.me` | Astro `site`: canonical URLs, `og:url`, sitemap, `robots.txt` |
+| `BASE_PATH` | `/website-tunadao`        | Astro `base`: path prefix of every page and asset             |
+
+The deploy fails if `SITE_URL` is unset. Moving the site is a variable change, not a code change: for the institutional domain at root, set `SITE_URL=https://tunadao1998.ipv.pt` and clear `BASE_PATH`.
+
+Settings elsewhere that name the frontend host — the CMS `FRONTEND_URL` on Render, the Turnstile widget hostnames — must use the same host, `www.loureiro.me`.
+
+**CI uses a test-only origin.** The build-output check in `ci.yml` builds with `https://example.test` (a reserved `.test` domain that never resolves) instead of the live origin. That value differs from the `astro.config.mjs` fallback, so the check proves `SITE_URL` was injected; it is never deployed. No hostname may be hardcoded under `app/` or `.github/` — CI greps for it — except in `#` comments.
+
 ### Manual Setup (one-time)
 
 1. Go to your GitHub repository settings
@@ -376,6 +391,8 @@ The frontend uses these environment variables for CMS integration:
 
 | Variable                    | Description                                                     | Default / Notes                                                                                                                                                    |
 | --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SITE_URL`                  | Public origin (Astro `site`)                                    | `http://localhost:4321` — set in prod from repo variable `SITE_URL` (live: `https://www.loureiro.me`)                                                              |
+| `BASE_PATH`                 | Path prefix (Astro `base`)                                      | `/` — set in prod from repo variable `BASE_PATH` (live: `/website-tunadao`)                                                                                        |
 | `CMS_URL`                   | PayloadCMS API URL (build-time data fetching)                   | `http://localhost:3000`                                                                                                                                            |
 | `PUBLIC_CMS_URL`            | CMS base URL for client-side contact form POST                  | `http://localhost:3000` — **must be set in the prod build env** (GitHub Actions). Distinct from `CMS_URL`: this is inlined into the client bundle.                 |
 | `PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (client widget)                   | Always-pass test key `1x00000000000000000000AA` for dev/CI — **must be replaced with the real key in the prod build env** (GitHub Actions). Inlined at build time. |
