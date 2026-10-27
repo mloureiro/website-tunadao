@@ -51,7 +51,6 @@ const pillars = [
           class="mission__card"
           data-pillar={pillar.key}
         >
-          <!-- Icon -->
           <div
             class="mission__icon"
             aria-hidden="true"
@@ -59,17 +58,14 @@ const pillars = [
             <AstroIcon name={pillar.icon} size={28} />
           </div>
 
-          <!-- Title -->
           <h3 class="mission__card-title">
             {t(`about.missionItems.${pillar.key}.title`)}
           </h3>
 
-          <!-- Description -->
           <p class="mission__card-text">
             {t(`about.missionItems.${pillar.key}.description`)}
           </p>
 
-          <!-- Bottom accent line -->
           <div
             class="mission__accent-line"
             aria-hidden="true"
