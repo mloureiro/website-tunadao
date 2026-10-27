@@ -13,5 +13,8 @@
   "*.{json,md,yml,yaml}": ["bash -c 'prettier --config .prettierrc.json --write \"$@\"' --"],
   ".github/**/*.{json,md,yml,yaml}": [
     "bash -c 'prettier --config .prettierrc.json --write \"$@\"' --"
+  ],
+  "{e2e/**/*.ts,playwright.config.ts}": [
+    "bash -c 'prettier --config .prettierrc.json --write \"$@\"' --"
   ]
 }
