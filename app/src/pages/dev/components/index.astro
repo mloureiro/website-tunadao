@@ -36,8 +36,8 @@ const allAwards = [
       <DesignThemeToggle showLabels />
     </div>
     <p class="theme-section__description">
-      Toggle between Classic and Noite themes to see how components adapt.
-      Noite features larger radii, glow effects, and no borders.
+      Toggle between Classic and Noite themes to see how components adapt. Noite features larger
+      radii, glow effects, and no borders.
     </p>
   </section>
 
@@ -121,14 +121,26 @@ const allAwards = [
     <div class="component-group">
       <h3>All Awards - Size SM</h3>
       <div class="component-row" style="flex-wrap: wrap;">
-        {allAwards.map(award => <Award awardKey={award.key} size="sm">{award.name}</Award>)}
+        {
+          allAwards.map((award) => (
+            <Award awardKey={award.key} size="sm">
+              {award.name}
+            </Award>
+          ))
+        }
       </div>
     </div>
 
     <div class="component-group">
       <h3>All Awards - Size MD</h3>
       <div class="component-row" style="flex-wrap: wrap;">
-        {allAwards.map(award => <Award awardKey={award.key} size="md">{award.name}</Award>)}
+        {
+          allAwards.map((award) => (
+            <Award awardKey={award.key} size="md">
+              {award.name}
+            </Award>
+          ))
+        }
       </div>
     </div>
 

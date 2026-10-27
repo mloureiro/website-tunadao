@@ -32,7 +32,7 @@ const MIGRATIONS_DIR = join(REPO_ROOT, 'cms', 'src', 'migrations');
 function findDriftArtifacts() {
   if (!existsSync(MIGRATIONS_DIR)) return [];
   return readdirSync(MIGRATIONS_DIR).filter(
-    (f) => f.includes('_ci_drift.') && (f.endsWith('.ts') || f.endsWith('.json')),
+    (f) => f.includes('_ci_drift.') && (f.endsWith('.ts') || f.endsWith('.json'))
   );
 }
 
@@ -76,7 +76,7 @@ try {
         // Ensure no Turso URL bleeds in; use local SQLite path (no file needed for snapshot diff)
         NODE_ENV: process.env.NODE_ENV ?? 'development',
       },
-    },
+    }
   );
 
   if (createResult.error) {
@@ -85,14 +85,10 @@ try {
 
   // Step 2: Check git diff against the migrations directory.
   // `git diff --exit-code` exits 1 if there are changes, 0 if clean.
-  const diffResult = spawnSync(
-    'git',
-    ['diff', '--exit-code', '--', 'cms/src/migrations'],
-    {
-      cwd: REPO_ROOT,
-      stdio: 'inherit',
-    },
-  );
+  const diffResult = spawnSync('git', ['diff', '--exit-code', '--', 'cms/src/migrations'], {
+    cwd: REPO_ROOT,
+    stdio: 'inherit',
+  });
 
   diffStatus = diffResult.status ?? 0;
 } finally {
@@ -104,12 +100,8 @@ try {
 // Step 4: Report and exit.
 if (diffStatus !== 0) {
   console.error('');
-  console.error(
-    'Schema drift detected: a collection changed without a committed migration.',
-  );
-  console.error(
-    'Run: npm run migrate:create -w cms -- <name>   then commit cms/src/migrations/*.',
-  );
+  console.error('Schema drift detected: a collection changed without a committed migration.');
+  console.error('Run: npm run migrate:create -w cms -- <name>   then commit cms/src/migrations/*.');
   process.exit(1);
 } else {
   console.log('No migration drift.');

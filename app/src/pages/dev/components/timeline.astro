@@ -86,8 +86,8 @@ const sampleYears = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015]
     <div class="component-group">
       <h3>Live Demo</h3>
       <p class="component-note">
-        Scroll down to see the vertical timeline appear on the left (desktop)
-        or the floating indicator on the bottom-right (mobile/tablet).
+        Scroll down to see the vertical timeline appear on the left (desktop) or the floating
+        indicator on the bottom-right (mobile/tablet).
       </p>
     </div>
   </section>
@@ -103,28 +103,30 @@ const sampleYears = [2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015]
       ariaLabel="Jump to year (new design)"
     />
 
-    {sampleYears.map((year) => (
-      <div class="demo-year-section" id={`demo-year-${year}`}>
-        <div class="demo-year-header">
-          <h3 class="demo-year-title">{year}</h3>
-          <span class="demo-year-badge">{Math.floor(Math.random() * 10) + 1} festivals</span>
-        </div>
-        <div class="demo-year-content">
-          <p>This is sample content for {year}. Scroll to see the timeline update.</p>
-          <div class="demo-placeholder-cards">
-            {[1, 2, 3].map((i) => (
-              <div class="demo-card">
-                <div class="demo-card__poster"></div>
-                <div class="demo-card__info">
-                  <strong>Festival {i}</strong>
-                  <span>Location {i}</span>
+    {
+      sampleYears.map((year) => (
+        <div class="demo-year-section" id={`demo-year-${year}`}>
+          <div class="demo-year-header">
+            <h3 class="demo-year-title">{year}</h3>
+            <span class="demo-year-badge">{Math.floor(Math.random() * 10) + 1} festivals</span>
+          </div>
+          <div class="demo-year-content">
+            <p>This is sample content for {year}. Scroll to see the timeline update.</p>
+            <div class="demo-placeholder-cards">
+              {[1, 2, 3].map((i) => (
+                <div class="demo-card">
+                  <div class="demo-card__poster" />
+                  <div class="demo-card__info">
+                    <strong>Festival {i}</strong>
+                    <span>Location {i}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    ))}
+      ))
+    }
   </section>
 
   <style>

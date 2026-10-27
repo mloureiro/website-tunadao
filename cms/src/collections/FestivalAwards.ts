@@ -12,7 +12,10 @@ export const FestivalAwards: CollectionConfig = {
             : doc.festival;
         if (festivalId) {
           try {
-            const festival = await req.payload.findByID({ collection: 'festivals', id: festivalId });
+            const festival = await req.payload.findByID({
+              collection: 'festivals',
+              id: festivalId,
+            });
             if (festival?.status === 'published') {
               await triggerFrontendRebuild(req.payload, 'festival-awards', operation);
             }

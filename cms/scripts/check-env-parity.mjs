@@ -22,12 +22,7 @@ const RENDER_YAML = join(CMS_ROOT, 'render.yaml');
 // Vars intentionally NOT in render.yaml:
 //   - seed/tooling only: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NAME
 //   - framework implicit (Render always sets it; no need to declare): NODE_ENV
-const ALLOW_LIST = new Set([
-  'ADMIN_EMAIL',
-  'ADMIN_PASSWORD',
-  'ADMIN_NAME',
-  'NODE_ENV',
-]);
+const ALLOW_LIST = new Set(['ADMIN_EMAIL', 'ADMIN_PASSWORD', 'ADMIN_NAME', 'NODE_ENV']);
 
 // ---------------------------------------------------------------------------
 // 1. Collect all process.env.VAR_NAME references from cms/src/**
@@ -98,14 +93,18 @@ for (const v of readVars) {
 if (missing.length === 0) {
   console.log(
     `✓ env-parity OK — all ${readVars.size} runtime env vars are declared in render.yaml ` +
-    `(${readVars.size - ALLOW_LIST.size} checked, ${[...readVars].filter(v => ALLOW_LIST.has(v)).length} allow-listed).`,
+      `(${readVars.size - ALLOW_LIST.size} checked, ${[...readVars].filter((v) => ALLOW_LIST.has(v)).length} allow-listed).`
   );
   process.exit(0);
 } else {
-  console.error('✗ env-parity FAIL — the following vars are read by cms/src but missing from render.yaml:');
+  console.error(
+    '✗ env-parity FAIL — the following vars are read by cms/src but missing from render.yaml:'
+  );
   for (const v of missing.sort()) {
     console.error(`  • ${v}`);
   }
-  console.error('\nAdd them to cms/render.yaml under envVars with sync: false (or a value if static).');
+  console.error(
+    '\nAdd them to cms/render.yaml under envVars with sync: false (or a value if static).'
+  );
   process.exit(1);
 }

@@ -64,7 +64,7 @@ test.describe('Per-locale control aria-labels', () => {
         const base = new BasePage(page, lang);
         await expect(base.langButton()).toHaveAttribute(
           'aria-label',
-          t('common.selectLanguage', lang),
+          t('common.selectLanguage', lang)
         );
       });
 
@@ -76,7 +76,7 @@ test.describe('Per-locale control aria-labels', () => {
         const validLabels = [t('common.switchToLight', lang), t('common.switchToDark', lang)];
         expect(
           validLabels.includes(toggleLabel ?? ''),
-          `Expected aria-label to be one of ${JSON.stringify(validLabels)}, got "${toggleLabel}"`,
+          `Expected aria-label to be one of ${JSON.stringify(validLabels)}, got "${toggleLabel}"`
         ).toBe(true);
       });
     });
@@ -89,9 +89,7 @@ test.describe('Per-locale control aria-labels', () => {
 
 test.describe('Desktop nav landmark aria-label', () => {
   for (const { path, lang } of locales) {
-    test(`locale ${lang} (${path}): .header__nav has localized aria-label`, async ({
-      page,
-    }) => {
+    test(`locale ${lang} (${path}): .header__nav has localized aria-label`, async ({ page }) => {
       const viewport = page.viewportSize();
       const isMobile = viewport ? viewport.width < 1024 : false;
       test.skip(isMobile, 'Desktop nav (.header__nav) is hidden on viewports < 1024 px');
@@ -110,9 +108,7 @@ test.describe('Desktop nav landmark aria-label', () => {
 
 test.describe('ThemeToggle — aria-label updates on toggle', () => {
   for (const { path, lang } of locales) {
-    test(`locale ${lang} (${path}): aria-label flips to opposite after click`, async ({
-      page,
-    }) => {
+    test(`locale ${lang} (${path}): aria-label flips to opposite after click`, async ({ page }) => {
       // Reset any persisted theme preference so we start from a clean state.
       await page.goto(path);
       await page.evaluate(() => localStorage.removeItem('theme'));
@@ -131,7 +127,7 @@ test.describe('ThemeToggle — aria-label updates on toggle', () => {
       // Verify "before" is one of the two expected labels.
       expect(
         [switchToLight, switchToDark].includes(before ?? ''),
-        `Expected initial aria-label to be one of ${JSON.stringify([switchToLight, switchToDark])}, got "${before}"`,
+        `Expected initial aria-label to be one of ${JSON.stringify([switchToLight, switchToDark])}, got "${before}"`
       ).toBe(true);
 
       // Compute the expected label AFTER the click — the opposite of "before".

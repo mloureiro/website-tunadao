@@ -97,7 +97,7 @@ test.describe('Lightbox dialog — /citadao/2024', () => {
             return trigger ? trigger === document.activeElement : false;
           });
         },
-        { timeout: 5000 },
+        { timeout: 5000 }
       )
       .toBe(true);
   });
@@ -132,7 +132,7 @@ test.describe('Lightbox dialog — /citadao/2024', () => {
             return container ? container.contains(document.activeElement) : false;
           });
         },
-        { timeout: 3000 },
+        { timeout: 3000 }
       )
       .toBe(true);
   });
@@ -152,7 +152,9 @@ test.describe('VideoModal dialog — /videos/', () => {
     await expect(videos.playButtons().first()).toBeVisible();
   });
 
-  test('play button opens a dialog with role=dialog and aria-modal=true (keyboard activation)', async ({ page }) => {
+  test('play button opens a dialog with role=dialog and aria-modal=true (keyboard activation)', async ({
+    page,
+  }) => {
     const firstPlay = videos.playButtons().first();
     const modal = videos.videoModal();
 
@@ -205,7 +207,7 @@ test.describe('VideoModal dialog — /videos/', () => {
             return btn ? btn === document.activeElement : false;
           });
         },
-        { timeout: 5000 },
+        { timeout: 5000 }
       )
       .toBe(true);
   });
@@ -229,7 +231,7 @@ test.describe('VideoModal dialog — /videos/', () => {
             return container ? container.contains(document.activeElement) : false;
           });
         },
-        { timeout: 5000 },
+        { timeout: 5000 }
       )
       .toBe(true);
   });
@@ -242,7 +244,7 @@ test.describe('Mobile menu keyboard a11y', () => {
   test('open/Escape cycle — aria-expanded toggles correctly', async ({ page }, testInfo) => {
     test.skip(
       testInfo.project.name !== 'mobile',
-      'Mobile menu button is hidden on desktop viewports; this test is mobile-only.',
+      'Mobile menu button is hidden on desktop viewports; this test is mobile-only.'
     );
 
     await page.goto('/');
@@ -269,7 +271,7 @@ test.describe('Mobile menu keyboard a11y', () => {
   }, testInfo) => {
     test.skip(
       testInfo.project.name !== 'mobile',
-      'Mobile menu button is hidden on desktop viewports; this test is mobile-only.',
+      'Mobile menu button is hidden on desktop viewports; this test is mobile-only.'
     );
 
     await page.goto('/');
@@ -296,7 +298,7 @@ test.describe('Mobile menu keyboard a11y', () => {
             return btn ? btn === document.activeElement : false;
           });
         },
-        { timeout: 5000 },
+        { timeout: 5000 }
       )
       .toBe(true);
   });
@@ -305,12 +307,10 @@ test.describe('Mobile menu keyboard a11y', () => {
 // ── Active nav aria-current (finding: oyz) ────────────────────────────────────
 
 test.describe('Active nav link aria-current', () => {
-  test('desktop: active link has aria-current="page" on /citadao/', async ({
-    page,
-  }, testInfo) => {
+  test('desktop: active link has aria-current="page" on /citadao/', async ({ page }, testInfo) => {
     test.skip(
       testInfo.project.name === 'mobile',
-      'Desktop nav is hidden on mobile; handled in the mobile block below.',
+      'Desktop nav is hidden on mobile; handled in the mobile block below.'
     );
 
     await page.goto('/citadao/');
@@ -323,10 +323,7 @@ test.describe('Active nav link aria-current', () => {
   test('mobile: active mobile nav link has aria-current="page" on /citadao/', async ({
     page,
   }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'mobile',
-      'Mobile nav link test is mobile-only.',
-    );
+    test.skip(testInfo.project.name !== 'mobile', 'Mobile nav link test is mobile-only.');
 
     await page.goto('/citadao/');
     // The mobile nav link for Citadão must carry aria-current="page".
@@ -374,8 +371,8 @@ test.describe('Reduced-motion scroll guard', () => {
   test('scroll-behavior is auto when prefers-reduced-motion: reduce', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    const scrollBehavior = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).scrollBehavior,
+    const scrollBehavior = await page.evaluate(
+      () => getComputedStyle(document.documentElement).scrollBehavior
     );
     expect(scrollBehavior).toBe('auto');
   });

@@ -190,7 +190,7 @@ export const editionsData: Record<number, CitadaoEdition> = {
     year: 2014,
     date: '2-3 Maio',
     venue: 'Aula Magna do IPV',
-    tunas: ["TAIPCA", "TDUP", "TUSA", "Tuna Templária", "Copituna d'Oppidana"],
+    tunas: ['TAIPCA', 'TDUP', 'TUSA', 'Tuna Templária', "Copituna d'Oppidana"],
     guests: ['Real Tunel Académico', 'Infantuna Cidade de Viseu'],
     awards: {
       melhorTuna: 'TAIPCA',

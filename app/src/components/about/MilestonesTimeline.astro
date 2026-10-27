@@ -25,24 +25,21 @@ const { title, dividerLabel, milestones } = Astro.props;
 
       <!-- Timeline items -->
       <div class="timeline__items">
-        {milestones.map((milestone, index) => {
-          const t = milestones.length > 1 ? index / (milestones.length - 1) : 0;
+        {
+          milestones.map((milestone, index) => {
+            const t = milestones.length > 1 ? index / (milestones.length - 1) : 0;
 
-          return (
-            <div class="timeline__item" style={`--t: ${t};`}>
-              <div
-                class="timeline__dot"
-                aria-hidden="true"
-              ></div>
-              <div class="timeline__card">
-                <div class="timeline__year">
-                  {milestone.year}
+            return (
+              <div class="timeline__item" style={`--t: ${t};`}>
+                <div class="timeline__dot" aria-hidden="true" />
+                <div class="timeline__card">
+                  <div class="timeline__year">{milestone.year}</div>
+                  <p class="timeline__text">{milestone.text}</p>
                 </div>
-                <p class="timeline__text">{milestone.text}</p>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        }
       </div>
     </div>
   </div>
@@ -81,11 +78,7 @@ const { title, dividerLabel, milestones } = Astro.props;
     top: 0;
     bottom: 0;
     width: 2px;
-    background: linear-gradient(
-      to bottom,
-      var(--color-primary),
-      var(--color-accent-gold)
-    );
+    background: linear-gradient(to bottom, var(--color-primary), var(--color-accent-gold));
   }
 
   @media (min-width: 768px) {

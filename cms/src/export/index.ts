@@ -112,7 +112,12 @@ export const COLLECTIONS_TO_EXPORT: CollectionConfig[] = [
   { slug: 'award-types', sort: 'slug' },
   { slug: 'tunas', sort: 'shortName' },
   { slug: 'venues', sort: 'name' },
-  { slug: 'citadao-editions', sort: '-startDate', where: { status: { equals: 'published' } }, depth: 1 },
+  {
+    slug: 'citadao-editions',
+    sort: '-startDate',
+    where: { status: { equals: 'published' } },
+    depth: 1,
+  },
   { slug: 'citadao-participants', depth: 2 },
   { slug: 'citadao-awards', depth: 2 },
   { slug: 'festivals', sort: '-date', where: { status: { equals: 'published' } }, depth: 2 },
@@ -201,8 +206,7 @@ const main = async () => {
 };
 
 const isDirectRun =
-  process.argv[1] !== undefined &&
-  import.meta.url === pathToFileURL(process.argv[1]).href;
+  process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isDirectRun) {
   main().catch((error) => {

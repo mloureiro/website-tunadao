@@ -46,32 +46,21 @@ const pillars = [
     <h2 class="mission__title">{title}</h2>
 
     <div class="mission__grid">
-      {pillars.map((pillar) => (
-        <article
-          class="mission__card"
-          data-pillar={pillar.key}
-        >
-          <div
-            class="mission__icon"
-            aria-hidden="true"
-          >
-            <AstroIcon name={pillar.icon} size={28} />
-          </div>
+      {
+        pillars.map((pillar) => (
+          <article class="mission__card" data-pillar={pillar.key}>
+            <div class="mission__icon" aria-hidden="true">
+              <AstroIcon name={pillar.icon} size={28} />
+            </div>
 
-          <h3 class="mission__card-title">
-            {t(`about.missionItems.${pillar.key}.title`)}
-          </h3>
+            <h3 class="mission__card-title">{t(`about.missionItems.${pillar.key}.title`)}</h3>
 
-          <p class="mission__card-text">
-            {t(`about.missionItems.${pillar.key}.description`)}
-          </p>
+            <p class="mission__card-text">{t(`about.missionItems.${pillar.key}.description`)}</p>
 
-          <div
-            class="mission__accent-line"
-            aria-hidden="true"
-          ></div>
-        </article>
-      ))}
+            <div class="mission__accent-line" aria-hidden="true" />
+          </article>
+        ))
+      }
     </div>
   </div>
 </section>
@@ -116,10 +105,18 @@ const pillars = [
   }
 
   /* Per-pillar accent token */
-  .mission__card[data-pillar="tradition"] { --pillar-accent: var(--color-accent-gold); }
-  .mission__card[data-pillar="train"]     { --pillar-accent: var(--color-primary); }
-  .mission__card[data-pillar="represent"] { --pillar-accent: var(--color-secondary); }
-  .mission__card[data-pillar="community"] { --pillar-accent: var(--color-gold-dark); }
+  .mission__card[data-pillar='tradition'] {
+    --pillar-accent: var(--color-accent-gold);
+  }
+  .mission__card[data-pillar='train'] {
+    --pillar-accent: var(--color-primary);
+  }
+  .mission__card[data-pillar='represent'] {
+    --pillar-accent: var(--color-secondary);
+  }
+  .mission__card[data-pillar='community'] {
+    --pillar-accent: var(--color-gold-dark);
+  }
 
   /* Tint and border derived from accent — single source of truth per pillar.
      Eliminates the #c9972a / #9b7120 drift; changing a pillar's accent token

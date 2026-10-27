@@ -12,19 +12,26 @@ describe('Export / fixture parity', () => {
   describe('collections', () => {
     it('every fixture-read collection is exported (no silent data loss in fallback builds)', () => {
       const missing = [...fixtureCollections].sort().filter((k) => !exportCollections.has(k));
-      expect(missing, `Collections in fixtures but missing from export: ${missing.join(', ')}`).toEqual([]);
+      expect(
+        missing,
+        `Collections in fixtures but missing from export: ${missing.join(', ')}`
+      ).toEqual([]);
     });
 
     it('every exported collection is read by a fixture (no dead exports)', () => {
       const extra = [...exportCollections].sort().filter((k) => !fixtureCollections.has(k));
-      expect(extra, `Collections in export but missing from fixtures: ${extra.join(', ')}`).toEqual([]);
+      expect(extra, `Collections in export but missing from fixtures: ${extra.join(', ')}`).toEqual(
+        []
+      );
     });
   });
 
   describe('globals', () => {
     it('every fixture-read global is exported', () => {
       const missing = [...fixtureGlobals].sort().filter((k) => !exportGlobals.has(k));
-      expect(missing, `Globals in fixtures but missing from export: ${missing.join(', ')}`).toEqual([]);
+      expect(missing, `Globals in fixtures but missing from export: ${missing.join(', ')}`).toEqual(
+        []
+      );
     });
 
     it('every exported global is read by a fixture', () => {

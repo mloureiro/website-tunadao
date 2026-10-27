@@ -10,7 +10,7 @@ jobs:
     name: Backup Turso Database
     runs-on: ubuntu-latest
     env:
-      TURSO_CLI_VERSION: v1.0.29  # pin — bump deliberately; verify on release page
+      TURSO_CLI_VERSION: v1.0.29 # pin — bump deliberately; verify on release page
     steps:
       - name: Install pinned Turso CLI
         run: |
@@ -39,7 +39,7 @@ jobs:
         with:
           name: turso-backup-${{ github.run_number }}-${{ github.run_id }}
           path: backup.sql
-          retention-days: 90  # intentional: ~3 months of daily dumps for point-in-time recovery
+          retention-days: 90 # intentional: ~3 months of daily dumps for point-in-time recovery
 
   restore-test:
     name: Verify backup restore (fixture)

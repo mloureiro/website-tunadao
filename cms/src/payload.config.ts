@@ -40,7 +40,7 @@ const resolveSecret = (): string => {
   if (isProduction()) {
     throw new Error(
       'PAYLOAD_SECRET is required in production. Set it in the Render dashboard ' +
-        '(render.yaml declares it via generateValue: true).',
+        '(render.yaml declares it via generateValue: true).'
     );
   }
   // Local dev only — non-secret, never used in production (guarded above).
@@ -52,7 +52,7 @@ const resolveAllowedOrigins = (): string[] => {
   if (isProduction() && !frontendUrl) {
     throw new Error(
       'FRONTEND_URL is required in production for CORS/CSRF. ' +
-        'Set it in the Render dashboard (render.yaml declares it).',
+        'Set it in the Render dashboard (render.yaml declares it).'
     );
   }
   return [

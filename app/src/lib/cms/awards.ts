@@ -80,9 +80,8 @@ export function splitTunasByAwards(edition: FrontendCitadaoEdition): {
   // Build list with award info
   const allTunas: TunaWithAwardsExtended[] = edition.tunas.map((tuna) => {
     const awards = tunaAwardsMap.get(tuna.shortName) || [];
-    const bestAwardPriority = awards.length > 0
-      ? Math.min(...awards.map((k) => AWARD_PRIORITY[k] ?? 100))
-      : Infinity;
+    const bestAwardPriority =
+      awards.length > 0 ? Math.min(...awards.map((k) => AWARD_PRIORITY[k] ?? 100)) : Infinity;
     return { tuna, awards, bestAwardPriority };
   });
 

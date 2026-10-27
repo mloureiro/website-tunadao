@@ -19,7 +19,7 @@ const TIMEOUT_MS = 5000;
  */
 export async function verifyTurnstileToken(
   token: string,
-  fetchImpl: typeof fetch = fetch,
+  fetchImpl: typeof fetch = fetch
 ): Promise<boolean> {
   if (!token) return false;
 

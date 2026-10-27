@@ -35,7 +35,13 @@ function makePayload(): { updateGlobal: ReturnType<typeof vi.fn> } & Pick<Payloa
   } as unknown as { updateGlobal: ReturnType<typeof vi.fn> } & Pick<Payload, 'updateGlobal'>;
 }
 
-const ENV_KEYS = ['GITHUB_TOKEN', 'GITHUB_OWNER', 'GITHUB_REPO', 'GITHUB_WORKFLOW_FILE', 'GITHUB_REF'];
+const ENV_KEYS = [
+  'GITHUB_TOKEN',
+  'GITHUB_OWNER',
+  'GITHUB_REPO',
+  'GITHUB_WORKFLOW_FILE',
+  'GITHUB_REF',
+];
 
 describe('triggerFrontendRebuild()', () => {
   let savedEnv: Record<string, string | undefined>;
@@ -88,9 +94,9 @@ describe('triggerFrontendRebuild()', () => {
   // --- Case 3: Non-2xx response is logged ---
   it('logs an error with status and workflow file on non-2xx response', async () => {
     const payload = makePayload();
-    global.fetch = vi.fn().mockResolvedValue(
-      makeFetchResponse(false, 404, 'nope')
-    ) as unknown as typeof global.fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeFetchResponse(false, 404, 'nope')) as unknown as typeof global.fetch;
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     await triggerFrontendRebuild(payload as unknown as Payload, 'albums', 'update');
@@ -107,9 +113,9 @@ describe('triggerFrontendRebuild()', () => {
   // --- Case 4: Immediate dispatch — no setTimeout ---
   it('does not call setTimeout (dispatches immediately)', async () => {
     const payload = makePayload();
-    global.fetch = vi.fn().mockResolvedValue(
-      makeFetchResponse(true, 204)
-    ) as unknown as typeof global.fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeFetchResponse(true, 204)) as unknown as typeof global.fetch;
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
     await triggerFrontendRebuild(payload as unknown as Payload, 'albums', 'update');
@@ -152,7 +158,9 @@ describe('triggerFrontendRebuild()', () => {
   // --- Recording: success outcome ---
   it('records success outcome with correct fields', async () => {
     const payload = makePayload();
-    global.fetch = vi.fn().mockResolvedValue(makeFetchResponse(true, 204)) as unknown as typeof global.fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeFetchResponse(true, 204)) as unknown as typeof global.fetch;
 
     await triggerFrontendRebuild(payload as unknown as Payload, 'albums', 'update');
 
@@ -175,7 +183,9 @@ describe('triggerFrontendRebuild()', () => {
   // --- Recording: failure (non-2xx) outcome ---
   it('records failure outcome with httpStatus and errorDetail on non-2xx response', async () => {
     const payload = makePayload();
-    global.fetch = vi.fn().mockResolvedValue(makeFetchResponse(false, 404, 'nope')) as unknown as typeof global.fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeFetchResponse(false, 404, 'nope')) as unknown as typeof global.fetch;
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
     await triggerFrontendRebuild(payload as unknown as Payload, 'blog-posts', 'create');
@@ -251,11 +261,11 @@ describe('triggerFrontendRebuild()', () => {
     const payload = {
       updateGlobal: vi.fn().mockRejectedValue(new Error('DB down')),
     } as unknown as Payload;
-    global.fetch = vi.fn().mockResolvedValue(makeFetchResponse(true, 204)) as unknown as typeof global.fetch;
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeFetchResponse(true, 204)) as unknown as typeof global.fetch;
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-    await expect(
-      triggerFrontendRebuild(payload, 'albums', 'update')
-    ).resolves.toBeUndefined();
+    await expect(triggerFrontendRebuild(payload, 'albums', 'update')).resolves.toBeUndefined();
   });
 });

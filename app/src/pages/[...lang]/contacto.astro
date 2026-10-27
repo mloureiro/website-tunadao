@@ -25,27 +25,29 @@ const contactInfo = await getContactInfo();
   <section class="contact">
     <div class="container">
       <div class="contact__grid">
-        <ContactForm labels={{
-          name: t('contact.form.name'),
-          namePlaceholder: t('contact.form.namePlaceholder'),
-          email: t('contact.form.email'),
-          emailPlaceholder: t('contact.form.emailPlaceholder'),
-          subject: t('contact.form.subject'),
-          subjectPlaceholder: t('contact.form.subjectPlaceholder'),
-          subjectOptions: {
-            atuacao: t('contact.form.subjectOptions.atuacao'),
-            citadao: t('contact.form.subjectOptions.citadao'),
-            informacao: t('contact.form.subjectOptions.informacao'),
-            recrutamento: t('contact.form.subjectOptions.recrutamento'),
-            outro: t('contact.form.subjectOptions.outro'),
-          },
-          message: t('contact.form.message'),
-          messagePlaceholder: t('contact.form.messagePlaceholder'),
-          submit: t('contact.form.submit'),
-          sending: t('contact.form.sending'),
-          success: t('contact.form.success'),
-          error: t('contact.form.error'),
-        }} />
+        <ContactForm
+          labels={{
+            name: t('contact.form.name'),
+            namePlaceholder: t('contact.form.namePlaceholder'),
+            email: t('contact.form.email'),
+            emailPlaceholder: t('contact.form.emailPlaceholder'),
+            subject: t('contact.form.subject'),
+            subjectPlaceholder: t('contact.form.subjectPlaceholder'),
+            subjectOptions: {
+              atuacao: t('contact.form.subjectOptions.atuacao'),
+              citadao: t('contact.form.subjectOptions.citadao'),
+              informacao: t('contact.form.subjectOptions.informacao'),
+              recrutamento: t('contact.form.subjectOptions.recrutamento'),
+              outro: t('contact.form.subjectOptions.outro'),
+            },
+            message: t('contact.form.message'),
+            messagePlaceholder: t('contact.form.messagePlaceholder'),
+            submit: t('contact.form.submit'),
+            sending: t('contact.form.sending'),
+            success: t('contact.form.success'),
+            error: t('contact.form.error'),
+          }}
+        />
 
         <div class="contact__sidebar">
           <ContactInfo

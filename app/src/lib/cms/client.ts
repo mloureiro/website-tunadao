@@ -115,7 +115,9 @@ async function fetchFromCMS<T>(endpoint: string, options: FetchOptions = {}): Pr
         endpoint
       );
     }
-    console.warn(`[CMS:Fallback] CMS unavailable at ${CMS_URL}, falling back to fixtures for ${endpoint}`);
+    console.warn(
+      `[CMS:Fallback] CMS unavailable at ${CMS_URL}, falling back to fixtures for ${endpoint}`
+    );
     return tryFixtureFallback<T>(endpoint);
   }
 
@@ -127,7 +129,9 @@ async function fetchFromCMS<T>(endpoint: string, options: FetchOptions = {}): Pr
         response.status
       );
     }
-    console.warn(`[CMS:Fallback] CMS error ${response.status} for ${endpoint}, falling back to fixtures`);
+    console.warn(
+      `[CMS:Fallback] CMS error ${response.status} for ${endpoint}, falling back to fixtures`
+    );
     return tryFixtureFallback<T>(endpoint);
   }
 
@@ -171,7 +175,9 @@ async function fetchGlobal<T>(slug: string): Promise<T> {
         `globals/${slug}`
       );
     }
-    console.warn(`[CMS:Fallback] CMS unavailable at ${CMS_URL}, falling back to fixtures for global ${slug}`);
+    console.warn(
+      `[CMS:Fallback] CMS unavailable at ${CMS_URL}, falling back to fixtures for global ${slug}`
+    );
     return tryGlobalFixtureFallback<T>(slug);
   }
 
@@ -183,7 +189,9 @@ async function fetchGlobal<T>(slug: string): Promise<T> {
         response.status
       );
     }
-    console.warn(`[CMS:Fallback] CMS error ${response.status} for global ${slug}, falling back to fixtures`);
+    console.warn(
+      `[CMS:Fallback] CMS error ${response.status} for global ${slug}, falling back to fixtures`
+    );
     return tryGlobalFixtureFallback<T>(slug);
   }
 
@@ -462,5 +470,7 @@ export async function checkCMSConnection(): Promise<void> {
       response.status
     );
   }
-  console.warn(`[CMS:Fallback] CMS health check failed (${response.status}), will use fixtures as fallback`);
+  console.warn(
+    `[CMS:Fallback] CMS health check failed (${response.status}), will use fixtures as fallback`
+  );
 }
