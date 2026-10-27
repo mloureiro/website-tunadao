@@ -2,15 +2,15 @@
 /**
  * Build-output consistency assertion.
  *
- * Reads dist/ after an interim-origin build and verifies:
+ * Reads dist/ after a test-only-origin build and verifies:
  *   1. dist/robots.txt has Disallow: /dev/ and the correct Sitemap: URL.
  *   2. dist/sitemap-index.xml references the expected origin+base.
  *   3. dist/index.html canonical + og:url use the expected origin+base.
- *   4. No phantom hosts (tunadao.pt, www.loureiro.me, tunadao1998.github.io)
+ *   4. No hardcoded hosts (tunadao.pt, www.loureiro.me, tunadao1998.github.io)
  *      remain anywhere in dist/.
  *
  * Expected env vars (set by the CI step that runs this script):
- *   EXPECTED_ORIGIN  e.g. http://loureiro.me
+ *   EXPECTED_ORIGIN  e.g. https://example.test
  *   EXPECTED_BASE    e.g. /website-tunadao/   (with trailing slash)
  *
  * Usage:
@@ -27,14 +27,18 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.resolve(__dirname, '..', 'dist');
 
-const EXPECTED_ORIGIN = process.env.EXPECTED_ORIGIN ?? 'http://loureiro.me';
+const EXPECTED_ORIGIN = process.env.EXPECTED_ORIGIN;
+const rawBase = process.env.EXPECTED_BASE;
+if (!EXPECTED_ORIGIN || !rawBase) {
+  console.error('FAIL: EXPECTED_ORIGIN and EXPECTED_BASE must be set');
+  process.exit(1);
+}
 // Normalise: ensure trailing slash
-const rawBase = process.env.EXPECTED_BASE ?? '/website-tunadao/';
 const EXPECTED_BASE = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 const EXPECTED_PREFIX = `${EXPECTED_ORIGIN}${EXPECTED_BASE}`;
 const EXPECTED_SITEMAP_URL = `${EXPECTED_PREFIX}sitemap-index.xml`;
 
-const PHANTOM_HOSTS = ['tunadao.pt', 'www.loureiro.me', 'tunadao1998.github.io'];
+const HARDCODED_HOSTS = ['tunadao.pt', 'www.loureiro.me', 'tunadao1998.github.io'];
 
 let failed = false;
 
@@ -61,9 +65,7 @@ if (!fs.existsSync(robotsPath)) {
     fail('robots.txt is missing "Disallow: /dev/"');
   }
 
-  const sitemapLines = robots
-    .split('\n')
-    .filter((l) => l.startsWith('Sitemap:'));
+  const sitemapLines = robots.split('\n').filter((l) => l.startsWith('Sitemap:'));
 
   if (sitemapLines.length === 1) {
     pass('robots.txt has exactly one Sitemap: line');
@@ -110,7 +112,9 @@ if (!fs.existsSync(indexPath)) {
     if (canonicalMatch[1].startsWith(EXPECTED_ORIGIN)) {
       pass(`index.html canonical = ${canonicalMatch[1]}`);
     } else {
-      fail(`index.html canonical does not start with "${EXPECTED_ORIGIN}"\n    got: ${canonicalMatch[1]}`);
+      fail(
+        `index.html canonical does not start with "${EXPECTED_ORIGIN}"\n    got: ${canonicalMatch[1]}`
+      );
     }
   } else {
     fail('index.html missing canonical link');
@@ -128,7 +132,7 @@ if (!fs.existsSync(indexPath)) {
   }
 }
 
-// ── 4. No phantom hosts ───────────────────────────────────────────────────────
+// ── 4. No hardcoded hosts ─────────────────────────────────────────────────────
 
 /**
  * Recursively walk a directory and return all file paths.
@@ -148,25 +152,23 @@ function walkDir(dir) {
   return results;
 }
 
-// Only check text files where phantom hosts would meaningfully appear
+// Only check text files where hardcoded hosts would meaningfully appear
 const TEXT_EXTS = new Set(['.html', '.txt', '.xml', '.json', '.js', '.css', '.mjs']);
 
-const distFiles = walkDir(DIST).filter((f) =>
-  TEXT_EXTS.has(path.extname(f).toLowerCase())
-);
+const distFiles = walkDir(DIST).filter((f) => TEXT_EXTS.has(path.extname(f).toLowerCase()));
 
-let phantomFound = false;
+let hardcodedFound = false;
 for (const file of distFiles) {
   const content = fs.readFileSync(file, 'utf8');
-  for (const phantom of PHANTOM_HOSTS) {
-    if (content.includes(phantom)) {
-      fail(`Phantom host "${phantom}" found in ${path.relative(DIST, file)}`);
-      phantomFound = true;
+  for (const host of HARDCODED_HOSTS) {
+    if (content.includes(host)) {
+      fail(`Hardcoded host "${host}" found in ${path.relative(DIST, file)}`);
+      hardcodedFound = true;
     }
   }
 }
-if (!phantomFound) {
-  pass(`No phantom hosts (${PHANTOM_HOSTS.join(', ')}) found in dist/`);
+if (!hardcodedFound) {
+  pass(`No hardcoded hosts (${HARDCODED_HOSTS.join(', ')}) found in dist/`);
 }
 
 // ── 5. No dropped-slash base joins ───────────────────────────────────────────
@@ -187,10 +189,7 @@ const BASE_WITHOUT_SLASH = EXPECTED_BASE.replace(/\/$/, ''); // '/website-tunada
 if (BASE_WITHOUT_SLASH && BASE_WITHOUT_SLASH !== '') {
   // Regex matches: href="/website-tunadaoXXX", src="/website-tunadaoXXX",
   // content="/website-tunadaoXXX" — where XXX is not '/' or '"'
-  const droppedSlashRe = new RegExp(
-    `(?:href|src|content)="${BASE_WITHOUT_SLASH}[^/"']`,
-    'g'
-  );
+  const droppedSlashRe = new RegExp(`(?:href|src|content)="${BASE_WITHOUT_SLASH}[^/"']`, 'g');
 
   const htmlFiles = walkDir(DIST).filter((f) => path.extname(f).toLowerCase() === '.html');
 
@@ -200,9 +199,7 @@ if (BASE_WITHOUT_SLASH && BASE_WITHOUT_SLASH !== '') {
     const matches = content.match(droppedSlashRe);
     if (matches) {
       for (const m of matches) {
-        fail(
-          `Dropped-slash base join in ${path.relative(DIST, file)}: ${m.slice(0, 80)}`
-        );
+        fail(`Dropped-slash base join in ${path.relative(DIST, file)}: ${m.slice(0, 80)}`);
         droppedSlashFound = true;
       }
     }

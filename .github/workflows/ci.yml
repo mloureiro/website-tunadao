@@ -146,6 +146,12 @@ jobs:
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
+    # Test-only origin: a reserved .test domain that never resolves and is never deployed.
+    # It differs from the astro.config.mjs fallback, so the assertion proves SITE_URL was injected.
+    # The live origin (https://www.loureiro.me) is not used: the dist host ban would reject it.
+    env:
+      TEST_SITE_URL: 'https://example.test'
+      TEST_BASE_PATH: '/website-tunadao'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -177,8 +183,8 @@ jobs:
           # astro preview serves pages at http://localhost:4321/<path> and the
           # existing tests (which use absolute-path page.goto('/...') calls) work
           # without modification. Iteration 2's build-output assertion uses its own
-          # dedicated build with the interim origin (SITE_URL + BASE_PATH) and does
-          # not reuse this E2E artifact. See DEPLOY.md / bead sax7.
+          # dedicated build with the test-only origin (SITE_URL + BASE_PATH) and does
+          # not reuse this E2E artifact. See DEPLOY.md.
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
@@ -186,38 +192,43 @@ jobs:
       - name: Run E2E tests
         run: npx playwright test
 
-      # Separate interim-origin build for the build-output consistency assertion.
+      # Separate test-only-origin build for the build-output consistency assertion.
       # Run AFTER Playwright so the root build in dist/ is not overwritten before
-      # astro preview serves it to the test runner. The interim build overwrites
+      # astro preview serves it to the test runner. The test-only build overwrites
       # dist/ only after Playwright has finished.
-      - name: Build site (interim origin — consistency assertion)
+      - name: Build site (test-only origin — consistency assertion)
         run: npm run build -w app
         env:
-          SITE_URL: 'http://loureiro.me'
-          BASE_PATH: '/website-tunadao'
+          SITE_URL: ${{ env.TEST_SITE_URL }}
+          BASE_PATH: ${{ env.TEST_BASE_PATH }}
           USE_TEST_FIXTURES: 'true'
           PUBLIC_CMS_URL: 'http://localhost:3000'
           PUBLIC_TURNSTILE_SITE_KEY: '1x00000000000000000000AA'
 
-      - name: Assert build-output consistency (interim origin)
+      - name: Assert build-output consistency (test-only origin)
         run: npm run test:build-output -w app
         env:
-          EXPECTED_ORIGIN: 'http://loureiro.me'
-          EXPECTED_BASE: '/website-tunadao/'
+          EXPECTED_ORIGIN: ${{ env.TEST_SITE_URL }}
+          EXPECTED_BASE: ${{ env.TEST_BASE_PATH }}
 
-      - name: Assert no phantom hosts in source
+      # Hosts come from repo variables (vars.SITE_URL, live https://www.loureiro.me), never from source.
+      # Full-line # comments are skipped so YAML/shell docs may name the live origin.
+      - name: Assert no hardcoded hosts in source
         run: |
           # Exclude: dist/ (build output covered by test:build-output),
           #          .astro/ (Astro cache, gitignored), scripts/check-build-output.mjs
-          #          (the detection script itself mentions phantom hosts in strings).
-          if grep -RInE 'tunadao\.pt|www\.loureiro\.me|tunadao1998\.github\.io' \
-               --exclude-dir=dist --exclude-dir=.astro \
-               --exclude='check-build-output.mjs' \
-               app .github; then
-            echo "::error::Phantom hosts found in source — see matches above"
+          #          (the detection script itself mentions hardcoded hosts in strings).
+          matches=$(grep -RInE 'tunadao\.pt|www\.loureiro\.me|tunadao1998\.github\.io' \
+                      --exclude-dir=dist --exclude-dir=.astro \
+                      --exclude='check-build-output.mjs' \
+                      app .github \
+                    | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' || true)
+          if [[ -n "$matches" ]]; then
+            echo "$matches"
+            echo "::error::Hardcoded hosts found in source — hosts come from repo variables"
             exit 1
           fi
-          echo "No phantom hosts found in source."
+          echo "No hardcoded hosts found in source."
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -310,9 +321,8 @@ jobs:
         run: |
           test -n "$SITE_URL" || { echo "::error::vars.SITE_URL is required for deploy"; exit 1; }
 
-      # Origin is driven by repo vars only — interim: SITE_URL=http://loureiro.me, BASE_PATH=/website-tunadao
-      # Going live at root: set vars.SITE_URL=https://tunadao1998.ipv.pt and clear vars.BASE_PATH — no code change needed.
-      # See DEPLOY.md / bead sax7.
+      # Origin comes from repo variables only. Live: vars.SITE_URL=https://www.loureiro.me, vars.BASE_PATH=/website-tunadao.
+      # Moving to the institutional domain at root: set vars.SITE_URL=https://tunadao1998.ipv.pt and clear vars.BASE_PATH — no code change.
       - name: Build site
         run: npm run build -w app
         env:
