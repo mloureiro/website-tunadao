@@ -187,8 +187,16 @@ See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
 | ------------------------ | -------------------------------------------------------------------- |
 | `CMS_URL`                | Production PayloadCMS URL (e.g., `https://tunadao-cms.onrender.com`) |
 | `RENDER_DEPLOY_HOOK_URL` | (Optional) Render deploy hook for CMS deploys                        |
-| `TURSO_DB_NAME`          | Turso database name (for backups)                                    |
-| `TURSO_API_TOKEN`        | Turso API token (for backups)                                        |
+| `TURSO_DB_NAME`          | Turso database name (for backups; repository secret)                 |
+| `TURSO_API_TOKEN`        | Turso platform API token (`turso auth api-tokens mint`), for backups |
+
+Both backup secrets are repository secrets, not `github-pages` environment secrets. `TURSO_API_TOKEN` is not the database `TURSO_AUTH_TOKEN`.
+
+### Required Variables (GitHub)
+
+| Variable               | Description                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| `BACKUP_AGE_RECIPIENT` | `age1...` public key the backup is encrypted to (repository variable; private key stays offline) |
 
 ### Required Environment Variables (Render)
 
@@ -208,9 +216,19 @@ See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
 
 Database backups run automatically via GitHub Actions (daily at 3 AM UTC).
 
-- **Retention**: 90 days (stored as GitHub artifacts)
+- **Encryption**: the dump is encrypted with [age](https://github.com/FiloSottile/age) to `BACKUP_AGE_RECIPIENT` before upload. Only the private key holder can read it. **If that key is lost, every backup is unreadable.**
+- **Retention**: 90 days (stored as GitHub artifacts, `backup.sql.age`)
 - **Manual trigger**: Go to Actions → Database Backup → Run workflow
-- **Restore**: Download artifact and run `turso db create restored-db --from-dump ./backup.sql`
+- **Failures**: a failed run opens (or comments on) an issue labelled `backup-failure`. GitHub disables scheduled workflows after 60 days without repository activity; that raises no issue, so check `gh workflow list --all` now and then.
+- **Restore**:
+
+  ```bash
+  gh run download <run-id> -n <artifact-name>
+  age -d -i <private key file> -o backup.sql backup.sql.age
+  turso db create restored-db --from-dump ./backup.sql && rm backup.sql
+  ```
+
+  Full procedure: [DEPLOY.md](DEPLOY.md#database-backup-pinned-tools-encryption-restore-check-retention-backupyml).
 
 ## License
 

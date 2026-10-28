@@ -460,11 +460,23 @@ Before building the frontend, `deploy-app` probes the CMS (`Check CMS availabili
 - **Final shipped state:** the flag is gone entirely — **no `--no-deprecation` narrowing was needed**. The Node-20 CI run showed the intended unmasking is a handful of lines (~15), not a flood, and `npm run migrate:check -w cms` stays green (the migration drift-check is not broken by the surfaced stderr).
 - A pre-authorized fallback existed (`NODE_OPTIONS=--no-deprecation=DEP0040` to silence only the Node-20 `punycode` warning) but was **not required** and is **not** in the shipped config. Only reach for it if a future Node bump reintroduces a genuine DEP0040 flood.
 
-### Database backup: pinned CLI, restore-test, retention (backup.yml)
+### Database backup: pinned tools, encryption, restore check, retention (backup.yml)
 
 - **Turso CLI pinned to `v1.0.29`** (`TURSO_CLI_VERSION` env) and installed from the pinned GitHub release tarball — no more `curl … | bash` of an unpinned latest. Bump deliberately and re-verify on the release page; the `Verify Turso CLI version` step prints the running version.
-- **`restore-test` job** verifies the **restore _mechanism_**, not production data. It restores a committed fixture (`.github/fixtures/backup-fixture.sql`) into a throwaway SQLite DB and asserts the schema/row counts round-trip (1+ table, exactly 3 rows). **A production dump restore is intentionally NOT exercised** — agents/CI never hold prod Turso credentials, by design. The job proves "our backups are restorable" without touching prod.
+- **`age` pinned to `v1.3.2` and checksummed** (`AGE_VERSION`, `AGE_SHA256`). The tarball is verified with `sha256sum -c` before extraction, because this binary handles the only copy of the backup.
+- **The dump is encrypted before it reaches the artifact store.** The repository is public, so any signed-in GitHub user can download Actions artifacts, and the dump holds password hashes, reset tokens, sessions and contact-form messages. The job encrypts to `BACKUP_AGE_RECIPIENT` (a public key); CI never holds the private key. Only `backup.sql.age` is uploaded and the plaintext is deleted in the same step.
+- **Restore check runs in the `backup` job, on this run's dump, before encryption.** CI holds no decryption key, so only the job that made the dump can test it. It loads the dump into a throwaway SQLite database, requires `PRAGMA integrity_check` to be `ok` and at least one row in each of `tunas`, `citadao_editions`, `festivals` and `payload_migrations`. A failed check stops the job before anything is uploaded.
+- **Ciphertext check.** The file is also encrypted to a throwaway key that exists only for that step; the job decrypts it and compares the hash with the tested dump. This proves the uploaded bytes are the tested dump. It cannot prove you still hold the private key matching `BACKUP_AGE_RECIPIENT`; decrypt one real backup by hand after setup.
+- **Configuration is repository-level.** `TURSO_DB_NAME` and `TURSO_API_TOKEN` (a Turso **platform API token**, `turso auth api-tokens mint`, not the database `TURSO_AUTH_TOKEN`) are repository secrets; `BACKUP_AGE_RECIPIENT` is a repository variable. None of them belongs in the `github-pages` environment. The first step fails with an `::error::` naming each missing one.
+- **Failure notification.** If the `backup` job fails, `notify-failure` opens an issue labelled `backup-failure` (created on first use) or comments on the open one. Close the issue after the next green run. This job is the only one with `issues: write`; everything else has `contents: read`.
+- **Inactivity limit.** GitHub disables scheduled workflows in a public repository after 60 days without repository activity. A disabled schedule produces no failed run, so no issue is raised. Check with `gh workflow list --all` and re-enable with `gh workflow enable backup.yml`.
 - **Retention is 90 days, intentional** (`retention-days: 90`) — roughly three months of daily dumps for point-in-time recovery. This is a deliberate cost/coverage choice, not a default.
+- **Restore procedure:**
+  1. `gh run download <run-id> -n <artifact-name>` to fetch `backup.sql.age`.
+  2. `age -d -i <private key file> -o backup.sql backup.sql.age`.
+  3. `turso db create restored-db --from-dump ./backup.sql`.
+  4. Delete `backup.sql` once the new database is verified.
+- **Key loss.** The private key is generated offline and kept in a password manager. If it is lost, every existing backup is unreadable.
 
 ### Rollup Linux native binary recorded in the lockfile
 
