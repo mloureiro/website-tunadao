@@ -6,3 +6,4 @@ build/
 *.db-journal
 src/payload-types.ts
 src/migrations/
+next-env.d.ts
