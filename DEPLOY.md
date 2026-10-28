@@ -70,7 +70,7 @@ Settings elsewhere that name the frontend host — the CMS `FRONTEND_URL` on Ren
 **Build Command:**
 
 ```bash
-npm install && npm run build
+npm ci && npm run build
 ```
 
 **Start Command:**
@@ -89,6 +89,8 @@ marked unhealthy, which is the correct fail-closed behaviour.
 ```
 cms
 ```
+
+The Node version comes from the `NODE_VERSION` environment variable (`22.23.4`), declared in `render.yaml`.
 
 ### Environment Variables
 
@@ -355,6 +357,7 @@ on:
 - [ ] GitHub Pages enabled in repository settings
 - [ ] Render.com web service created
 - [ ] Turso database created and connected (`TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` set)
+- [ ] Before a deploy that adds a migration: back up the Turso database and confirm `payload_migrations` has no `dev` row
 - [ ] Migrations applied on first deploy (automated via start command — verify in Render logs)
 - [ ] `PAYLOAD_DISABLE_PUSH` kept in `render.yaml` as documentation marker (push is off in code)
 - [ ] `FRONTEND_URL` set to production frontend URL (required for CORS/CSRF and provisioning)
