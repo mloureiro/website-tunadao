@@ -2,9 +2,8 @@ services:
   - type: web
     name: tunadao-cms
     runtime: node
-    rootDir: cms
-    buildCommand: npm ci --include=dev && npm run build
-    startCommand: npm run payload -- migrate --force-accept-warning && npm run start
+    buildCommand: npm ci --include=dev && npm run build -w cms
+    startCommand: npm run payload -w cms -- migrate --force-accept-warning && npm run start -w cms
     plan: free
     healthCheckPath: /admin
     envVars:
