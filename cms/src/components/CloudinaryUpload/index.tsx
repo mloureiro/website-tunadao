@@ -1,7 +1,7 @@
 'use client';
 
 import { useField } from '@payloadcms/ui';
-import { useEffect, useCallback, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import type { TextFieldClientProps } from 'payload';
 import './styles.scss';
 
@@ -34,21 +34,28 @@ declare global {
   }
 }
 
+const WIDGET_SCRIPT_SRC = 'https://upload-widget.cloudinary.com/latest/global/all.js';
+
+const subscribeToWidgetScript = (onLoad: () => void): (() => void) => {
+  if (window.cloudinary) return () => {};
+  let script = document.querySelector<HTMLScriptElement>(`script[src="${WIDGET_SCRIPT_SRC}"]`);
+  if (!script) {
+    script = document.createElement('script');
+    script.src = WIDGET_SCRIPT_SRC;
+    script.async = true;
+    document.body.appendChild(script);
+  }
+  script.addEventListener('load', onLoad);
+  return () => script.removeEventListener('load', onLoad);
+};
+
 export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({ field, path }) => {
   const { value, setValue } = useField<CloudinaryUploadResult | null>({ path });
-  const [isWidgetLoaded, setIsWidgetLoaded] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !window.cloudinary) {
-      const script = document.createElement('script');
-      script.src = 'https://upload-widget.cloudinary.com/latest/global/all.js';
-      script.async = true;
-      script.onload = () => setIsWidgetLoaded(true);
-      document.body.appendChild(script);
-    } else if (window.cloudinary) {
-      setIsWidgetLoaded(true);
-    }
-  }, []);
+  const isWidgetLoaded = useSyncExternalStore(
+    subscribeToWidgetScript,
+    () => Boolean(window.cloudinary),
+    () => false
+  );
 
   const openWidget = useCallback(() => {
     if (!window.cloudinary) return;
