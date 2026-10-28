@@ -5,13 +5,43 @@ on:
     - cron: '0 3 * * *' # Daily at 3 AM UTC
   workflow_dispatch: # Manual trigger
 
+permissions:
+  contents: read
+
+concurrency:
+  group: database-backup
+  cancel-in-progress: false
+
 jobs:
   backup:
     name: Backup Turso Database
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       TURSO_CLI_VERSION: v1.0.29 # pin — bump deliberately; verify on release page
+      AGE_VERSION: v1.3.2
+      AGE_SHA256: cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10
     steps:
+      - name: Check backup configuration
+        env:
+          TURSO_DB_NAME: ${{ secrets.TURSO_DB_NAME }}
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+          BACKUP_AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in TURSO_DB_NAME TURSO_API_TOKEN; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::${name} is not set. Set it as a repository secret (not a github-pages environment one)."
+              missing=1
+            fi
+          done
+          if [[ -z "$BACKUP_AGE_RECIPIENT" ]]; then
+            echo "::error::BACKUP_AGE_RECIPIENT is not set. Set it as a repository variable (not a github-pages environment one)."
+            missing=1
+          fi
+          exit "$missing"
+
       - name: Install pinned Turso CLI
         run: |
           set -euo pipefail
@@ -25,38 +55,122 @@ jobs:
       - name: Verify Turso CLI version
         run: turso --version
 
-      - name: Dump database
+      - name: Install pinned age
         run: |
           set -euo pipefail
-          ~/.turso/turso db shell "$TURSO_DB_NAME" ".dump" > backup.sql
-          echo "Backup size: $(wc -c < backup.sql) bytes"
+          curl -sSfL \
+            "https://github.com/FiloSottile/age/releases/download/${AGE_VERSION}/age-${AGE_VERSION}-linux-amd64.tar.gz" \
+            -o "$RUNNER_TEMP/age.tar.gz"
+          echo "${AGE_SHA256}  $RUNNER_TEMP/age.tar.gz" | sha256sum -c -
+          mkdir -p "$HOME/.age"
+          tar -xzf "$RUNNER_TEMP/age.tar.gz" -C "$HOME/.age" --strip-components=1 age/age age/age-keygen
+          echo "$HOME/.age" >> "$GITHUB_PATH"
+          "$HOME/.age/age" --version
+
+      - name: Dump database
         env:
           TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
           TURSO_DB_NAME: ${{ secrets.TURSO_DB_NAME }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/backup"
+          turso db shell "$TURSO_DB_NAME" ".dump" > "$RUNNER_TEMP/backup/backup.sql"
+          if [[ ! -s "$RUNNER_TEMP/backup/backup.sql" ]]; then
+            echo "::error::Database dump is empty."
+            exit 1
+          fi
+          echo "Backup size: $(wc -c < "$RUNNER_TEMP/backup/backup.sql") bytes"
 
-      - name: Upload backup artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: turso-backup-${{ github.run_number }}-${{ github.run_id }}
-          path: backup.sql
-          retention-days: 90 # intentional: ~3 months of daily dumps for point-in-time recovery
-
-  restore-test:
-    name: Verify backup restore (fixture)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Restore fixture dump into a throwaway SQLite DB
+      - name: Restore test this run's dump
         run: |
           set -euo pipefail
           # sqlite3 is preinstalled on ubuntu-latest runners.
-          FIXTURE=.github/fixtures/backup-fixture.sql
-          DB=$(mktemp -d)/restore-test.db
-          sqlite3 "$DB" < "$FIXTURE"
-          # Assert expected schema + row counts round-trip.
-          tables=$(sqlite3 "$DB" "SELECT count(*) FROM sqlite_master WHERE type='table';")
-          rows=$(sqlite3 "$DB" "SELECT count(*) FROM backup_smoke;")
-          echo "tables=$tables rows=$rows"
-          [[ "$tables" -ge 1 ]] || { echo "no tables restored"; exit 1; }
-          [[ "$rows" -eq 3 ]]   || { echo "expected 3 rows, got $rows"; exit 1; }
+          DB="$RUNNER_TEMP/restore-test.db"
+          rm -f "$DB"
+          sqlite3 -bail "$DB" < "$RUNNER_TEMP/backup/backup.sql"
+          integrity=$(sqlite3 "$DB" "PRAGMA integrity_check;")
+          if [[ "$integrity" != "ok" ]]; then
+            echo "::error::Restored database failed integrity_check."
+            exit 1
+          fi
+          for table in tunas citadao_editions festivals payload_migrations; do
+            count=$(sqlite3 "$DB" "SELECT count(*) FROM ${table};")
+            echo "${table}=${count}"
+            if [[ "$count" -lt 1 ]]; then
+              echo "::error::Restored table ${table} has no rows."
+              exit 1
+            fi
+          done
+
+      - name: Encrypt and verify
+        env:
+          BACKUP_AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          set -euo pipefail
+          # The file is also encrypted to a throwaway key generated and deleted in this step,
+          # so the uploaded bytes can be decrypted here and compared to the dump that passed
+          # the restore test, without CI ever holding the real decryption key.
+          age-keygen -o "$RUNNER_TEMP/verify.key" 2>/dev/null
+          VERIFY_RECIPIENT=$(age-keygen -y "$RUNNER_TEMP/verify.key")
+          age -r "$BACKUP_AGE_RECIPIENT" -r "$VERIFY_RECIPIENT" \
+            -o "$RUNNER_TEMP/backup/backup.sql.age" "$RUNNER_TEMP/backup/backup.sql"
+          plain_hash=$(sha256sum "$RUNNER_TEMP/backup/backup.sql" | cut -d' ' -f1)
+          round_trip_hash=$(age -d -i "$RUNNER_TEMP/verify.key" "$RUNNER_TEMP/backup/backup.sql.age" | sha256sum | cut -d' ' -f1)
+          if [[ "$plain_hash" != "$round_trip_hash" ]]; then
+            echo "::error::Encrypted backup does not decrypt to the dump that was tested."
+            exit 1
+          fi
+          if [[ "$(head -c 21 "$RUNNER_TEMP/backup/backup.sql.age")" != "age-encryption.org/v1" ]]; then
+            echo "::error::Backup file does not carry the age header."
+            exit 1
+          fi
+          rm -f "$RUNNER_TEMP/backup/backup.sql" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/verify.key"
+          if [[ -e "$RUNNER_TEMP/backup/backup.sql" ]]; then
+            echo "::error::Plaintext dump still exists."
+            exit 1
+          fi
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: turso-backup-${{ github.run_number }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/backup/backup.sql.age
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 90 # intentional: ~3 months of daily dumps for point-in-time recovery
+
+      - name: Remove backup files
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/backup" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/verify.key"
+
+  notify-failure:
+    name: Report backup failure
+    needs: backup
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open or update the backup-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          gh label create backup-failure --force --color B60205 --description "Database backup workflow failed"
+          existing=$(gh issue list --label backup-failure --state open --json number --jq '.[0].number // empty')
+          body="The database backup failed.
+
+          - Run: ${RUN_URL}
+          - Trigger: ${EVENT}
+          - Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          Check the failed step's log. Close this issue after the next green run."
+          if [[ -n "$existing" ]]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "Database backup failed" --label backup-failure --body "$body"
+          fi
