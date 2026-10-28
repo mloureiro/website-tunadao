@@ -87,7 +87,12 @@ jobs:
           # sqlite3 is preinstalled on ubuntu-latest runners.
           DB="$RUNNER_TEMP/restore-test.db"
           rm -f "$DB"
-          sqlite3 -bail "$DB" < "$RUNNER_TEMP/backup/backup.sql"
+          # sqlite3 echoes the failing statement, which can be a row of user data, into stderr.
+          if ! sqlite3 -bail "$DB" < "$RUNNER_TEMP/backup/backup.sql" 2> "$RUNNER_TEMP/restore.err"; then
+            line=$(grep -oE 'near line [0-9]+' "$RUNNER_TEMP/restore.err" | head -n1 || true)
+            echo "::error::Dump did not load into SQLite (${line:-no line reported}). Statement text is withheld because it can contain row data."
+            exit 1
+          fi
           integrity=$(sqlite3 "$DB" "PRAGMA integrity_check;")
           if [[ "$integrity" != "ok" ]]; then
             echo "::error::Restored database failed integrity_check."
@@ -124,7 +129,7 @@ jobs:
             echo "::error::Backup file does not carry the age header."
             exit 1
           fi
-          rm -f "$RUNNER_TEMP/backup/backup.sql" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/verify.key"
+          rm -f "$RUNNER_TEMP/backup/backup.sql" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/restore.err" "$RUNNER_TEMP/verify.key"
           if [[ -e "$RUNNER_TEMP/backup/backup.sql" ]]; then
             echo "::error::Plaintext dump still exists."
             exit 1
@@ -141,7 +146,7 @@ jobs:
 
       - name: Remove backup files
         if: always()
-        run: rm -rf "$RUNNER_TEMP/backup" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/verify.key"
+        run: rm -rf "$RUNNER_TEMP/backup" "$RUNNER_TEMP/restore-test.db" "$RUNNER_TEMP/restore.err" "$RUNNER_TEMP/verify.key"
 
   notify-failure:
     name: Report backup failure
