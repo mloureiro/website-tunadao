@@ -63,14 +63,14 @@ Settings elsewhere that name the frontend host — the CMS `FRONTEND_URL` on Ren
 
 1. Create a [Render.com](https://render.com) account
 2. Connect your GitHub repository
-3. Create a new **Web Service** from the `cms/` directory
+3. Create a new **Web Service** from the repository root (leave Root Directory blank)
 
 ### Configuration
 
 **Build Command:**
 
 ```bash
-npm ci --include=dev && npm run build
+npm ci --include=dev && npm run build -w cms
 ```
 
 `NODE_ENV=production` makes npm omit devDependencies, and the CMS build needs them (TypeScript type-checks the test files), so the install includes them explicitly.
@@ -78,19 +78,13 @@ npm ci --include=dev && npm run build
 **Start Command:**
 
 ```bash
-npm run payload -- migrate --force-accept-warning && npm run start
+npm run payload -w cms -- migrate --force-accept-warning && npm run start -w cms
 ```
 
 Database migrations are applied automatically on every deploy, **before the service begins serving
 traffic**. The migrate step is idempotent — a redeploy with no new migrations is a no-op. If
 migrate fails (schema mismatch or DB unreachable), `npm run start` is not reached and the deploy is
 marked unhealthy, which is the correct fail-closed behaviour.
-
-**Root Directory:**
-
-```
-cms
-```
 
 The Node version comes from the `NODE_VERSION` environment variable (`22.23.4`), declared in `render.yaml`.
 
@@ -162,7 +156,7 @@ never auto-created from collection definitions at runtime.
 **On every Render deploy** the start command runs:
 
 ```bash
-npm run payload -- migrate --force-accept-warning && npm run start
+npm run payload -w cms -- migrate --force-accept-warning && npm run start -w cms
 ```
 
 This applies any pending migrations to Turso before the service serves traffic. If the schema is
