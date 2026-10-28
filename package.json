@@ -27,7 +27,7 @@
     "seed": "npm run seed -w cms",
     "db:reset": "npm run db:reset -w cms",
     "db:reset-and-seed": "npm run db:reset-and-seed -w cms",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "engines": {
     "node": "^22.23.4 || >=24.22.1"
