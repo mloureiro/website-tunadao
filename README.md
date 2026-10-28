@@ -64,7 +64,7 @@ This is a monorepo with two self-contained projects:
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22.23.4+ (see `.nvmrc`)
 - npm
 
 ### Development
