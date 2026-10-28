@@ -70,13 +70,15 @@ Settings elsewhere that name the frontend host — the CMS `FRONTEND_URL` on Ren
 **Build Command:**
 
 ```bash
-npm ci && npm run build
+npm ci --include=dev && npm run build
 ```
+
+`NODE_ENV=production` makes npm omit devDependencies, and the CMS build needs them (TypeScript type-checks the test files), so the install includes them explicitly.
 
 **Start Command:**
 
 ```bash
-npm run payload -w cms -- migrate --force-accept-warning && npm run start
+npm run payload -- migrate --force-accept-warning && npm run start
 ```
 
 Database migrations are applied automatically on every deploy, **before the service begins serving
@@ -160,7 +162,7 @@ never auto-created from collection definitions at runtime.
 **On every Render deploy** the start command runs:
 
 ```bash
-npm run payload -w cms -- migrate --force-accept-warning && npm run start
+npm run payload -- migrate --force-accept-warning && npm run start
 ```
 
 This applies any pending migrations to Turso before the service serves traffic. If the schema is
