@@ -183,12 +183,14 @@ See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
 
 ### Required Secrets (GitHub)
 
-| Secret                   | Description                                                          |
-| ------------------------ | -------------------------------------------------------------------- |
-| `CMS_URL`                | Production PayloadCMS URL (e.g., `https://tunadao-cms.onrender.com`) |
-| `RENDER_DEPLOY_HOOK_URL` | (Optional) Render deploy hook for CMS deploys                        |
-| `TURSO_DB_NAME`          | Turso database name (for backups; repository secret)                 |
-| `TURSO_API_TOKEN`        | Turso platform API token (`turso auth api-tokens mint`), for backups |
+| Secret                   | Description                                                                       |
+| ------------------------ | --------------------------------------------------------------------------------- |
+| `CMS_URL`                | Render CMS base URL, no trailing slash (e.g., `https://tunadao-cms.onrender.com`) |
+| `RENDER_DEPLOY_HOOK_URL` | (Optional) Render deploy hook for CMS deploys                                     |
+| `TURSO_DB_NAME`          | Turso database name (for backups; repository secret)                              |
+| `TURSO_API_TOKEN`        | Turso platform API token (`turso auth api-tokens mint`), for backups              |
+
+`CMS_URL` can be a repository secret or a `github-pages` environment secret, because `deploy-app` runs in the `github-pages` environment. Without it, every deploy builds from seed data and the run shows a warning.
 
 Both backup secrets are repository secrets, not `github-pages` environment secrets. `TURSO_API_TOKEN` is not the database `TURSO_AUTH_TOKEN`.
 

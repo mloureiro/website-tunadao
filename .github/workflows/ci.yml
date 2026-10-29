@@ -306,7 +306,7 @@ jobs:
             # Render free-tier cold start can take ~30-60s; retry a few times.
             # ~5 attempts x (10s per-attempt cap + 15s sleep) => hard ceiling < ~3min.
             for attempt in 1 2 3 4 5; do
-              if curl -sf "$CMS_URL/api/health" --max-time 10 >/dev/null 2>&1; then
+              if curl -sf "$CMS_URL/api/globals/site-settings?depth=0" --max-time 10 >/dev/null 2>&1; then
                 echo "CMS is available (attempt $attempt)"
                 available=true
                 break
@@ -316,7 +316,7 @@ jobs:
             done || available=false
             [[ "$available" == "true" ]] || echo "CMS is NOT available after retries - will use seed data fallback"
           else
-            echo "CMS_URL not configured - will use seed data fallback"
+            echo "::warning::CMS_URL is not configured - deploying seed data instead of live CMS content"
           fi
           echo "available=$available" >> "$GITHUB_OUTPUT"
 
