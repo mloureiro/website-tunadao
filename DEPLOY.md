@@ -445,6 +445,8 @@ The CI/CD pipeline (`.github/workflows/ci.yml`, `.github/workflows/backup.yml`) 
 
 Before building the frontend, `deploy-app` probes the CMS (`Check CMS availability` step) to decide whether to build against live CMS data or fall back to a seeded SQLite dump. The check is a **bounded retry**, not a single request:
 
+- The probed route is `GET $CMS_URL/api/globals/site-settings?depth=0`. It is publicly readable and does one database read, so it fails when the database is unreachable and not only when the process is down. It is also the same route family the build fetches.
+- With `CMS_URL` unset, the step emits a `::warning::` annotation and the deploy builds from seed data.
 - ~5 attempts, each `curl --max-time 10`, with a 15s sleep between attempts → hard ceiling **under ~3 minutes**.
 - On every failed attempt it keeps `available=false` and, after the loop, falls through to the **seed-data fallback** (`Generate fallback data from seeds`). The fallback path is unchanged: `migrate --force-accept-warning` runs **before** `seed`, then `db:export`.
 
