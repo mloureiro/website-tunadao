@@ -24,6 +24,7 @@ import { verifyTurnstileToken } from '../utils/verifyTurnstile';
 // Field length caps are defined as a module-level const in ContactSubmissions.ts.
 // We duplicate the values here to assert the same boundaries (the authoritative
 // source is the implementation; this tests the observable behaviour).
+const REJECTION = 'Validação falhou. Tenta novamente.';
 const CAPS = { name: 120, email: 254, subject: 200, message: 5000 } as const;
 
 // ---------------------------------------------------------------------------
@@ -37,6 +38,13 @@ if (!beforeValidateHooks || beforeValidateHooks.length === 0) {
 
 // The first collection-level hook handles Turnstile + length caps.
 const beforeValidateHook = beforeValidateHooks[0];
+
+const beforeChangeHooks = ContactSubmissions.hooks?.beforeChange;
+if (!beforeChangeHooks || beforeChangeHooks.length === 0) {
+  throw new Error('ContactSubmissions.hooks.beforeChange must have at least one hook');
+}
+
+const beforeChangeHook = beforeChangeHooks[0];
 
 const afterChangeHooks = ContactSubmissions.hooks?.afterChange;
 if (!afterChangeHooks || afterChangeHooks.length === 0) {
@@ -57,6 +65,16 @@ function makeArgs(
   context: Record<string, unknown> = {}
 ): HookArgs {
   return { data, operation, req: { context } } as HookArgs;
+}
+
+type BeforeChangeArgs = Parameters<typeof beforeChangeHook>[0];
+
+function makeBeforeChangeArgs(
+  data: HookData,
+  operation: 'create' | 'update',
+  context: Record<string, unknown>
+): BeforeChangeArgs {
+  return { data, operation, req: { context } } as BeforeChangeArgs;
 }
 
 type AfterChangeArgs = Parameters<typeof afterChangeHook>[0];
@@ -80,119 +98,170 @@ function makeAfterChangeArgs(
 }
 
 // ---------------------------------------------------------------------------
-// ContactSubmissions beforeValidate — honeypot silent-accept (finding [scdl])
+// ContactSubmissions beforeValidate — honeypot only marks, never bypasses
 // ---------------------------------------------------------------------------
 
-describe('ContactSubmissions beforeValidate — honeypot silent-accept', () => {
+const validBase = {
+  name: 'Bot',
+  email: 'bot@spam.com',
+  subject: 'spam',
+  message: 'buy pills',
+};
+
+describe('ContactSubmissions beforeValidate — honeypot', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('does NOT throw when honeypot field "website" is filled', async () => {
-    // verifyTurnstileToken is NOT mocked to resolve — it should never be called.
-    const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      website: 'http://spam.example.com', // honeypot filled
-      turnstileToken: '', // bot has no valid token
-    };
-    const context: Record<string, unknown> = {};
-    const args = makeArgs(data, 'create', context);
+  it('rejects a filled honeypot when Turnstile fails', async () => {
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
+    const data: HookData = { ...validBase, website: '1', turnstileToken: '' };
 
-    await expect(beforeValidateHook(args)).resolves.not.toThrow();
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow(REJECTION);
+    expect(verifyTurnstileToken).toHaveBeenCalledOnce();
   });
 
-  it('sets req.context.isSpam to true when "website" honeypot is filled', async () => {
+  it('rejects a filled honeypot with an over-cap message before calling Turnstile', async () => {
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
     const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      website: 'http://spam.example.com',
-      turnstileToken: '',
+      ...validBase,
+      message: 'm'.repeat(6000),
+      website: '1',
+      turnstileToken: 'valid-token',
     };
-    const context: Record<string, unknown> = {};
-    const args = makeArgs(data, 'create', context);
 
-    await beforeValidateHook(args);
-
-    expect(context.isSpam).toBe(true);
+    await expect(beforeValidateHook(makeArgs(data))).rejects.toThrow(REJECTION);
+    expect(verifyTurnstileToken).not.toHaveBeenCalled();
   });
 
-  it('does NOT call verifyTurnstileToken when honeypot is filled', async () => {
-    const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      website: 'http://spam.example.com',
-      turnstileToken: '', // missing token — but must not reach Turnstile
-    };
+  it.each(['website', 'honeypot'])(
+    'flags spam and strips transient keys when "%s" is filled and Turnstile passes',
+    async (key) => {
+      vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
+      const data: HookData = {
+        ...validBase,
+        [key]: 'http://spam.example.com',
+        turnstileToken: 't',
+      };
+      const context: Record<string, unknown> = {};
+
+      const result = await beforeValidateHook(makeArgs(data, 'create', context));
+
+      expect(context.isSpam).toBe(true);
+      expect(verifyTurnstileToken).toHaveBeenCalledOnce();
+      expect(result).not.toHaveProperty('website');
+      expect(result).not.toHaveProperty('honeypot');
+      expect(result).not.toHaveProperty('turnstileToken');
+    }
+  );
+
+  it('does not flag spam when the honeypot is empty', async () => {
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
+    const data: HookData = { ...validBase, website: '', turnstileToken: 't' };
     const context: Record<string, unknown> = {};
 
     await beforeValidateHook(makeArgs(data, 'create', context));
 
-    expect(verifyTurnstileToken).not.toHaveBeenCalled();
+    expect(context.isSpam).toBeUndefined();
   });
 
-  it('sets req.context.isSpam when legacy "honeypot" key is filled', async () => {
-    const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      honeypot: 'filled', // alternate key
-      turnstileToken: '',
-    };
-    const context: Record<string, unknown> = {};
-    const args = makeArgs(data, 'create', context);
+  it('gives the cap rejection and the Turnstile rejection the same disclosure-free message', async () => {
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
+    const capData: HookData = { ...validBase, message: 'm'.repeat(6000), website: '1' };
+    const tokenData: HookData = { ...validBase, website: '1', turnstileToken: '' };
 
-    await beforeValidateHook(args);
+    const messages = await Promise.all(
+      [capData, tokenData].map(async (data) => {
+        try {
+          await beforeValidateHook(makeArgs(data));
+        } catch (err) {
+          return err instanceof Error ? err.message : '';
+        }
+        return '';
+      })
+    );
 
-    expect(context.isSpam).toBe(true);
-    expect(verifyTurnstileToken).not.toHaveBeenCalled();
-  });
-
-  it('strips the honeypot key from data when filled', async () => {
-    const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      website: 'http://spam.example.com',
-      turnstileToken: '',
-    };
-    const context: Record<string, unknown> = {};
-
-    const result = await beforeValidateHook(makeArgs(data, 'create', context));
-
-    expect(result).not.toHaveProperty('website');
-    expect(result).not.toHaveProperty('turnstileToken');
-  });
-
-  it('does NOT produce a "Spam detected" string anywhere on honeypot path (regression guard)', async () => {
-    const data: HookData = {
-      name: 'Bot',
-      email: 'bot@spam.com',
-      subject: 'spam',
-      message: 'buy pills',
-      website: 'http://spam.example.com',
-      turnstileToken: '',
-    };
-    const context: Record<string, unknown> = {};
-
-    // If the hook throws, it must not say 'Spam detected'.
-    try {
-      const result = await beforeValidateHook(makeArgs(data, 'create', context));
-      // On success, context must carry isSpam and no spam-disclosure string.
-      expect(context.isSpam).toBe(true);
-      expect(JSON.stringify(result)).not.toContain('Spam detected');
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      expect(msg).not.toContain('Spam detected');
+    expect(messages[0]).toBe(REJECTION);
+    expect(messages[1]).toBe(messages[0]);
+    for (const word of ['honeypot', 'website', 'turnstile', 'captcha', 'message', '5000']) {
+      expect(messages[0].toLowerCase()).not.toContain(word);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions create pipeline — spam status and email suppression
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions create pipeline', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
+  });
+
+  async function runPipeline(data: HookData) {
+    const context: Record<string, unknown> = {};
+    const sendEmail = vi.fn().mockResolvedValue(undefined);
+
+    const validated = await beforeValidateHook(makeArgs(data, 'create', context));
+    const changed = await beforeChangeHook(
+      makeBeforeChangeArgs({ ...validated, status: 'new' }, 'create', context)
+    );
+    await afterChangeHook(makeAfterChangeArgs({ ...changed }, sendEmail, context));
+
+    return { changed, sendEmail };
+  }
+
+  it('stores a honeypot hit as spam and sends no email', async () => {
+    const { changed, sendEmail } = await runPipeline({
+      ...validBase,
+      website: '1',
+      turnstileToken: 't',
+    });
+
+    expect(changed).toMatchObject({ status: 'spam' });
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('keeps a clean create as new and sends the email once', async () => {
+    const { changed, sendEmail } = await runPipeline({
+      ...validBase,
+      website: '',
+      turnstileToken: 't',
+    });
+
+    expect(changed).toMatchObject({ status: 'new' });
+    expect(sendEmail).toHaveBeenCalledOnce();
+  });
+
+  it('leaves data unchanged on update even when isSpam is set', () => {
+    const data: HookData = { status: 'read' };
+
+    const result = beforeChangeHook(makeBeforeChangeArgs(data, 'update', { isSpam: true }));
+
+    expect(result).toBe(data);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ContactSubmissions status field — client cannot set it
+// ---------------------------------------------------------------------------
+
+describe('ContactSubmissions status field', () => {
+  const statusField = ContactSubmissions.fields.find(
+    (f) => 'name' in f && f.name === 'status'
+  ) as Extract<(typeof ContactSubmissions.fields)[number], { type: 'select' }>;
+
+  it('denies create access so a client-sent status is stripped', () => {
+    const allowed = statusField.access?.create?.({ req: {} } as never);
+
+    expect(allowed).toBe(false);
+  });
+
+  it('declares spam as an option so the server-set value validates', () => {
+    const values = statusField.options.map((o) => (typeof o === 'string' ? o : o.value));
+
+    expect(values).toContain('spam');
   });
 });
 
@@ -261,36 +330,28 @@ describe('ContactSubmissions beforeValidate — Turnstile verification', () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { name: 'Test', email: 'test@example.com', message: 'Hello' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
-      'Validação falhou. Tenta novamente.'
-    );
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(REJECTION);
   });
 
   it('throws a generic error when turnstileToken is an empty string', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: '' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
-      'Validação falhou. Tenta novamente.'
-    );
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(REJECTION);
   });
 
   it('throws a generic error when token verification fails (invalid token)', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: 'invalid-token' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
-      'Validação falhou. Tenta novamente.'
-    );
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(REJECTION);
   });
 
   it('throws a generic error when network fails (verifyTurnstileToken returns false)', async () => {
     vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
     const data: HookData = { turnstileToken: 'some-token' };
 
-    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(
-      'Validação falhou. Tenta novamente.'
-    );
+    await expect(turnstileHook(makeArgs(data))).rejects.toThrow(REJECTION);
   });
 
   it('strips turnstileToken from data when verification succeeds', async () => {
