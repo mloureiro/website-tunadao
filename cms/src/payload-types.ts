@@ -707,7 +707,7 @@ export interface ContactSubmission {
   email: string;
   subject: string;
   message: string;
-  status: 'new' | 'read' | 'replied' | 'archived';
+  status: 'new' | 'read' | 'replied' | 'archived' | 'spam';
   /**
    * Notas internas sobre este contacto
    */
