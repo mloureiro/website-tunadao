@@ -313,8 +313,11 @@ jobs:
               fi
               echo "CMS not ready (attempt $attempt/5) - retrying in 15s..."
               sleep 15
-            done || available=false
-            [[ "$available" == "true" ]] || echo "CMS is NOT available after retries - will use seed data fallback"
+            done
+            if [[ "$available" != "true" ]]; then
+              echo "::error::CMS at CMS_URL was unreachable after 5 attempts - nothing was deployed, the previous site is still live"
+              exit 1
+            fi
           else
             echo "::warning::CMS_URL is not configured - deploying seed data instead of live CMS content"
           fi
@@ -358,6 +361,7 @@ jobs:
           BASE_PATH: ${{ vars.BASE_PATH }}
           SITE_URL: ${{ vars.SITE_URL }}
           CMS_URL: ${{ steps.cms-check.outputs.available == 'true' && secrets.CMS_URL || '' }}
+          FORCE_PROD_CMS: ${{ steps.cms-check.outputs.available == 'true' && 'true' || 'false' }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
