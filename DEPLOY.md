@@ -16,7 +16,7 @@ The frontend is a **static site** (SSG) that fetches data from the CMS **at buil
 3. The generated static HTML is deployed to GitHub Pages
 4. **No runtime CMS dependency** - the static site works without the CMS running
 
-**Fallback mechanism**: Local and fixture builds fall back to the committed dump `data/cms-dump.json` (and, as the last resort, the E2E fixtures) when the CMS is unavailable. The production deploy does not: whenever `CMS_URL` is configured it requires the CMS and fails if it cannot be reached, and it builds from seed data only when `CMS_URL` is not configured.
+**Fallback mechanism**: Local and fixture builds fall back to the local, gitignored dump `data/cms-dump.json` (produced by `npm run db:export -w cms`) or, as the last resort, the E2E fixtures when the CMS is unavailable. The production deploy does not: whenever `CMS_URL` is configured it requires the CMS and fails if it cannot be reached, and it builds from seed data only when `CMS_URL` is not configured.
 
 ---
 
