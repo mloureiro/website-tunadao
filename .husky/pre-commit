@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Lint/format only staged files (fast, incremental).
-npx lint-staged || exit 1
+npx lint-staged --no-stash || exit 1
 
 # Typecheck only the workspaces that have staged changes.
 # CI's lint-and-typecheck job remains the authoritative full gate.
