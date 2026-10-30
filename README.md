@@ -190,7 +190,7 @@ See [DEPLOY.md](./DEPLOY.md) for detailed deployment instructions.
 | `TURSO_DB_NAME`          | Turso database name (for backups; repository secret)                              |
 | `TURSO_API_TOKEN`        | Turso platform API token (`turso auth api-tokens mint`), for backups              |
 
-`CMS_URL` can be a repository secret or a `github-pages` environment secret, because `deploy-app` runs in the `github-pages` environment. Without it, every deploy builds from seed data and the run shows a warning.
+`CMS_URL` can be a repository secret or a `github-pages` environment secret, because `deploy-app` runs in the `github-pages` environment. Without it, every deploy builds from seed data and the run shows a warning. With it set, a deploy that cannot reach the CMS fails instead of deploying, and the previous site stays live.
 
 Both backup secrets are repository secrets, not `github-pages` environment secrets. `TURSO_API_TOKEN` is not the database `TURSO_AUTH_TOKEN`.
 

@@ -16,7 +16,7 @@ The frontend is a **static site** (SSG) that fetches data from the CMS **at buil
 3. The generated static HTML is deployed to GitHub Pages
 4. **No runtime CMS dependency** - the static site works without the CMS running
 
-**Fallback mechanism**: If the CMS is unavailable during build, the frontend falls back to static data in `app/data/` to ensure builds always succeed.
+**Fallback mechanism**: Local and fixture builds fall back to the committed dump `data/cms-dump.json` (and, as the last resort, the E2E fixtures) when the CMS is unavailable. The production deploy does not: whenever `CMS_URL` is configured it requires the CMS and fails if it cannot be reached, and it builds from seed data only when `CMS_URL` is not configured.
 
 ---
 
@@ -388,15 +388,15 @@ schema on a fresh local DB.
 
 The frontend uses these environment variables for CMS integration:
 
-| Variable                    | Description                                                     | Default / Notes                                                                                                                                                    |
-| --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `SITE_URL`                  | Public origin (Astro `site`)                                    | `http://localhost:4321` — set in prod from repo variable `SITE_URL` (live: `https://www.loureiro.me`)                                                              |
-| `BASE_PATH`                 | Path prefix (Astro `base`)                                      | `/` — set in prod from repo variable `BASE_PATH` (live: `/website-tunadao`)                                                                                        |
-| `CMS_URL`                   | PayloadCMS API URL (build-time data fetching)                   | `http://localhost:3000`                                                                                                                                            |
-| `PUBLIC_CMS_URL`            | CMS base URL for client-side contact form POST                  | `http://localhost:3000` — **must be set in the prod build env** (GitHub Actions). Distinct from `CMS_URL`: this is inlined into the client bundle.                 |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (client widget)                   | Always-pass test key `1x00000000000000000000AA` for dev/CI — **must be replaced with the real key in the prod build env** (GitHub Actions). Inlined at build time. |
-| `USE_TEST_FIXTURES`         | Force static fixtures — no CMS network calls (CI/E2E builds)    | `false`                                                                                                                                                            |
-| `FORCE_PROD_CMS`            | Require live CMS; build throws `CMSError` if CMS is unreachable | `false`                                                                                                                                                            |
+| Variable                    | Description                                                                                                        | Default / Notes                                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `SITE_URL`                  | Public origin (Astro `site`)                                                                                       | `http://localhost:4321` — set in prod from repo variable `SITE_URL` (live: `https://www.loureiro.me`)                                                              |
+| `BASE_PATH`                 | Path prefix (Astro `base`)                                                                                         | `/` — set in prod from repo variable `BASE_PATH` (live: `/website-tunadao`)                                                                                        |
+| `CMS_URL`                   | PayloadCMS API URL (build-time data fetching)                                                                      | `http://localhost:3000`                                                                                                                                            |
+| `PUBLIC_CMS_URL`            | CMS base URL for client-side contact form POST                                                                     | `http://localhost:3000` — **must be set in the prod build env** (GitHub Actions). Distinct from `CMS_URL`: this is inlined into the client bundle.                 |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (client widget)                                                                      | Always-pass test key `1x00000000000000000000AA` for dev/CI — **must be replaced with the real key in the prod build env** (GitHub Actions). Inlined at build time. |
+| `USE_TEST_FIXTURES`         | Force static fixtures — no CMS network calls (CI/E2E builds)                                                       | `false`                                                                                                                                                            |
+| `FORCE_PROD_CMS`            | Require live CMS; build throws `CMSError` if CMS is unreachable; `deploy-app` sets it `true` on the live-CMS build | `false`                                                                                                                                                            |
 
 See `app/.env.example` for the full list.
 
@@ -443,16 +443,19 @@ The CI/CD pipeline (`.github/workflows/ci.yml`, `.github/workflows/backup.yml`) 
 
 ### CMS health-check cold-start tolerance (deploy-app)
 
-Before building the frontend, `deploy-app` probes the CMS (`Check CMS availability` step) to decide whether to build against live CMS data or fall back to a seeded SQLite dump. The check is a **bounded retry**, not a single request:
+Before building the frontend, `deploy-app` probes the CMS (`Check CMS availability` step) to decide between a live build, a seed-data build (only when `CMS_URL` is unset) and failing the deploy. The check is a **bounded retry**, not a single request:
 
 - The probed route is `GET $CMS_URL/api/globals/site-settings?depth=0`. It is publicly readable and does one database read, so it fails when the database is unreachable and not only when the process is down. It is also the same route family the build fetches.
-- With `CMS_URL` unset, the step emits a `::warning::` annotation and the deploy builds from seed data.
+- With `CMS_URL` unset, the step emits a `::warning::` annotation and the deploy builds from seed data. That fallback path runs `migrate --force-accept-warning` **before** `seed`, then `db:export`.
 - ~5 attempts, each `curl --max-time 10`, with a 15s sleep between attempts → hard ceiling **under ~3 minutes**.
-- On every failed attempt it keeps `available=false` and, after the loop, falls through to the **seed-data fallback** (`Generate fallback data from seeds`). The fallback path is unchanged: `migrate --force-accept-warning` runs **before** `seed`, then `db:export`.
+- After the last failed attempt the step emits `::error::` and fails the job, so no artifact is uploaded and the previous Pages deployment stays live.
+- On the live path `Build site` sets `FORCE_PROD_CMS=true`, so a CMS that drops mid-build fails the build instead of shipping fixtures.
 
-**Rationale:** Render's free tier spins the CMS down when idle; a cold start can take ~30–60s. A single 10s timeout would almost always fail on the first deploy of the day and silently build against seed data even when the CMS is healthy. The retry gives the instance time to wake.
+**Rationale:** Render's free tier spins the CMS down when idle; a cold start can take ~30–60s. A single 10s timeout would almost always fail on the first deploy of the day and fail the deploy even when the CMS is healthy. The retry gives the instance time to wake. Failing beats seeding because seed definitions are not production content: a seed deploy would remove everything editors published until the next good deploy, while a failed deploy loses only freshness.
 
-**Live-only caveat:** the _exact_ free-tier cold-start window is **only confirmable on a live Render deploy**. The ~5×/15s/≤3min values are a conservative starting point. If real deploys show the CMS waking faster (tighten) or slower (loosen) than this, adjust the attempt count / sleep in the `Check CMS availability` step — keep the `|| available=false` fall-through so a genuinely-down CMS still degrades to seed data instead of hanging CI.
+**Live-only caveat:** the _exact_ free-tier cold-start window is **only confirmable on a live Render deploy**. The ~5×/15s/≤3min values are a conservative starting point. If real deploys show the CMS waking faster (tighten) or slower (loosen) than this, adjust the attempt count / sleep in the `Check CMS availability` step — the retry ceiling is what keeps a down CMS from hanging CI. If cold starts routinely outlast it, deploys go red, and that is the signal to loosen the window.
+
+**Recovery:** once the CMS is up, re-run with `gh workflow run ci.yml -f deploy_target=app-only`, or wait for the next content edit, whose rebuild dispatch does the same.
 
 ### Deprecation warnings unmasked in CMS scripts
 
