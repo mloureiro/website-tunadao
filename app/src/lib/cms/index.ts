@@ -561,11 +561,3 @@ export async function getSiteSettings() {
     googleAnalyticsId: settings.googleAnalyticsId,
   };
 }
-
-// =============================================================================
-// UTILITY
-// =============================================================================
-
-export async function checkCMSAvailable(): Promise<void> {
-  return client.checkCMSConnection();
-}
