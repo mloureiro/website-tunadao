@@ -305,6 +305,27 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Assert deploy configuration
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          PUBLIC_CMS_URL: ${{ vars.PUBLIC_CMS_URL }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
+        run: |
+          failed=0
+          for name in SITE_URL PUBLIC_CMS_URL PUBLIC_TURNSTILE_SITE_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::vars.$name is required for deploy"
+              failed=1
+            fi
+          done
+          case "$PUBLIC_TURNSTILE_SITE_KEY" in
+            1x00000000000000000000AA | 2x00000000000000000000AB | 1x00000000000000000000BB | 2x00000000000000000000BB | 3x00000000000000000000FF)
+              echo "::error::vars.PUBLIC_TURNSTILE_SITE_KEY is a Cloudflare test key, not a real site key"
+              failed=1
+              ;;
+          esac
+          exit "$failed"
+
       - name: Check CMS availability
         id: cms-check
         env:
@@ -357,12 +378,6 @@ jobs:
             exit 1
           fi
 
-      - name: Assert deploy origin is configured
-        env:
-          SITE_URL: ${{ vars.SITE_URL }}
-        run: |
-          test -n "$SITE_URL" || { echo "::error::vars.SITE_URL is required for deploy"; exit 1; }
-
       # Origin comes from repo variables only. Live: vars.SITE_URL=https://www.loureiro.me, vars.BASE_PATH=/website-tunadao.
       # Moving to the institutional domain at root: set vars.SITE_URL=https://tunadao1998.ipv.pt and clear vars.BASE_PATH — no code change.
       - name: Build site
@@ -370,6 +385,8 @@ jobs:
         env:
           BASE_PATH: ${{ vars.BASE_PATH }}
           SITE_URL: ${{ vars.SITE_URL }}
+          PUBLIC_CMS_URL: ${{ vars.PUBLIC_CMS_URL }}
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
           CMS_URL: ${{ steps.cms-check.outputs.available == 'true' && secrets.CMS_URL || '' }}
           FORCE_PROD_CMS: ${{ steps.cms-check.outputs.available == 'true' && 'true' || 'false' }}
 
