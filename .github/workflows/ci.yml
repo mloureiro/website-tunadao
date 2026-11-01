@@ -221,6 +221,16 @@ jobs:
       - name: Run E2E tests
         run: npx playwright test
 
+      - name: Build site (contact form unconfigured)
+        run: npm run build -w app
+        env:
+          USE_TEST_FIXTURES: 'true'
+          PUBLIC_CMS_URL: ''
+          PUBLIC_TURNSTILE_SITE_KEY: ''
+
+      - name: Run E2E tests (contact form unconfigured)
+        run: npx playwright test --config playwright.unconfigured.config.ts
+
       # Separate test-only-origin build for the build-output consistency assertion.
       # Run AFTER Playwright so the root build in dist/ is not overwritten before
       # astro preview serves it to the test runner. The test-only build overwrites
