@@ -327,6 +327,10 @@
     "title": "Contact",
     "subtitle": "Get in touch with us",
     "description": "Get in touch with Tunadão 1998. Send us a message to book performances, request information or any other matter.",
+    "unavailable": {
+      "title": "Contact form unavailable",
+      "message": "Messages can't be sent from this page right now. Write to us directly at:"
+    },
     "form": {
       "name": "Name",
       "namePlaceholder": "Your name",

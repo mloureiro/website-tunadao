@@ -2,7 +2,10 @@
 import Button from '@components/Button.astro';
 
 interface Props {
+  contactEmail: string;
   labels: {
+    unavailableTitle: string;
+    unavailableMessage: string;
     name: string;
     namePlaceholder: string;
     email: string;
@@ -19,93 +22,121 @@ interface Props {
   };
 }
 
-const { labels } = Astro.props;
+const { labels, contactEmail } = Astro.props;
 
 // PUBLIC_TURNSTILE_SITE_KEY is inlined into the client bundle by Astro (PUBLIC_* prefix).
 // Dev/CI use Cloudflare's always-pass test key (1x00000000000000000000AA).
 // The real production key must be set at build time in the CI/deploy environment.
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+const cmsUrl = import.meta.env.PUBLIC_CMS_URL as string | undefined;
+const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
 ---
 
 <div class="contact__form-container">
-  <form class="contact-form" id="contactForm">
-    <!-- Honeypot field for spam protection -->
-    <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
+  {
+    !isConfigured && (
+      <section class="contact-unavailable" aria-labelledby="contact-unavailable-title">
+        <h2 id="contact-unavailable-title" class="contact-unavailable__title">
+          {labels.unavailableTitle}
+        </h2>
+        <p class="contact-unavailable__message">{labels.unavailableMessage}</p>
+        <Button href={`mailto:${contactEmail}`} variant="primary" size="lg">
+          {contactEmail}
+        </Button>
+      </section>
+    )
+  }
+  {
+    isConfigured && (
+      <form class="contact-form" id="contactForm">
+        {/* Honeypot field for spam protection */}
+        <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
 
-    <div class="form-group">
-      <label for="name">{labels.name} *</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        required
-        aria-required="true"
-        placeholder={labels.namePlaceholder}
-      />
-    </div>
+        <div class="form-group">
+          <label for="name">{labels.name} *</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            aria-required="true"
+            placeholder={labels.namePlaceholder}
+          />
+        </div>
 
-    <div class="form-group">
-      <label for="email">{labels.email} *</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        aria-required="true"
-        placeholder={labels.emailPlaceholder}
-      />
-    </div>
+        <div class="form-group">
+          <label for="email">{labels.email} *</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            aria-required="true"
+            placeholder={labels.emailPlaceholder}
+          />
+        </div>
 
-    <div class="form-group">
-      <label for="subject">{labels.subject} *</label>
-      <select id="subject" name="subject" required aria-required="true">
-        <option value="">{labels.subjectPlaceholder}</option>
-        {
-          Object.entries(labels.subjectOptions).map(([key, value]) => (
-            <option value={key}>{value}</option>
-          ))
-        }
-      </select>
-    </div>
+        <div class="form-group">
+          <label for="subject">{labels.subject} *</label>
+          <select id="subject" name="subject" required aria-required="true">
+            <option value="">{labels.subjectPlaceholder}</option>
+            {Object.entries(labels.subjectOptions).map(([key, value]) => (
+              <option value={key}>{value}</option>
+            ))}
+          </select>
+        </div>
 
-    <div class="form-group">
-      <label for="message">{labels.message} *</label>
-      <textarea
-        id="message"
-        name="message"
-        rows="5"
-        required
-        aria-required="true"
-        placeholder={labels.messagePlaceholder}></textarea>
-    </div>
+        <div class="form-group">
+          <label for="message">{labels.message} *</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            required
+            aria-required="true"
+            placeholder={labels.messagePlaceholder}
+          />
+        </div>
 
-    <!-- Cloudflare Turnstile widget — renders a challenge and writes the
+        {/* Cloudflare Turnstile widget — renders a challenge and writes the
          verified token into a hidden `cf-turnstile-response` input.
-         The site key comes from PUBLIC_TURNSTILE_SITE_KEY (inlined at build time). -->
-    <div class="cf-turnstile" data-sitekey={siteKey}></div>
+         The site key comes from PUBLIC_TURNSTILE_SITE_KEY (inlined at build time). */}
+        <div class="cf-turnstile" data-sitekey={siteKey} />
 
-    <div class="form-actions">
-      <Button type="submit" variant="primary" size="lg">
-        {labels.submit}
-      </Button>
-    </div>
+        <div class="form-actions">
+          <Button type="submit" variant="primary" size="lg">
+            {labels.submit}
+          </Button>
+        </div>
 
-    <div
-      class="form-status"
-      id="formStatus"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      data-sending={labels.sending}
-      data-success={labels.success}
-      data-error={labels.error}
-      data-submit={labels.submit}
-    >
-    </div>
-  </form>
+        <div
+          class="form-status"
+          id="formStatus"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          data-sending={labels.sending}
+          data-success={labels.success}
+          data-error={labels.error}
+          data-submit={labels.submit}
+        ></div>
+      </form>
+    )
+  }
 </div>
 
 <style>
+  .contact-unavailable__title {
+    font-size: var(--font-size-xl);
+    color: var(--color-text);
+    margin-bottom: var(--space-3);
+  }
+
+  .contact-unavailable__message {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-6);
+  }
+
   .contact__form-container {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -199,12 +230,17 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
   and silences generic linters, but `integrity` must remain absent.
   (Reference: ARCHITECTURE.md § "Anti-Abuse Design Decision")
 -->
-<script
-  is:inline
-  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-  crossorigin="anonymous"
-  async
-  defer></script>
+{
+  isConfigured && (
+    <script
+      is:inline
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      crossorigin="anonymous"
+      async
+      defer
+    />
+  )
+}
 
 <script>
   // PUBLIC_CMS_URL is inlined at build time by Astro (PUBLIC_* prefix).
