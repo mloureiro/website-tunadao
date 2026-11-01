@@ -26,7 +26,10 @@ const contactInfo = await getContactInfo();
     <div class="container">
       <div class="contact__grid">
         <ContactForm
+          contactEmail={contactInfo.email}
           labels={{
+            unavailableTitle: t('contact.unavailable.title'),
+            unavailableMessage: t('contact.unavailable.message'),
             name: t('contact.form.name'),
             namePlaceholder: t('contact.form.namePlaceholder'),
             email: t('contact.form.email'),

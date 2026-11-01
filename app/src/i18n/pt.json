@@ -327,6 +327,10 @@
     "title": "Contacto",
     "subtitle": "Entre em contacto connosco",
     "description": "Entra em contacto com a Tunadão 1998. Envia-nos uma mensagem para marcares atuações, pedidos de informação ou qualquer outro assunto.",
+    "unavailable": {
+      "title": "Formulário indisponível",
+      "message": "De momento não é possível enviar mensagens por aqui. Escreve-nos diretamente para:"
+    },
     "form": {
       "name": "Nome",
       "namePlaceholder": "O teu nome",

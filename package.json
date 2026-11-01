@@ -21,7 +21,7 @@
     "format:fix": "npm run format:root:fix && npm run format:fix --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "pretest:e2e": "PUBLIC_CMS_URL=http://localhost:3000 USE_TEST_FIXTURES=true npm run build -w app",
+    "pretest:e2e": "PUBLIC_CMS_URL=http://localhost:3000 PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA USE_TEST_FIXTURES=true npm run build -w app",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "seed": "npm run seed -w cms",
