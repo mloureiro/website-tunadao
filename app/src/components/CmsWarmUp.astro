@@ -1,0 +1,39 @@
+<script>
+  const CMS_URL = import.meta.env.PUBLIC_CMS_URL as string | undefined;
+  const WARMUP_KEY = 'tunadao:cms-warmup-at';
+  const WARMUP_INTERVAL_MS = 5 * 60 * 1000;
+
+  function readLastWarmUp(): number | null {
+    try {
+      const raw = sessionStorage.getItem(WARMUP_KEY);
+      const value = raw === null ? NaN : Number(raw);
+      return Number.isFinite(value) ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function recordWarmUp(at: number): void {
+    try {
+      sessionStorage.setItem(WARMUP_KEY, String(at));
+    } catch {
+      return;
+    }
+  }
+
+  function isRecent(last: number | null, now: number): boolean {
+    return last !== null && now - last >= 0 && now - last < WARMUP_INTERVAL_MS;
+  }
+
+  const now = Date.now();
+
+  if (CMS_URL && !isRecent(readLastWarmUp(), now)) {
+    recordWarmUp(now);
+    // Render's free plan sleeps the CMS after ~15 min idle; this request only wakes it, so the response and any failure are ignored.
+    fetch(`${CMS_URL}/api/globals/site-settings?depth=0`, {
+      mode: 'no-cors',
+      cache: 'no-store',
+      credentials: 'omit',
+    }).catch(() => {});
+  }
+</script>
