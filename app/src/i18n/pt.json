@@ -349,6 +349,7 @@
       "messagePlaceholder": "Escreve a tua mensagem...",
       "submit": "Enviar mensagem",
       "sending": "A enviar...",
+      "waking": "O servidor está a arrancar e o envio pode demorar até um minuto. Não feches esta página.",
       "success": "Mensagem enviada com sucesso! Entraremos em contacto brevemente.",
       "error": "Erro ao enviar mensagem. Por favor, tente novamente."
     },

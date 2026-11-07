@@ -17,6 +17,7 @@ interface Props {
     messagePlaceholder: string;
     submit: string;
     sending: string;
+    waking: string;
     success: string;
     error: string;
   };
@@ -116,6 +117,7 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
           aria-live="polite"
           aria-atomic="true"
           data-sending={labels.sending}
+          data-waking={labels.waking}
           data-success={labels.success}
           data-error={labels.error}
           data-submit={labels.submit}
@@ -215,6 +217,13 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
     color: var(--color-error-dark);
     border: 1px solid var(--color-error);
   }
+
+  .form-status.pending {
+    display: block;
+    background-color: var(--color-surface-hover);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
 </style>
 
 <!--
@@ -246,6 +255,7 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
   // PUBLIC_CMS_URL is inlined at build time by Astro (PUBLIC_* prefix).
   // It is the client-side POST target; the build-time CMS_URL is never exposed to the browser.
   const CMS = import.meta.env.PUBLIC_CMS_URL as string | undefined;
+  const WAKING_DELAY_MS = 5000;
 
   /**
    * Build the JSON payload for the contact form submission.
@@ -278,6 +288,7 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
 
     if (form && formStatus) {
       const sendingText = formStatus.dataset.sending || 'Sending...';
+      const wakingText = formStatus.dataset.waking ?? '';
       const successText = formStatus.dataset.success || 'Message sent successfully!';
       const errorText = formStatus.dataset.error || 'Error sending message.';
       const submitText = formStatus.dataset.submit || 'Send message';
@@ -324,6 +335,11 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
           turnstileToken,
         });
 
+        const wakingTimer = window.setTimeout(() => {
+          formStatus.textContent = wakingText;
+          formStatus.className = 'form-status pending';
+        }, WAKING_DELAY_MS);
+
         try {
           const res = await fetch(`${CMS}/api/contact-submissions`, {
             method: 'POST',
@@ -348,6 +364,7 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
           formStatus.textContent = errorText;
           formStatus.className = 'form-status error';
         } finally {
+          window.clearTimeout(wakingTimer);
           if (submitButton) {
             submitButton.textContent = submitText;
             (submitButton as HTMLButtonElement).disabled = false;
