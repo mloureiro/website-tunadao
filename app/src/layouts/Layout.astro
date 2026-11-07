@@ -1,6 +1,7 @@
 ---
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
+import CmsWarmUp from '@components/CmsWarmUp.astro';
 import '@styles/global.css';
 import { getLang, langBcp47, getLocalizedPath, useTranslations, type Language } from '@i18n/index';
 import { normalizeBase } from '@utils/url';
@@ -108,5 +109,6 @@ const alternates = [
     </main>
 
     <Footer lang={lang} />
+    <CmsWarmUp />
   </body>
 </html>
