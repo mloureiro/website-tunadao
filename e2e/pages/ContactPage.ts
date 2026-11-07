@@ -48,6 +48,10 @@ export class ContactPage extends BasePage {
     return this.page.locator('.form-status.success');
   }
 
+  statusRegion(): Locator {
+    return this.page.locator('#formStatus');
+  }
+
   /** Contact info card with email/phone/address details. */
   infoCard(): Locator {
     return this.page.locator('.info-card');
@@ -93,6 +97,22 @@ export class ContactPage extends BasePage {
         body: JSON.stringify({ doc: { id: 1 } }),
       })
     );
+  }
+
+  async holdContactSubmission(): Promise<() => void> {
+    let release: () => void = () => {};
+    const released = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await this.page.route('**/api/contact-submissions', async (route) => {
+      await released;
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ doc: { id: 1 } }),
+      });
+    });
+    return release;
   }
 
   /**

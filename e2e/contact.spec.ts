@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { ContactPage } from './pages/ContactPage';
+import { t } from './support/i18n';
 
 test.describe('Contact Page', () => {
   let contact: ContactPage;
@@ -75,5 +76,30 @@ test.describe('Contact Page', () => {
     // No waitForTimeout needed — the element appears when the intercepted
     // fetch resolves (synchronously in Playwright's route handler).
     await expect(freshContact.successStatus()).toBeVisible();
+    await expect(freshContact.statusRegion()).not.toContainText(t('contact.form.waking', 'pt'));
+  });
+
+  test('shows the waking-up message while the submission is slow, then the success message', async ({
+    page,
+  }) => {
+    await page.clock.install();
+    const slowContact = new ContactPage(page);
+    await slowContact.interceptTurnstile();
+    const release = await slowContact.holdContactSubmission();
+    await slowContact.goto();
+
+    await slowContact.nameInput().fill('Test User');
+    await slowContact.emailInput().fill('test@example.com');
+    await slowContact.subjectSelect().selectOption('informacao');
+    await slowContact.messageTextarea().fill('This is a test message');
+    await slowContact.injectTurnstileToken();
+    await slowContact.submitButton().click();
+
+    await page.clock.fastForward(5_000);
+    await expect(slowContact.statusRegion()).toContainText(t('contact.form.waking', 'pt'));
+
+    release();
+    await expect(slowContact.successStatus()).toBeVisible();
+    await expect(slowContact.statusRegion()).not.toContainText(t('contact.form.waking', 'pt'));
   });
 });
