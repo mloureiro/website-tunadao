@@ -6,10 +6,23 @@ import Icon from '@ui/icons/Icon.astro';
 import Section from '@components/Section.astro';
 import SectionText from '@components/SectionText.astro';
 import SectionImage from '@components/SectionImage.astro';
+import PosterPlaceholder from '@components/PosterPlaceholder.astro';
 import StatsBar from '@components/StatsBar.astro';
 import MainHero from '@components/home/MainHero.astro';
-import { useTranslations, getLocalizedPath, type Language, defaultLang } from '@i18n/index';
-import { getCitadaoEditions, getPalmaresYears, getAlbums, getSocialLinks } from '@lib/cms';
+import {
+  useTranslations,
+  getLocalizedPath,
+  ordinal,
+  type Language,
+  defaultLang,
+} from '@i18n/index';
+import {
+  getCitadaoEditions,
+  getPalmaresYears,
+  getAlbums,
+  getSocialLinks,
+  findNewestEditionWithPoster,
+} from '@lib/cms';
 
 // Photos
 import heroPhoto from '@assets/photos/palco-bandeira-25anos.jpg';
@@ -59,7 +72,7 @@ const stats = [
 // Latest Citadao edition
 const latestEdition = citadaoEditions[0];
 const latestEditionYear = latestEdition ? latestEdition.year : null;
-const latestEditionPosterUrl = latestEdition?.posterUrl || null;
+const posterEdition = findNewestEditionWithPoster(citadaoEditions);
 
 // Inline stats for sections
 const editionStats =
@@ -138,22 +151,22 @@ const achievementStats = [
     <SectionImage>
       <a href={l('/citadao')}>
         {
-          latestEditionPosterUrl ? (
+          posterEdition?.posterUrl ? (
             <img
-              src={latestEditionPosterUrl}
-              alt={`CITADAO ${latestEditionYear} - ${t('home.sections.citadaoPreview.posterAlt')}`}
+              src={posterEdition.posterUrl}
+              alt={t('citadao.posterAlt', {
+                edition: `${ordinal(posterEdition.edition, currentLang)} ${t('citadao.edition')}`,
+                year: posterEdition.year,
+              })}
               loading="lazy"
               class="u-object-cover"
               style="aspect-ratio: 3/2; width: 100%;"
             />
           ) : (
-            <div class="citadao-placeholder">
-              <Icon name="music" size={96} class="citadao-placeholder__icon" />
-              <p class="citadao-placeholder__title">CITADAO</p>
-              <p class="citadao-placeholder__text">
-                {t('home.sections.citadaoPreview.placeholderText')}
-              </p>
-            </div>
+            <PosterPlaceholder
+              title={t('home.sections.citadaoPreview.title')}
+              caption={t('home.sections.citadaoPreview.placeholderText')}
+            />
           )
         }
       </a>
@@ -227,36 +240,3 @@ const achievementStats = [
     </SectionImage>
   </Section>
 </Layout>
-
-<style>
-  /* Citadao Placeholder */
-  .citadao-placeholder {
-    aspect-ratio: 3 / 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
-    color: #ffffff;
-    border-radius: var(--radius-2xl);
-    padding: var(--space-8);
-    text-align: center;
-    box-shadow: var(--shadow-xl);
-  }
-
-  .citadao-placeholder__icon {
-    margin-bottom: var(--space-4);
-    opacity: 0.8;
-  }
-
-  .citadao-placeholder__title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-black);
-    margin-bottom: var(--space-2);
-  }
-
-  .citadao-placeholder__text {
-    font-size: var(--font-size-sm);
-    opacity: 0.8;
-  }
-</style>
