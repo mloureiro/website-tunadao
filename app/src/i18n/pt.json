@@ -200,6 +200,11 @@
     }
   },
   "citadao": {
+    "pending": {
+      "title": "Informação em breve",
+      "text": "Os participantes e os prémios desta edição ainda não foram publicados.",
+      "previous": "Ver o CITADÃO {year}"
+    },
     "title": "Citadão",
     "subtitle": "Certame Internacional de Tunas Académicas do Dão",
     "description": "CITADÃO - Certame Internacional de Tunas Académicas do Dão. O festival de tunas organizado pela Tunadão desde 2004.",
@@ -226,6 +231,7 @@
     }
   },
   "palmares": {
+    "posterUnavailable": "Cartaz de {festival} indisponível",
     "title": "Palmarés",
     "subtitle": "Prémios conquistados",
     "description": "Palmarés da Tunadão 1998 - Prémios conquistados em festivais de tunas por todo o país desde 1999.",
@@ -308,6 +314,7 @@
     "subtitle": "A nossa discografia",
     "description": "Discografia da Tunadão 1998 - Ouve os nossos álbuns no Spotify. Música tradicional portuguesa e composições originais.",
     "heroAlt": "Tunadao em performance de percussao",
+    "albumsEmpty": "Os nossos álbuns vão aparecer aqui em breve. Até lá, ouve a Tunadão no Spotify.",
     "albums": "Álbuns",
     "listenOn": "Ouvir no Spotify",
     "openOnSpotify": "Abrir no Spotify",
