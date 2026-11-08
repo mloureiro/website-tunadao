@@ -110,11 +110,7 @@ const initials = (tuna: FrontendTunaWithLogo) =>
     font-family: var(--font-family-heading);
     font-size: var(--font-size-lg);
     font-weight: 700;
-    color: var(--color-gold-dark);
-  }
-
-  [data-theme='dark'] .palmares-count {
-    color: var(--color-accent-gold);
+    color: var(--color-text-accent);
   }
 
   .laureates {
@@ -236,7 +232,7 @@ const initials = (tuna: FrontendTunaWithLogo) =>
     padding: var(--space-1) var(--space-3);
     border: 1px solid var(--color-gold-dark);
     border-radius: var(--radius-full);
-    color: var(--color-gold-dark);
+    color: var(--color-text-accent);
     font-size: var(--font-size-sm);
     font-weight: 600;
     line-height: 1.4;
@@ -245,19 +241,12 @@ const initials = (tuna: FrontendTunaWithLogo) =>
 
   [data-theme='dark'] .medal {
     border-color: var(--color-accent-gold);
-    color: var(--color-accent-gold);
   }
 
   .medal--grand {
-    background: var(--color-gold-dark);
-    border-color: var(--color-gold-dark);
-    color: #fff;
-  }
-
-  [data-theme='dark'] .medal--grand {
     background: var(--color-accent-gold);
     border-color: var(--color-accent-gold);
-    color: var(--color-primary-dark);
+    color: var(--color-on-gold);
   }
 
   .medal-icon {
