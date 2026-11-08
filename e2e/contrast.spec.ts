@@ -32,24 +32,15 @@ const THEMES = ['light', 'dark'] as const;
 
 test.describe('text contrast on fixed components', () => {
   test.skip(({ browserName }) => browserName !== 'chromium', 'axe contrast runs on Chromium only');
-  test.use({ reducedMotion: 'reduce' });
 
   for (const route of ROUTES) {
     for (const theme of THEMES) {
       test(`${route} meets AA contrast in ${theme} theme`, async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
         await page.addInitScript((value) => localStorage.setItem('theme', value), theme);
         await page.goto(route);
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
         await page.evaluate(() => document.fonts.ready);
-        await page.evaluate(() => {
-          for (const animation of document.getAnimations()) {
-            try {
-              animation.finish();
-            } catch {
-              animation.cancel();
-            }
-          }
-        });
 
         const present: string[] = [];
         for (const selector of FIXED_COMPONENTS) {
