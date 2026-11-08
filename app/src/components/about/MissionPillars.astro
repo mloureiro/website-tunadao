@@ -107,15 +107,19 @@ const pillars = [
   /* Per-pillar accent token */
   .mission__card[data-pillar='tradition'] {
     --pillar-accent: var(--color-accent-gold);
+    --pillar-text: var(--color-text-accent);
   }
   .mission__card[data-pillar='train'] {
     --pillar-accent: var(--color-primary);
+    --pillar-text: var(--color-link);
   }
   .mission__card[data-pillar='represent'] {
     --pillar-accent: var(--color-secondary);
+    --pillar-text: var(--color-secondary);
   }
   .mission__card[data-pillar='community'] {
     --pillar-accent: var(--color-gold-dark);
+    --pillar-text: var(--color-text-accent);
   }
 
   /* Tint and border derived from accent — single source of truth per pillar.
@@ -169,7 +173,7 @@ const pillars = [
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     margin-bottom: var(--space-3);
-    color: var(--pillar-accent);
+    color: var(--pillar-text);
   }
 
   .mission__card-text {
