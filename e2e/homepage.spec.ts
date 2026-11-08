@@ -40,6 +40,15 @@ test.describe('Homepage', () => {
     await expect(home.statsItems()).toHaveCount(5);
   });
 
+  test('shows the newest poster (2024) while the inline stats show the latest edition (2025)', async ({
+    page,
+  }) => {
+    const preview = home.citadaoPreview();
+    await expect(preview.getByRole('img', { name: /2024/ })).toBeAttached();
+    await expect(preview.locator('.stats-bar--inline')).toContainText('2025');
+    await expect(page.locator('#citadao-preview .poster-placeholder')).toHaveCount(0);
+  });
+
   test('should have section links to main pages', async () => {
     await expect(home.sobrePreview()).toBeAttached();
     await expect(home.citadaoPreview()).toBeAttached();
