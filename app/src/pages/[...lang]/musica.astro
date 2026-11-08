@@ -69,17 +69,24 @@ const albums = cmsAlbums.map((album) => ({
   <section class="albums">
     <div class="container">
       <h2 class="section-title">{t('music.albums')}</h2>
-      <div class="albums__grid">
-        {
-          albums.map((album) => (
-            <AlbumCard
-              album={album}
-              studioLabel={t('music.recordingTypes.studio')}
-              liveLabel={t('music.recordingTypes.live')}
-            />
-          ))
-        }
-      </div>
+      {
+        albums.length === 0 ? (
+          <div class="albums__empty">
+            <Icon name="music" size={32} />
+            <p>{t('music.albumsEmpty')}</p>
+          </div>
+        ) : (
+          <div class="albums__grid">
+            {albums.map((album) => (
+              <AlbumCard
+                album={album}
+                studioLabel={t('music.recordingTypes.studio')}
+                liveLabel={t('music.recordingTypes.live')}
+              />
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
 </Layout>
@@ -127,5 +134,27 @@ const albums = cmsAlbums.map((album) => ({
     gap: var(--space-10);
     max-width: 900px;
     margin: 0 auto;
+  }
+
+  .albums__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: 36rem;
+    margin: 0 auto;
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--color-text-secondary);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+
+  .albums__empty :global(svg) {
+    color: var(--color-link);
+  }
+
+  .albums__empty p {
+    margin: 0;
   }
 </style>
