@@ -200,6 +200,11 @@
     }
   },
   "citadao": {
+    "pending": {
+      "title": "Details coming soon",
+      "text": "The participants and awards of this edition have not been published yet.",
+      "previous": "See CITADÃO {year}"
+    },
     "title": "Citadão",
     "subtitle": "International Competition of Academic Tunas of Dão",
     "description": "CITADÃO - Certame Internacional de Tunas Académicas do Dão. The tuna festival organized by Tunadão since 2004.",
@@ -226,6 +231,7 @@
     }
   },
   "palmares": {
+    "posterUnavailable": "Poster of {festival} unavailable",
     "title": "Awards",
     "subtitle": "Awards won",
     "description": "Tunadão 1998 Awards - Prizes won at tuna festivals across the country since 1999.",
@@ -308,6 +314,7 @@
     "subtitle": "Our discography",
     "description": "Tunadão 1998 Discography - Listen to our albums on Spotify. Traditional Portuguese music and original compositions.",
     "heroAlt": "Tunadao percussion performance",
+    "albumsEmpty": "Our albums will appear here soon. Until then, listen to Tunadão on Spotify.",
     "albums": "Albums",
     "listenOn": "Listen on Spotify",
     "openOnSpotify": "Open on Spotify",
