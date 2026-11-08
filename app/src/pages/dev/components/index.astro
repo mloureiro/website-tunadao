@@ -2,6 +2,7 @@
 import DevLayout from '@layouts/DevLayout.astro';
 import Button from '@components/Button.astro';
 import Award from '@components/Award.astro';
+import PosterPlaceholder from '@components/PosterPlaceholder.astro';
 import DesignThemeToggle from '@components/DesignThemeToggle.astro';
 
 // All award types for demo
@@ -44,6 +45,7 @@ const allAwards = [
   <nav class="component-nav">
     <a href="#button">Button</a>
     <a href="#award">Award</a>
+    <a href="#poster-placeholder">PosterPlaceholder</a>
   </nav>
 
   <!-- Button -->
@@ -91,6 +93,26 @@ const allAwards = [
       <div class="component-row hero">
         <Button variant="primary">Primary</Button>
         <Button variant="outline">Outline</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PosterPlaceholder -->
+  <section id="poster-placeholder" class="component-section">
+    <h2>PosterPlaceholder</h2>
+    <p class="component-path">@components/PosterPlaceholder.astro</p>
+
+    <div class="component-group">
+      <h3>Title and caption (3 / 2)</h3>
+      <div style="max-width: 32rem;">
+        <PosterPlaceholder title="CITADÃO" caption="Festival de Tunas" />
+      </div>
+    </div>
+
+    <div class="component-group">
+      <h3>Title only (2 / 3)</h3>
+      <div style="max-width: 16rem;">
+        <PosterPlaceholder title="CITADÃO" aspectRatio="2 / 3" />
       </div>
     </div>
   </section>

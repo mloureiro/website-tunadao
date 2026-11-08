@@ -1,0 +1,57 @@
+---
+import Icon from '@ui/icons/Icon.astro';
+import type { IconName } from '@ui/icons';
+
+interface Props {
+  title?: string;
+  caption?: string;
+  icon?: IconName;
+  aspectRatio?: string;
+  class?: string;
+}
+
+const { title, caption, icon = 'music', aspectRatio = '3 / 2', class: className } = Astro.props;
+---
+
+<div class:list={['poster-placeholder', className]} style={`aspect-ratio: ${aspectRatio};`}>
+  <Icon name={icon} size={96} />
+  {title && <p class="poster-placeholder__title">{title}</p>}
+  {caption && <p class="poster-placeholder__caption">{caption}</p>}
+</div>
+
+<style>
+  .poster-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-8);
+    text-align: center;
+    line-height: var(--line-height-tight);
+    color: var(--color-text-inverted);
+    background: linear-gradient(135deg, var(--color-secondary-dark), var(--color-primary-dark));
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .poster-placeholder__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-black);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .poster-placeholder__caption {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  @media (min-width: 768px) {
+    .poster-placeholder__title {
+      font-size: var(--font-size-3xl);
+    }
+  }
+</style>
