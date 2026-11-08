@@ -11,9 +11,23 @@ const FIXED_COMPONENTS = [
   '.palmares',
   '.hero[aria-labelledby="edition-title"]',
   '.spotify-cta',
+  '.edition-cta',
+  '.nav-link',
+  '.album-card__year',
+  '#pending-title',
+  '.section-title',
 ];
 
-const ROUTES = ['/', '/sobre', '/citadao/2024', '/palmares', '/musica', '/en/'];
+const ROUTES = [
+  '/',
+  '/sobre',
+  '/citadao',
+  '/citadao/2024',
+  '/citadao/2025',
+  '/palmares',
+  '/musica',
+  '/en/',
+];
 const THEMES = ['light', 'dark'] as const;
 
 test.describe('text contrast on fixed components', () => {
