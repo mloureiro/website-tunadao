@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { CitadaoPage } from './pages/CitadaoPage';
+import { t } from './support/i18n';
 
 test.describe('Citadão Page', () => {
   let citadao: CitadaoPage;
@@ -62,4 +63,29 @@ test.describe('Citadão — fixture-tied participant names', () => {
     await page.goto('/citadao/2024');
     await expect(page.locator('.tuna-name', { hasText: 'Afonsina' }).first()).toBeVisible();
   });
+});
+
+test.describe('Citadão — edition without published data (fixture: 2025)', () => {
+  const locales = [
+    { lang: 'pt' as const, prefix: '' },
+    { lang: 'en' as const, prefix: '/en' },
+  ];
+
+  for (const { lang, prefix } of locales) {
+    test(`shows the pending state with a link to the previous edition (${lang})`, async ({
+      page,
+    }) => {
+      await page.goto(`${prefix}/citadao/2025/`);
+
+      const pending = page.getByRole('region', { name: t('citadao.pending.title', lang) });
+      await expect(pending.getByRole('heading', { level: 2 })).toBeVisible();
+      await expect(pending).toContainText(t('citadao.pending.text', lang));
+
+      const previous = pending.getByRole('link', {
+        name: t('citadao.pending.previous', lang).replace('{year}', '2024'),
+      });
+      await previous.click();
+      await expect(page).toHaveURL(new RegExp(`${prefix}/citadao/2024/?$`));
+    });
+  }
 });
