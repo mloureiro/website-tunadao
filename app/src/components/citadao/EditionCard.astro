@@ -1,5 +1,6 @@
 ---
 import { Icon } from '@ui/icons';
+import PosterPlaceholder from '@components/PosterPlaceholder.astro';
 import ResponsiveImage from '@components/ResponsiveImage.astro';
 import type { FrontendCitadaoEdition } from '@lib/cms/types';
 import { extractPublicId } from '@lib/cms';
@@ -41,9 +42,7 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
             loading="lazy"
           />
         ) : (
-          <div class="poster-placeholder" aria-hidden="true">
-            <span class="edition-number-large">{edition.edition}</span>
-          </div>
+          <PosterPlaceholder fill title="CITADÃO" caption={String(edition.year)} />
         )
       }
     </div>
@@ -127,23 +126,6 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     transform: scale(1.05);
   }
 
-  .poster-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .edition-number-large {
-    font-family: var(--font-family-heading);
-    font-size: 4rem;
-    font-weight: 900;
-    color: rgba(255, 255, 255, 0.2);
-    letter-spacing: -0.05em;
-  }
-
   .edition-content {
     flex: 1;
     display: flex;
@@ -190,14 +172,10 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    color: var(--color-primary);
+    color: var(--color-link);
     font-weight: 600;
     font-size: var(--font-size-sm);
     transition: gap var(--transition-base);
-  }
-
-  [data-theme='dark'] .edition-cta {
-    color: var(--color-accent-gold);
   }
 
   .edition-card:hover .edition-cta {
@@ -219,10 +197,6 @@ const detailPath = getLocalizedPath(`/citadao/${edition.year}`, lang);
 
     .edition-title {
       font-size: var(--font-size-lg);
-    }
-
-    .edition-number-large {
-      font-size: 3rem;
     }
   }
 </style>
