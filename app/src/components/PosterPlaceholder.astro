@@ -7,13 +7,24 @@ interface Props {
   caption?: string;
   icon?: IconName;
   aspectRatio?: string;
+  fill?: boolean;
   class?: string;
 }
 
-const { title, caption, icon = 'music', aspectRatio = '3 / 2', class: className } = Astro.props;
+const {
+  title,
+  caption,
+  icon = 'music',
+  aspectRatio = '3 / 2',
+  fill = false,
+  class: className,
+} = Astro.props;
 ---
 
-<div class:list={['poster-placeholder', className]} style={`aspect-ratio: ${aspectRatio};`}>
+<div
+  class:list={['poster-placeholder', { 'poster-placeholder--fill': fill }, className]}
+  style={fill ? undefined : `aspect-ratio: ${aspectRatio};`}
+>
   <Icon name={icon} size={96} />
   {title && <p class="poster-placeholder__title">{title}</p>}
   {caption && <p class="poster-placeholder__caption">{caption}</p>}
@@ -33,6 +44,13 @@ const { title, caption, icon = 'music', aspectRatio = '3 / 2', class: className 
     background: linear-gradient(135deg, var(--color-secondary-dark), var(--color-primary-dark));
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-xl);
+  }
+
+  .poster-placeholder--fill {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .poster-placeholder__title {
