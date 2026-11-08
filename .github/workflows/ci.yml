@@ -221,12 +221,13 @@ jobs:
       - name: Run E2E tests
         run: npx playwright test
 
-      - name: Build site (contact form unconfigured)
+      - name: Build site (contact form unconfigured, no albums)
         run: npm run build -w app
         env:
           USE_TEST_FIXTURES: 'true'
           PUBLIC_CMS_URL: ''
           PUBLIC_TURNSTILE_SITE_KEY: ''
+          FIXTURE_EMPTY_COLLECTIONS: 'albums'
 
       - name: Run E2E tests (contact form unconfigured)
         run: npx playwright test --config playwright.unconfigured.config.ts

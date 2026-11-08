@@ -137,6 +137,11 @@ function getCollection<T>(
   collectionName: keyof CMSDump['collections'],
   fallback: T[]
 ): CMSPaginatedResponse<T> {
+  // Read via process.env: Vite would inline and tree-shake import.meta.env.
+  const emptied = (process.env.FIXTURE_EMPTY_COLLECTIONS ?? '').split(',').map((n) => n.trim());
+  if (emptied.includes(collectionName)) {
+    return paginate<T>([]);
+  }
   const dump = loadDump();
   if (dump?.collections?.[collectionName]) {
     const collection = dump.collections[collectionName] as { docs: T[]; totalDocs: number };
@@ -202,6 +207,15 @@ const fallbackCitadaoEditions: CMSCitadaoEdition[] = [
     startDate: '2023-05-05',
     endDate: '2023-05-06',
     schedule: [{ date: '2023-05-05', venue: fallbackVenues[0] }],
+    status: 'published',
+  },
+  {
+    id: 3,
+    title: 'XIX CITADÃO',
+    editionNumber: 19,
+    startDate: '2025-05-01',
+    endDate: '2025-05-01',
+    schedule: [],
     status: 'published',
   },
 ];

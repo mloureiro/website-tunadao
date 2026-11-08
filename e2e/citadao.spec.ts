@@ -14,7 +14,7 @@ test.describe('Citadão Page', () => {
   });
 
   test('should display at least 2 edition cards (fixture-tied: editions 18 and 17)', async () => {
-    // Fixture provides exactly 2 editions; assert >= 2 to stay count-tolerant
+    // Fixtures provide several editions; assert >= 2 to stay count-tolerant
     // if the CMS dump ever adds more, this test still passes.
     const cards = citadao.editionCards();
     await expect(cards.first()).toBeVisible();
