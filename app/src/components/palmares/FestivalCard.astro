@@ -6,6 +6,7 @@
 
 import { Icon } from '@ui/icons';
 import Award from '@components/Award.astro';
+import PosterPlaceholder from '@components/PosterPlaceholder.astro';
 import ResponsiveImage from '@components/ResponsiveImage.astro';
 import type { FrontendPalmaresFestival } from '@lib/cms/types';
 import { sortAwards, extractPublicId } from '@lib/cms';
@@ -17,6 +18,7 @@ interface Props {
   contestantsLabel?: string;
   guestsLabel?: string;
   posterAlt?: string;
+  posterUnavailableLabel?: string;
 }
 
 const {
@@ -26,89 +28,76 @@ const {
   contestantsLabel = 'A Concurso',
   guestsLabel = 'Convidados',
   posterAlt = `Cartaz ${festival.name}`,
+  posterUnavailableLabel = `Cartaz de ${festival.name} indisponível`,
 } = Astro.props;
 
 const sortedAwards = sortAwards(festival.awards);
 const hasNoAwards = sortedAwards.length === 0;
-const festivalInitial = festival.name.charAt(0).toUpperCase();
 const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) : null;
 ---
 
-<article class="festival-card">
-  {/* Poster Section */}
-  <div class="festival-card__poster">
-    {
-      festival.posterUrl ? (
-        <>
-          <button
-            type="button"
-            class="festival-card__poster-button"
-            data-poster-url={festival.posterUrl}
-            data-poster-alt={posterAlt}
-          >
-            {posterPublicId ? (
-              <ResponsiveImage
-                publicId={posterPublicId}
-                alt={posterAlt}
-                class="festival-card__poster-image"
-                sizes="(max-width: 768px) 100vw, 400px"
-                aspectRatio="3/4"
-              />
-            ) : (
-              <img
-                src={festival.posterUrl}
-                alt={posterAlt}
-                class="festival-card__poster-image"
-                loading="lazy"
-              />
-            )}
-            <span class="festival-card__poster-zoom">
-              <Icon name="zoom-in" size={20} />
-            </span>
-          </button>
-          {/* Fallback placeholder — hidden until poster image fails to load */}
-          <div
-            class="festival-card__poster-placeholder festival-card__poster-placeholder--fallback"
-            aria-label={`Cartaz ${festival.name} (imagem indisponível)`}
-            aria-hidden="true"
-          >
-            <div class="festival-card__poster-pattern">
-              <span class="festival-card__poster-initial">{festivalInitial}</span>
-            </div>
-            <div class="festival-card__poster-notes">
-              <span>♪</span>
-              <span>♫</span>
-              <span>♪</span>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div class="festival-card__poster-placeholder">
-          <div class="festival-card__poster-pattern">
-            <span class="festival-card__poster-initial">{festivalInitial}</span>
-          </div>
-          <div class="festival-card__poster-notes">
-            <span>♪</span>
-            <span>♫</span>
-            <span>♪</span>
-          </div>
+<article class:list={['festival-card', { 'festival-card--no-poster': !festival.posterUrl }]}>
+  {
+    festival.posterUrl && (
+      <div class="festival-card__poster">
+        <button
+          type="button"
+          class="festival-card__poster-button"
+          data-poster-url={festival.posterUrl}
+          data-poster-alt={posterAlt}
+        >
+          {posterPublicId ? (
+            <ResponsiveImage
+              publicId={posterPublicId}
+              alt={posterAlt}
+              class="festival-card__poster-image"
+              sizes="(max-width: 768px) 100vw, 400px"
+              aspectRatio="3/4"
+            />
+          ) : (
+            <img
+              src={festival.posterUrl}
+              alt={posterAlt}
+              class="festival-card__poster-image"
+              loading="lazy"
+            />
+          )}
+          <span class="festival-card__poster-zoom">
+            <Icon name="zoom-in" size={20} />
+          </span>
+        </button>
+        <div
+          class="festival-card__poster-placeholder festival-card__poster-placeholder--fallback"
+          aria-label={posterUnavailableLabel}
+          aria-hidden="true"
+        >
+          <PosterPlaceholder fill />
         </div>
-      )
-    }
-  </div>
+      </div>
+    )
+  }
 
   {/* Content Section */}
   <div class="festival-card__content">
     <header class="festival-card__header">
-      <h3 class="festival-card__name">{festival.name}</h3>
       {
-        festival.location && (
-          <p class="festival-card__location">
-            <Icon name="map-pin" size={14} />
-            <span>{festival.location}</span>
-          </p>
+        !festival.posterUrl && (
+          <span class="festival-card__tile" aria-hidden="true">
+            <Icon name="music" size={20} />
+          </span>
         )
       }
+      <div class="festival-card__heading">
+        <h3 class="festival-card__name">{festival.name}</h3>
+        {
+          festival.location && (
+            <p class="festival-card__location">
+              <Icon name="map-pin" size={14} />
+              <span>{festival.location}</span>
+            </p>
+          )
+        }
+      </div>
     </header>
 
     {/* Organizer */}
@@ -292,77 +281,9 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
     transform: scale(1);
   }
 
-  /* Placeholder - Modern design with initial and music notes */
   .festival-card__poster-placeholder {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-    overflow: hidden;
-  }
-
-  @media (min-width: 768px) {
-    .festival-card__poster-button,
-    .festival-card__poster-placeholder {
-      height: 100%;
-    }
-  }
-
-  .festival-card__poster-pattern {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: var(--radius-xl);
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .festival-card__poster-initial {
-    font-size: var(--font-size-4xl);
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .festival-card__poster-notes {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .festival-card__poster-notes span {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.1);
-    font-size: 2rem;
-  }
-
-  .festival-card__poster-notes span:nth-child(1) {
-    top: 15%;
-    left: 10%;
-    font-size: 1.5rem;
-    transform: rotate(-15deg);
-  }
-
-  .festival-card__poster-notes span:nth-child(2) {
-    top: 60%;
-    right: 15%;
-    font-size: 2.5rem;
-    transform: rotate(10deg);
-  }
-
-  .festival-card__poster-notes span:nth-child(3) {
-    bottom: 20%;
-    left: 20%;
-    font-size: 1.8rem;
-    transform: rotate(-5deg);
   }
 
   /* Content Section */
@@ -384,6 +305,31 @@ const posterPublicId = festival.posterUrl ? extractPublicId(festival.posterUrl) 
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+  }
+
+  .festival-card--no-poster .festival-card__header {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .festival-card__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
+  .festival-card__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-active);
+    color: var(--color-link);
   }
 
   .festival-card__name {
