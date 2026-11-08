@@ -35,6 +35,7 @@ export type * from './types';
 // Re-export utilities
 export { richTextToHtml, estimateReadingTime } from './rich-text';
 export { CMSError } from './client';
+export { findNewestEditionWithPoster } from './editions';
 export {
   AWARD_PRIORITY,
   getAwardPriority,
