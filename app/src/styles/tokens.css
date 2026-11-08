@@ -53,7 +53,15 @@
   --color-youtube: #ff0000;
   --color-youtube-dark: #cc0000;
   --color-spotify: #1db954;
-  --color-accent-gold: #d4a15e; /* decorative / dark-bg text only — 2.32:1 on white, fails AA on light surfaces; use --color-gold-dark for text-on-light */
+  --color-accent-gold: #d4a15e; /* decorative / dark-bg text only — 2.32:1 on white, fails AA on light surfaces; use --color-text-accent for text */
+  --color-text-accent: #7d5a14;
+  --color-on-gold: #1a0e4a;
+  --color-secondary-solid: #bf0029;
+  --color-secondary-solid-hover: #e6003a;
+  --color-primary-solid-hover: #3d2599;
+  --color-surface-brand: #1a0e4a;
+  --color-surface-brand-alt: #29166f;
+  --color-on-spotify: #121212;
 
   /* Award/Medal Colors */
   --color-gold: #ffd700;
@@ -163,7 +171,7 @@
   --color-surface-elevated: #21262d;
 
   --color-text: #e6edf3;
-  --color-text-muted: #768390;
+  --color-text-muted: #8b949e;
   --color-text-secondary: #adbac7;
   --color-text-inverted: #ffffff;
 
@@ -181,6 +189,11 @@
   /* Lighter secondary for dark mode */
   --color-secondary: #ff4d6d;
   --color-secondary-light: #ff6b85;
+
+  --color-text-accent: #d4a15e;
+  --color-secondary-solid: #d1173f;
+  --color-secondary-solid-hover: #b3002a;
+  --color-primary-solid-hover: #5a48d0;
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.4);
