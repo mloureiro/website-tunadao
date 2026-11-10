@@ -74,9 +74,18 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: ' - Tunadao CMS',
+      titleSuffix: '- Tunadão CMS',
+      icons: [
+        { rel: 'icon', type: 'image/svg+xml', url: '/tunadao-logo.svg' },
+        { rel: 'apple-touch-icon', url: '/apple-touch-icon.png' },
+      ],
+      openGraph: { siteName: 'Tunadão CMS' },
     },
     components: {
+      graphics: {
+        Logo: '@/components/AdminLogo',
+        Icon: '@/components/AdminIcon',
+      },
       beforeDashboard: ['@/components/RebuildStatusWidget'],
     },
   },
