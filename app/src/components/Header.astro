@@ -294,9 +294,7 @@ const currentPath = normalizePath(Astro.url.pathname);
     top: 100%;
     left: 0;
     right: 0;
-    background-color: rgba(248, 249, 250, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: var(--color-background);
     border-bottom: 1px solid var(--color-border-light);
     transform: translateY(-100%);
     opacity: 0;
@@ -305,10 +303,6 @@ const currentPath = normalizePath(Astro.url.pathname);
       transform var(--transition-base),
       opacity var(--transition-base),
       visibility var(--transition-base);
-  }
-
-  :global([data-theme='dark']) .header__mobile-menu {
-    background-color: rgba(13, 17, 23, 0.95);
   }
 
   .header__mobile-menu[aria-hidden='false'] {
