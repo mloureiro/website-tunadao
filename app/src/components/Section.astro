@@ -93,8 +93,12 @@ const {
   .section__body {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-12);
+    gap: 0;
     align-items: start;
+  }
+
+  .section__body > :global(.section-image) {
+    margin-top: var(--space-12);
   }
 
   @media (min-width: 1024px) {
@@ -103,6 +107,10 @@ const {
       grid-template-rows: auto 1fr;
       column-gap: var(--space-12);
       row-gap: 0;
+    }
+
+    .section--two-column .section__body > :global(.section-image) {
+      margin-top: 0;
     }
 
     .section--two-column .section__heading {
