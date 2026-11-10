@@ -2,11 +2,13 @@ import { buildConfig } from 'payload';
 import { sqliteAdapter } from '@payloadcms/db-sqlite';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
 import { resendAdapter } from '@payloadcms/email-resend';
+import { pt } from '@payloadcms/translations/languages/pt';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
 import { LOCAL_DB_URL } from './lib/db-path';
 import { isProduction } from './lib/env';
+import { ptPTTranslations } from './i18n/pt-PT';
 
 // Collections
 import { Users } from './collections/Users';
@@ -77,6 +79,12 @@ export default buildConfig({
     components: {
       beforeDashboard: ['@/components/RebuildStatusWidget'],
     },
+  },
+
+  i18n: {
+    supportedLanguages: { pt },
+    fallbackLanguage: 'pt',
+    translations: { pt: ptPTTranslations },
   },
 
   editor: lexicalEditor(),
