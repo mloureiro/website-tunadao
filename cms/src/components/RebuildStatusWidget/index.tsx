@@ -96,10 +96,10 @@ export default async function RebuildStatusWidget() {
   if (!hasOutcome) {
     return (
       <div style={cardStyle}>
-        <span style={labelStyle}>Último Rebuild do Site</span>
+        <span style={labelStyle}>Última atualização do site</span>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <span style={badges.empty}>—</span>
-          <span style={metaStyle}>Ainda não foi despoletado nenhum rebuild.</span>
+          <span style={metaStyle}>Ainda não foi pedida nenhuma atualização do site.</span>
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export default async function RebuildStatusWidget() {
 
   return (
     <div style={cardStyle}>
-      <span style={labelStyle}>Último Rebuild do Site</span>
+      <span style={labelStyle}>Última atualização do site</span>
 
       {/* Status row */}
       <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
@@ -147,7 +147,7 @@ export default async function RebuildStatusWidget() {
       {/* Skipped note */}
       {outcome === 'skipped' && (
         <div style={{ ...metaStyle, marginTop: '6px', fontStyle: 'italic' }}>
-          Credenciais GitHub não configuradas — o rebuild não foi enviado.
+          Credenciais GitHub não configuradas — o pedido de atualização do site não foi enviado.
         </div>
       )}
 

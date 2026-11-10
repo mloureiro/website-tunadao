@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const Videos: CollectionConfig = {
   slug: 'videos',
+  labels: {
+    singular: 'Vídeo',
+    plural: 'Vídeos',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const Videos: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Vídeos do YouTube',
     defaultColumns: ['title', 'category', 'publishedAt', 'status'],
   },
@@ -28,11 +32,13 @@ export const Videos: CollectionConfig = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       required: true,
     },
     {
       name: 'youtubeUrl',
+      label: 'URL do YouTube',
       type: 'text',
       required: true,
       admin: {
@@ -48,6 +54,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'youtubeId',
+      label: 'ID do YouTube',
       type: 'text',
       admin: {
         hidden: true,
@@ -68,6 +75,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'description',
+      label: 'Descrição',
       type: 'textarea',
       admin: {
         description: 'Descrição do vídeo',
@@ -75,6 +83,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'category',
+      label: 'Categoria',
       type: 'select',
       required: true,
       options: [
@@ -87,6 +96,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'featured',
+      label: 'Destaque',
       type: 'checkbox',
       defaultValue: false,
       admin: {
@@ -95,6 +105,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'publishedAt',
+      label: 'Data de publicação',
       type: 'date',
       required: true,
       admin: {
@@ -103,6 +114,7 @@ export const Videos: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'draft',

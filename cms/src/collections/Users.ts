@@ -2,6 +2,10 @@ import { CollectionConfig } from 'payload';
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    singular: 'Utilizador',
+    plural: 'Utilizadores',
+  },
   auth: {
     tokenExpiration: 7200, // 2 hours
     maxLoginAttempts: 5,
@@ -9,7 +13,7 @@ export const Users: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    group: 'Admin',
+    group: 'Administração',
   },
   access: {
     // Only admins can create/update/delete users
@@ -30,16 +34,18 @@ export const Users: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
     },
     {
       name: 'role',
+      label: 'Função',
       type: 'select',
       required: true,
       defaultValue: 'editor',
       options: [
-        { label: 'Admin', value: 'admin' },
+        { label: 'Administrador', value: 'admin' },
         { label: 'Editor', value: 'editor' },
       ],
       access: {

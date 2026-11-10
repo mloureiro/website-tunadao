@@ -3,9 +3,10 @@ import { GlobalConfig } from 'payload';
 // NOTE: intentionally NO hooks.afterChange — writing status must never trigger a rebuild.
 export const RebuildStatus: GlobalConfig = {
   slug: 'rebuild-status',
+  label: 'Estado da atualização do site',
   admin: {
-    group: 'Settings',
-    description: 'Estado do último despoletar de rebuild do site',
+    group: 'Definições',
+    description: 'Estado do último pedido de atualização do site',
   },
   access: {
     // Deliberate deviation from the public-read convention:
@@ -23,34 +24,34 @@ export const RebuildStatus: GlobalConfig = {
         { label: 'Falha', value: 'failure' },
         { label: 'Ignorado', value: 'skipped' },
       ],
-      admin: { description: 'Resultado do último despoletar de rebuild' },
+      admin: { description: 'Resultado do último pedido de atualização' },
     },
     {
       name: 'timestamp',
       type: 'date',
       label: 'Data/Hora',
       admin: {
-        description: 'Quando o rebuild foi tentado',
+        description: 'Quando a atualização foi pedida',
         date: { pickerAppearance: 'dayAndTime' },
       },
     },
     {
       name: 'workflowFile',
       type: 'text',
-      label: 'Workflow',
-      admin: { description: 'Ficheiro de workflow GitHub Actions despoletado' },
+      label: 'Fluxo de trabalho (GitHub Actions)',
+      admin: { description: 'Fluxo de trabalho GitHub Actions utilizado no pedido' },
     },
     {
       name: 'triggerCollection',
       type: 'text',
       label: 'Origem',
-      admin: { description: 'Coleção ou global que despoletou o rebuild' },
+      admin: { description: 'Coleção ou global que pediu a atualização' },
     },
     {
       name: 'triggerOperation',
       type: 'text',
       label: 'Operação',
-      admin: { description: 'Operação (create/update) que despoletou o rebuild' },
+      admin: { description: 'Operação (create/update) que pediu a atualização' },
     },
     {
       name: 'httpStatus',

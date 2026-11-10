@@ -3,6 +3,7 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  label: 'Definições do site',
   hooks: {
     afterChange: [
       async ({ doc, req }) => {
@@ -12,7 +13,7 @@ export const SiteSettings: GlobalConfig = {
     ],
   },
   admin: {
-    group: 'Settings',
+    group: 'Definições',
   },
   access: {
     read: () => true,
@@ -21,18 +22,21 @@ export const SiteSettings: GlobalConfig = {
   fields: [
     {
       name: 'siteName',
+      label: 'Nome do site',
       type: 'text',
       required: true,
       defaultValue: 'Tunadão 1998',
     },
     {
       name: 'siteDescription',
+      label: 'Descrição do site',
       type: 'textarea',
       required: true,
       defaultValue: 'Tuna do Instituto Politécnico de Viseu',
     },
     {
       name: 'logo',
+      label: 'Logótipo',
       type: 'relationship',
       relationTo: 'media',
     },
@@ -84,10 +88,11 @@ export const SiteSettings: GlobalConfig = {
     },
     {
       type: 'collapsible',
-      label: 'SEO Defaults',
+      label: 'SEO por omissão',
       fields: [
         {
           name: 'defaultSeoImage',
+          label: 'Imagem de partilha por omissão',
           type: 'relationship',
           relationTo: 'media',
           admin: {
@@ -96,6 +101,7 @@ export const SiteSettings: GlobalConfig = {
         },
         {
           name: 'googleAnalyticsId',
+          label: 'ID do Google Analytics',
           type: 'text',
           admin: {
             description: 'Google Analytics ID (ex: G-XXXXXXXXXX)',

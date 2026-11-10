@@ -3,11 +3,11 @@ import type { CollectionConfig } from 'payload';
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: {
-    singular: 'Media',
-    plural: 'Media',
+    singular: 'Ficheiro multimédia',
+    plural: 'Multimédia',
   },
   admin: {
-    group: 'Media',
+    group: 'Multimédia',
     defaultColumns: ['filename', 'alt', 'url', 'createdAt'],
     useAsTitle: 'filename',
   },
@@ -20,6 +20,7 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'filename',
+      label: 'Nome do ficheiro',
       type: 'text',
       required: true,
       admin: {
@@ -28,6 +29,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'cloudinary',
+      label: 'Imagem',
       type: 'json',
       required: true,
       admin: {
@@ -38,6 +40,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'url',
+      label: 'URL',
       type: 'text',
       admin: {
         readOnly: true,
@@ -53,6 +56,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'publicId',
+      label: 'ID público (Cloudinary)',
       type: 'text',
       admin: {
         readOnly: true,
@@ -68,6 +72,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'width',
+      label: 'Largura',
       type: 'number',
       admin: {
         readOnly: true,
@@ -82,6 +87,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'height',
+      label: 'Altura',
       type: 'number',
       admin: {
         readOnly: true,
@@ -111,6 +117,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'mimeType',
+      label: 'Tipo MIME',
       type: 'text',
       admin: {
         readOnly: true,
@@ -131,6 +138,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'filesize',
+      label: 'Tamanho (bytes)',
       type: 'number',
       admin: {
         readOnly: true,
@@ -146,6 +154,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'alt',
+      label: 'Texto alternativo',
       type: 'text',
       required: true,
       admin: {
@@ -154,6 +163,7 @@ export const Media: CollectionConfig = {
     },
     {
       name: 'caption',
+      label: 'Legenda',
       type: 'text',
       admin: {
         description: 'Legenda opcional',

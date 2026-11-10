@@ -2,9 +2,13 @@ import { CollectionConfig } from 'payload';
 
 export const AwardTypes: CollectionConfig = {
   slug: 'award-types',
+  labels: {
+    singular: 'Tipo de prémio',
+    plural: 'Tipos de prémio',
+  },
   admin: {
     useAsTitle: 'name',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Tipos de prémios (usados no Citadão e Palmarés)',
   },
   access: {
@@ -16,6 +20,7 @@ export const AwardTypes: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
       admin: {
@@ -24,6 +29,7 @@ export const AwardTypes: CollectionConfig = {
     },
     {
       name: 'slug',
+      label: 'Identificador',
       type: 'text',
       required: true,
       unique: true,
@@ -33,6 +39,7 @@ export const AwardTypes: CollectionConfig = {
     },
     {
       name: 'aliases',
+      label: 'Nomes alternativos',
       type: 'array',
       admin: {
         description: 'Nomes alternativos usados por outros festivais',
@@ -40,6 +47,7 @@ export const AwardTypes: CollectionConfig = {
       fields: [
         {
           name: 'alias',
+          label: 'Nome alternativo',
           type: 'text',
           required: true,
         },
@@ -47,6 +55,7 @@ export const AwardTypes: CollectionConfig = {
     },
     {
       name: 'description',
+      label: 'Descrição',
       type: 'textarea',
       admin: {
         description: 'Descrição do prémio (aparece em tooltip)',
@@ -54,6 +63,7 @@ export const AwardTypes: CollectionConfig = {
     },
     {
       name: 'criteria',
+      label: 'Critérios',
       type: 'richText',
       admin: {
         description: 'Critérios de avaliação detalhados',
@@ -61,6 +71,7 @@ export const AwardTypes: CollectionConfig = {
     },
     {
       name: 'icon',
+      label: 'Ícone',
       type: 'text',
       admin: {
         description: 'Ícone do prémio (emoji ou código)',

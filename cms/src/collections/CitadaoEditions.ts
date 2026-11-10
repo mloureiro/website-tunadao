@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const CitadaoEditions: CollectionConfig = {
   slug: 'citadao-editions',
+  labels: {
+    singular: 'Edição do Citadão',
+    plural: 'Edições do Citadão',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const CitadaoEditions: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Edições do Festival Citadão',
     defaultColumns: ['editionNumber', 'startDate', 'endDate', 'status'],
   },
@@ -28,6 +32,7 @@ export const CitadaoEditions: CollectionConfig = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       admin: {
         hidden: true,
@@ -45,6 +50,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'editionNumber',
+      label: 'Número da edição',
       type: 'number',
       required: true,
       unique: true,
@@ -57,6 +63,7 @@ export const CitadaoEditions: CollectionConfig = {
       fields: [
         {
           name: 'startDate',
+          label: 'Data de início',
           type: 'date',
           required: true,
           admin: {
@@ -70,6 +77,7 @@ export const CitadaoEditions: CollectionConfig = {
         },
         {
           name: 'endDate',
+          label: 'Data de fim',
           type: 'date',
           required: true,
           admin: {
@@ -85,6 +93,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'poster',
+      label: 'Cartaz',
       type: 'relationship',
       relationTo: 'media',
       admin: {
@@ -93,6 +102,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'schedule',
+      label: 'Programação',
       type: 'array',
       admin: {
         description: 'Programação por dia/local',
@@ -100,6 +110,7 @@ export const CitadaoEditions: CollectionConfig = {
       fields: [
         {
           name: 'date',
+          label: 'Data',
           type: 'date',
           required: true,
           admin: {
@@ -111,6 +122,7 @@ export const CitadaoEditions: CollectionConfig = {
         },
         {
           name: 'venue',
+          label: 'Local',
           type: 'relationship',
           relationTo: 'venues',
           required: true,
@@ -119,6 +131,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'description',
+      label: 'Descrição',
       type: 'textarea',
       admin: {
         description: 'Descrição pública do evento',
@@ -126,6 +139,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'notes',
+      label: 'Notas internas',
       type: 'textarea',
       admin: {
         description: 'Notas internas (ex: 10º Aniversário)',
@@ -133,6 +147,7 @@ export const CitadaoEditions: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'published',

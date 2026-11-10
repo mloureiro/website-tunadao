@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const BlogPosts: CollectionConfig = {
   slug: 'blog-posts',
+  labels: {
+    singular: 'Artigo',
+    plural: 'Artigos',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const BlogPosts: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Artigos do blog',
     defaultColumns: ['title', 'author', 'publishedAt', 'status'],
   },
@@ -28,11 +32,13 @@ export const BlogPosts: CollectionConfig = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       required: true,
     },
     {
       name: 'slug',
+      label: 'Endereço (slug)',
       type: 'text',
       required: true,
       unique: true,
@@ -42,6 +48,7 @@ export const BlogPosts: CollectionConfig = {
     },
     {
       name: 'excerpt',
+      label: 'Resumo',
       type: 'textarea',
       required: true,
       maxLength: 300,
@@ -51,17 +58,20 @@ export const BlogPosts: CollectionConfig = {
     },
     {
       name: 'content',
+      label: 'Conteúdo',
       type: 'richText',
       required: true,
     },
     {
       name: 'featuredImage',
+      label: 'Imagem de destaque',
       type: 'relationship',
       relationTo: 'media',
       required: true,
     },
     {
       name: 'author',
+      label: 'Autor',
       type: 'relationship',
       relationTo: 'users',
       required: true,
@@ -71,10 +81,12 @@ export const BlogPosts: CollectionConfig = {
     },
     {
       name: 'tags',
+      label: 'Etiquetas',
       type: 'array',
       fields: [
         {
           name: 'tag',
+          label: 'Etiqueta',
           type: 'text',
           required: true,
         },
@@ -82,6 +94,7 @@ export const BlogPosts: CollectionConfig = {
     },
     {
       name: 'publishedAt',
+      label: 'Data de publicação',
       type: 'date',
       required: true,
       admin: {
@@ -92,6 +105,7 @@ export const BlogPosts: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'draft',
