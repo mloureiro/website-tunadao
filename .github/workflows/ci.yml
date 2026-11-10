@@ -28,7 +28,7 @@ jobs:
   # Determine what needs to be deployed based on changed files or manual input
   determine-targets:
     name: Determine Deploy Targets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       deploy_app: ${{ steps.decide.outputs.deploy_app }}
       deploy_cms: ${{ steps.decide.outputs.deploy_cms }}
@@ -93,7 +93,7 @@ jobs:
 
   lint-and-typecheck:
     name: Lint & Type Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -125,7 +125,7 @@ jobs:
 
   cms-build:
     name: CMS Lint & Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       PAYLOAD_SECRET: ci-build-placeholder
       FRONTEND_URL: https://example.test
@@ -151,7 +151,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -174,7 +174,7 @@ jobs:
 
   e2e-tests:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Test-only origin: a reserved .test domain that never resolves and is never deployed.
     # It differs from the astro.config.mjs fallback, so the assertion proves SITE_URL was injected.
     # The live origin (https://www.loureiro.me) is not used: the dist host ban would reject it.
@@ -279,7 +279,7 @@ jobs:
 
   deploy-app:
     name: Deploy App to GitHub Pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pages: write
@@ -404,7 +404,7 @@ jobs:
 
   deploy-cms:
     name: Deploy CMS (Render)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [determine-targets, lint-and-typecheck, cms-build, unit-tests, e2e-tests]
     if: |
       needs.determine-targets.outputs.deploy_cms == 'true' &&
