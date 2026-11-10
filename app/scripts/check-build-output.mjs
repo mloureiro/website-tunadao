@@ -8,6 +8,9 @@
  *   3. dist/index.html canonical + og:url use the expected origin+base.
  *   4. No hardcoded hosts (tunadao.pt, www.loureiro.me, tunadao1998.github.io)
  *      remain anywhere in dist/.
+ *   5. No dropped-slash base joins in every dist HTML file.
+ *   6. dist/404.html is noindex, has no canonical, and keeps every
+ *      root-relative href/src under the base path.
  *
  * Expected env vars (set by the CI step that runs this script):
  *   EXPECTED_ORIGIN  e.g. https://example.test
@@ -209,6 +212,41 @@ if (BASE_WITHOUT_SLASH && BASE_WITHOUT_SLASH !== '') {
   }
 } else {
   pass(`Skipping dropped-slash check (base is root "/", no join ambiguity)`);
+}
+
+// ── 6. 404.html ──────────────────────────────────────────────────────────────
+
+const notFoundPath = path.join(DIST, '404.html');
+if (!fs.existsSync(notFoundPath)) {
+  fail('dist/404.html not found');
+} else {
+  const notFound = fs.readFileSync(notFoundPath, 'utf8');
+
+  if (/<meta\s+name="robots"\s+content="noindex"/.test(notFound)) {
+    pass('404.html has robots noindex');
+  } else {
+    fail('404.html is missing <meta name="robots" content="noindex">');
+  }
+
+  if (/rel="canonical"/.test(notFound)) {
+    fail('404.html has a canonical link');
+  } else {
+    pass('404.html has no canonical link');
+  }
+
+  const strayUrls = [...notFound.matchAll(/(?:href|src)="(\/[^"]*)"/g)]
+    .map((m) => m[1])
+    .filter(
+      (url) =>
+        !url.startsWith('//') && url !== BASE_WITHOUT_SLASH && !url.startsWith(EXPECTED_BASE)
+    );
+  if (strayUrls.length === 0) {
+    pass(`404.html root-relative href/src all start with ${EXPECTED_BASE}`);
+  } else {
+    for (const url of strayUrls) {
+      fail(`404.html URL outside the base path: ${url}`);
+    }
+  }
 }
 
 // ── Summary ───────────────────────────────────────────────────────────────────
