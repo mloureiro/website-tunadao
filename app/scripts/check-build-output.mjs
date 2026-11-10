@@ -237,8 +237,7 @@ if (!fs.existsSync(notFoundPath)) {
   const strayUrls = [...notFound.matchAll(/(?:href|src)="(\/[^"]*)"/g)]
     .map((m) => m[1])
     .filter(
-      (url) =>
-        !url.startsWith('//') && url !== BASE_WITHOUT_SLASH && !url.startsWith(EXPECTED_BASE)
+      (url) => !url.startsWith('//') && url !== BASE_WITHOUT_SLASH && !url.startsWith(EXPECTED_BASE)
     );
   if (strayUrls.length === 0) {
     pass(`404.html root-relative href/src all start with ${EXPECTED_BASE}`);
