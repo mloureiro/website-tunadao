@@ -15,7 +15,7 @@ concurrency:
 jobs:
   backup:
     name: Backup Turso Database
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       TURSO_CLI_VERSION: v1.0.29 # pin — bump deliberately; verify on release page
@@ -152,7 +152,7 @@ jobs:
     name: Report backup failure
     needs: backup
     if: failure()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       issues: write
