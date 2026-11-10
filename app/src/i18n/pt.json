@@ -377,6 +377,11 @@
     "since": "Desde",
     "yearsOfHistory": "anos de história"
   },
+  "notFound": {
+    "title": "Página não encontrada",
+    "text": "A página que procuras não existe ou mudou de endereço.",
+    "home": "Voltar ao início"
+  },
   "error": {
     "404": {
       "title": "Página não encontrada",
