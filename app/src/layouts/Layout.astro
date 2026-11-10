@@ -10,6 +10,7 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  noindex?: boolean;
 }
 
 // import.meta.env.BASE_URL can lack a trailing slash when BASE_PATH is supplied
@@ -27,6 +28,7 @@ const {
   title,
   description = 'Tunadão 1998 - Tuna do Instituto Politécnico de Viseu. Desde 1998 a representar a academia e a cidade de Viseu.',
   image = baseAsset('og-image.jpg'),
+  noindex = false,
 } = Astro.props;
 
 const lang: Language = getLang(Astro.currentLocale, Astro.url);
@@ -53,11 +55,14 @@ const alternates = [
     <meta name="title" content={title} />
     <meta name="description" content={description} />
 
-    <!-- Canonical -->
-    <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex" />}
 
-    <!-- hreflang alternates (pt-PT / en-US / x-default) -->
-    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+    <!-- Canonical + hreflang alternates (pt-PT / en-US / x-default) -->
+    {!noindex && <link rel="canonical" href={canonicalURL} />}
+    {
+      !noindex &&
+        alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)
+    }
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={baseAsset('favicon.svg')} />
