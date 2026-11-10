@@ -2,9 +2,13 @@ import { CollectionConfig } from 'payload';
 
 export const Venues: CollectionConfig = {
   slug: 'venues',
+  labels: {
+    singular: 'Local',
+    plural: 'Locais',
+  },
   admin: {
     useAsTitle: 'name',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Locais dos eventos',
     defaultColumns: ['name', 'address'],
   },
@@ -17,6 +21,7 @@ export const Venues: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
       admin: {
@@ -25,6 +30,7 @@ export const Venues: CollectionConfig = {
     },
     {
       name: 'address',
+      label: 'Morada',
       type: 'text',
       admin: {
         description: 'Morada',
@@ -32,6 +38,7 @@ export const Venues: CollectionConfig = {
     },
     {
       name: 'photo',
+      label: 'Fotografia',
       type: 'relationship',
       relationTo: 'media',
       admin: {

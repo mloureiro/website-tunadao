@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  labels: {
+    singular: 'Página',
+    plural: 'Páginas',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const Pages: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Páginas de conteúdo estático',
     defaultColumns: ['title', 'slug', 'status'],
   },
@@ -28,11 +32,13 @@ export const Pages: CollectionConfig = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       required: true,
     },
     {
       name: 'slug',
+      label: 'Endereço (slug)',
       type: 'text',
       required: true,
       unique: true,
@@ -42,6 +48,7 @@ export const Pages: CollectionConfig = {
     },
     {
       name: 'content',
+      label: 'Conteúdo',
       type: 'richText',
       required: true,
     },
@@ -51,6 +58,7 @@ export const Pages: CollectionConfig = {
       fields: [
         {
           name: 'seoTitle',
+          label: 'Título SEO',
           type: 'text',
           admin: {
             description: 'Título para motores de busca (deixar vazio para usar o título principal)',
@@ -58,6 +66,7 @@ export const Pages: CollectionConfig = {
         },
         {
           name: 'seoDescription',
+          label: 'Descrição SEO',
           type: 'textarea',
           maxLength: 160,
           admin: {
@@ -66,6 +75,7 @@ export const Pages: CollectionConfig = {
         },
         {
           name: 'seoImage',
+          label: 'Imagem de partilha',
           type: 'relationship',
           relationTo: 'media',
           admin: {
@@ -76,6 +86,7 @@ export const Pages: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'draft',

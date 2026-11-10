@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const Albums: CollectionConfig = {
   slug: 'albums',
+  labels: {
+    singular: 'Álbum',
+    plural: 'Álbuns',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const Albums: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Álbuns de música',
     defaultColumns: ['title', 'year', 'status'],
   },
@@ -28,6 +32,7 @@ export const Albums: CollectionConfig = {
   fields: [
     {
       name: 'title',
+      label: 'Título',
       type: 'text',
       required: true,
       admin: {
@@ -36,6 +41,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'year',
+      label: 'Ano',
       type: 'number',
       required: true,
       admin: {
@@ -44,6 +50,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'coverImage',
+      label: 'Capa',
       type: 'relationship',
       relationTo: 'media',
       required: true,
@@ -53,6 +60,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'description',
+      label: 'Descrição',
       type: 'richText',
       admin: {
         description: 'Descrição/história do álbum',
@@ -60,6 +68,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'spotifyUrl',
+      label: 'URL do Spotify',
       type: 'text',
       admin: {
         description: 'Link para o álbum no Spotify',
@@ -67,6 +76,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'tracks',
+      label: 'Faixas',
       type: 'array',
       admin: {
         description: 'Lista de faixas',
@@ -74,6 +84,7 @@ export const Albums: CollectionConfig = {
       fields: [
         {
           name: 'number',
+          label: 'N.º',
           type: 'number',
           required: true,
           admin: {
@@ -82,6 +93,7 @@ export const Albums: CollectionConfig = {
         },
         {
           name: 'title',
+          label: 'Título',
           type: 'text',
           required: true,
           admin: {
@@ -90,6 +102,7 @@ export const Albums: CollectionConfig = {
         },
         {
           name: 'duration',
+          label: 'Duração',
           type: 'text',
           admin: {
             description: 'Duração (ex: 3:45)',
@@ -100,6 +113,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'recordingType',
+      label: 'Tipo de gravação',
       type: 'select',
       options: [
         { label: 'Ao Vivo', value: 'live' },
@@ -111,6 +125,7 @@ export const Albums: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'published',

@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const FestivalAwards: CollectionConfig = {
   slug: 'festival-awards',
+  labels: {
+    singular: 'Prémio em festival',
+    plural: 'Prémios em festivais',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -27,8 +31,8 @@ export const FestivalAwards: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'id',
-    group: 'Content',
-    description: 'Premios ganhos em festivais',
+    group: 'Conteúdos',
+    description: 'Prémios ganhos em festivais',
     defaultColumns: ['festival', 'awardType', 'customName'],
   },
   access: {
@@ -44,19 +48,21 @@ export const FestivalAwards: CollectionConfig = {
       relationTo: 'festivals',
       required: true,
       admin: {
-        description: 'Festival onde o premio foi ganho',
+        description: 'Festival onde o prémio foi ganho',
       },
     },
     {
       name: 'awardType',
+      label: 'Tipo de prémio',
       type: 'relationship',
       relationTo: 'award-types',
       admin: {
-        description: 'Tipo de premio (opcional se nao existir na lista)',
+        description: 'Tipo de prémio (opcional se não existir na lista)',
       },
     },
     {
       name: 'customName',
+      label: 'Nome personalizado',
       type: 'text',
       admin: {
         description: 'Nome personalizado (se diferente do tipo)',

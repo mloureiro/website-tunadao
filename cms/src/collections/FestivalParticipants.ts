@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const FestivalParticipants: CollectionConfig = {
   slug: 'festival-participants',
+  labels: {
+    singular: 'Participação em festival',
+    plural: 'Participações em festivais',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -27,8 +31,8 @@ export const FestivalParticipants: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'id',
-    group: 'Content',
-    description: 'Participacoes de tunas nos festivais externos',
+    group: 'Conteúdos',
+    description: 'Participações de tunas nos festivais externos',
     defaultColumns: ['festival', 'tuna', 'type'],
   },
   access: {
@@ -58,6 +62,7 @@ export const FestivalParticipants: CollectionConfig = {
     },
     {
       name: 'type',
+      label: 'Tipo de participação',
       type: 'select',
       required: true,
       defaultValue: 'contestant',
@@ -66,7 +71,7 @@ export const FestivalParticipants: CollectionConfig = {
         { label: 'Convidado', value: 'guest' },
       ],
       admin: {
-        description: 'Tipo de participacao',
+        description: 'Tipo de participação',
       },
     },
   ],

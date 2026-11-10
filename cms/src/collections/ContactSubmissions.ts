@@ -14,9 +14,13 @@ const REJECTION_MESSAGE = 'Validação falhou. Tenta novamente.';
 
 export const ContactSubmissions: CollectionConfig = {
   slug: 'contact-submissions',
+  labels: {
+    singular: 'Mensagem de contacto',
+    plural: 'Mensagens de contacto',
+  },
   admin: {
     useAsTitle: 'subject',
-    group: 'Admin',
+    group: 'Administração',
     description: 'Mensagens recebidas pelo formulário de contacto',
     defaultColumns: ['name', 'email', 'subject', 'status', 'createdAt'],
   },
@@ -32,12 +36,14 @@ export const ContactSubmissions: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
       maxLength: FIELD_MAX_LENGTHS.name,
     },
     {
       name: 'email',
+      label: 'E-mail',
       type: 'email',
       required: true,
       validate: (value, args) =>
@@ -47,18 +53,21 @@ export const ContactSubmissions: CollectionConfig = {
     },
     {
       name: 'subject',
+      label: 'Assunto',
       type: 'text',
       required: true,
       maxLength: FIELD_MAX_LENGTHS.subject,
     },
     {
       name: 'message',
+      label: 'Mensagem',
       type: 'textarea',
       required: true,
       maxLength: FIELD_MAX_LENGTHS.message,
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'new',
@@ -75,6 +84,7 @@ export const ContactSubmissions: CollectionConfig = {
     },
     {
       name: 'notes',
+      label: 'Notas internas',
       type: 'textarea',
       admin: {
         description: 'Notas internas sobre este contacto',

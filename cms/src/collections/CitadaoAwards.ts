@@ -2,9 +2,13 @@ import { CollectionConfig } from 'payload';
 
 export const CitadaoAwards: CollectionConfig = {
   slug: 'citadao-awards',
+  labels: {
+    singular: 'Prémio do Citadão',
+    plural: 'Prémios do Citadão',
+  },
   admin: {
     useAsTitle: 'id',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Prémios atribuídos nas edições do Citadão',
     defaultColumns: ['edition', 'award', 'tuna'],
   },
@@ -17,6 +21,7 @@ export const CitadaoAwards: CollectionConfig = {
   fields: [
     {
       name: 'edition',
+      label: 'Edição',
       type: 'relationship',
       relationTo: 'citadao-editions',
       required: true,
@@ -26,6 +31,7 @@ export const CitadaoAwards: CollectionConfig = {
     },
     {
       name: 'award',
+      label: 'Prémio',
       type: 'relationship',
       relationTo: 'award-types',
       required: true,

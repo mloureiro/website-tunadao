@@ -3,6 +3,10 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const Festivals: CollectionConfig = {
   slug: 'festivals',
+  labels: {
+    singular: 'Festival',
+    plural: 'Festivais',
+  },
   hooks: {
     afterChange: [
       async ({ doc, operation, req }) => {
@@ -15,7 +19,7 @@ export const Festivals: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'name',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Festivais de tunas onde participamos',
     defaultColumns: ['name', 'date', 'location', 'status'],
   },
@@ -28,6 +32,7 @@ export const Festivals: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: 'Nome',
       type: 'text',
       required: true,
       admin: {
@@ -36,6 +41,7 @@ export const Festivals: CollectionConfig = {
     },
     {
       name: 'date',
+      label: 'Data',
       type: 'date',
       required: true,
       admin: {
@@ -48,6 +54,7 @@ export const Festivals: CollectionConfig = {
     },
     {
       name: 'location',
+      label: 'Localidade',
       type: 'text',
       admin: {
         description: 'Localidade',
@@ -55,6 +62,7 @@ export const Festivals: CollectionConfig = {
     },
     {
       name: 'organizingTuna',
+      label: 'Tuna organizadora',
       type: 'relationship',
       relationTo: 'tunas',
       admin: {
@@ -63,6 +71,7 @@ export const Festivals: CollectionConfig = {
     },
     {
       name: 'poster',
+      label: 'Cartaz',
       type: 'relationship',
       relationTo: 'media',
       admin: {
@@ -71,6 +80,7 @@ export const Festivals: CollectionConfig = {
     },
     {
       name: 'status',
+      label: 'Estado',
       type: 'select',
       required: true,
       defaultValue: 'published',

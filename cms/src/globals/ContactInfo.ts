@@ -3,6 +3,7 @@ import { triggerFrontendRebuild } from '../utils/triggerRebuild';
 
 export const ContactInfo: GlobalConfig = {
   slug: 'contact-info',
+  label: 'Contactos',
   hooks: {
     afterChange: [
       async ({ doc, req }) => {
@@ -12,7 +13,7 @@ export const ContactInfo: GlobalConfig = {
     ],
   },
   admin: {
-    group: 'Settings',
+    group: 'Definições',
   },
   access: {
     read: () => true,
@@ -21,17 +22,20 @@ export const ContactInfo: GlobalConfig = {
   fields: [
     {
       name: 'email',
+      label: 'E-mail',
       type: 'email',
       required: true,
       defaultValue: 'tunadao@gmail.com',
     },
     {
       name: 'phone',
+      label: 'Telefone',
       type: 'text',
       defaultValue: '+351 928 155 399',
     },
     {
       name: 'address',
+      label: 'Morada',
       type: 'textarea',
       defaultValue: 'Campus Politécnico de Viseu\n3504-510 Viseu',
     },
@@ -41,6 +45,7 @@ export const ContactInfo: GlobalConfig = {
       fields: [
         {
           name: 'mapEmbedUrl',
+          label: 'URL do mapa (Google Maps)',
           type: 'text',
           admin: {
             description: 'URL do Google Maps embed (opcional)',
@@ -48,6 +53,7 @@ export const ContactInfo: GlobalConfig = {
         },
         {
           name: 'coordinates',
+          label: 'Coordenadas',
           type: 'group',
           fields: [
             {

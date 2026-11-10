@@ -315,7 +315,7 @@ export interface Tuna {
    */
   fullName: string;
   /**
-   * Logo da tuna
+   * Logótipo da tuna
    */
   logo?: (number | null) | Media;
   /**
@@ -463,7 +463,7 @@ export interface Festival {
   createdAt: string;
 }
 /**
- * Premios ganhos em festivais
+ * Prémios ganhos em festivais
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "festival-awards".
@@ -471,11 +471,11 @@ export interface Festival {
 export interface FestivalAward {
   id: number;
   /**
-   * Festival onde o premio foi ganho
+   * Festival onde o prémio foi ganho
    */
   festival: number | Festival;
   /**
-   * Tipo de premio (opcional se nao existir na lista)
+   * Tipo de prémio (opcional se não existir na lista)
    */
   awardType?: (number | null) | AwardType;
   /**
@@ -486,7 +486,7 @@ export interface FestivalAward {
   createdAt: string;
 }
 /**
- * Participacoes de tunas nos festivais externos
+ * Participações de tunas nos festivais externos
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "festival-participants".
@@ -502,7 +502,7 @@ export interface FestivalParticipant {
    */
   tuna: number | Tuna;
   /**
-   * Tipo de participacao
+   * Tipo de participação
    */
   type: 'contestant' | 'guest';
   updatedAt: string;
@@ -1209,7 +1209,7 @@ export interface ContactInfo {
   createdAt?: string | null;
 }
 /**
- * Estado do último despoletar de rebuild do site
+ * Estado do último pedido de atualização do site
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "rebuild-status".
@@ -1217,23 +1217,23 @@ export interface ContactInfo {
 export interface RebuildStatus {
   id: number;
   /**
-   * Resultado do último despoletar de rebuild
+   * Resultado do último pedido de atualização
    */
   outcome?: ('success' | 'failure' | 'skipped') | null;
   /**
-   * Quando o rebuild foi tentado
+   * Quando a atualização foi pedida
    */
   timestamp?: string | null;
   /**
-   * Ficheiro de workflow GitHub Actions despoletado
+   * Fluxo de trabalho GitHub Actions utilizado no pedido
    */
   workflowFile?: string | null;
   /**
-   * Coleção ou global que despoletou o rebuild
+   * Coleção ou global que pediu a atualização
    */
   triggerCollection?: string | null;
   /**
-   * Operação (create/update) que despoletou o rebuild
+   * Operação (create/update) que pediu a atualização
    */
   triggerOperation?: string | null;
   /**

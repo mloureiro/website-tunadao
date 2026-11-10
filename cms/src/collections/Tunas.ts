@@ -2,9 +2,13 @@ import { CollectionConfig } from 'payload';
 
 export const Tunas: CollectionConfig = {
   slug: 'tunas',
+  labels: {
+    singular: 'Tuna',
+    plural: 'Tunas',
+  },
   admin: {
     useAsTitle: 'fullName',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Tunas académicas e grupos similares',
     defaultColumns: ['shortName', 'fullName', 'city', 'type'],
   },
@@ -17,6 +21,7 @@ export const Tunas: CollectionConfig = {
   fields: [
     {
       name: 'shortName',
+      label: 'Sigla',
       type: 'text',
       required: true,
       unique: true,
@@ -26,6 +31,7 @@ export const Tunas: CollectionConfig = {
     },
     {
       name: 'fullName',
+      label: 'Nome completo',
       type: 'text',
       required: true,
       admin: {
@@ -34,14 +40,16 @@ export const Tunas: CollectionConfig = {
     },
     {
       name: 'logo',
+      label: 'Logótipo',
       type: 'relationship',
       relationTo: 'media',
       admin: {
-        description: 'Logo da tuna',
+        description: 'Logótipo da tuna',
       },
     },
     {
       name: 'city',
+      label: 'Cidade',
       type: 'text',
       admin: {
         description: 'Cidade de origem',
@@ -49,13 +57,14 @@ export const Tunas: CollectionConfig = {
     },
     {
       name: 'type',
+      label: 'Tipo',
       type: 'select',
       defaultValue: 'tuna',
       options: [
         { label: 'Tuna', value: 'tuna' },
         { label: 'Tuna Feminina', value: 'tuna-feminina' },
         { label: 'Tuna Veterana', value: 'tuna-veterana' },
-        { label: 'Tuna Senior', value: 'tuna-senior' },
+        { label: 'Tuna Sénior', value: 'tuna-senior' },
         { label: 'Internacional', value: 'international' },
         { label: 'Grupo', value: 'group' },
         { label: 'Solista', value: 'soloist' },
@@ -73,6 +82,7 @@ export const Tunas: CollectionConfig = {
     },
     {
       name: 'description',
+      label: 'Descrição',
       type: 'textarea',
       admin: {
         description: 'Descrição da tuna',

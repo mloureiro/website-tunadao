@@ -2,9 +2,13 @@ import { CollectionConfig } from 'payload';
 
 export const CitadaoParticipants: CollectionConfig = {
   slug: 'citadao-participants',
+  labels: {
+    singular: 'Participação no Citadão',
+    plural: 'Participações no Citadão',
+  },
   admin: {
     useAsTitle: 'id',
-    group: 'Content',
+    group: 'Conteúdos',
     description: 'Participações de tunas nas edições do Citadão',
     defaultColumns: ['edition', 'tuna', 'type'],
   },
@@ -17,6 +21,7 @@ export const CitadaoParticipants: CollectionConfig = {
   fields: [
     {
       name: 'edition',
+      label: 'Edição',
       type: 'relationship',
       relationTo: 'citadao-editions',
       required: true,
@@ -35,6 +40,7 @@ export const CitadaoParticipants: CollectionConfig = {
     },
     {
       name: 'type',
+      label: 'Tipo de participação',
       type: 'select',
       required: true,
       defaultValue: 'contestant',

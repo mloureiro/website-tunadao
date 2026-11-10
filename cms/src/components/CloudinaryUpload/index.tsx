@@ -114,13 +114,13 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({ field, p
     setValue(null);
   }, [setValue]);
 
-  const label = field?.label || 'Cloudinary Upload';
+  const label = field?.label || 'Imagem';
   const required = field?.required;
 
   return (
     <div className="cloudinary-upload-field">
       <label className="field-label">
-        {typeof label === 'string' ? label : 'Upload'}
+        {typeof label === 'string' ? label : 'Imagem'}
         {required && <span className="required">*</span>}
       </label>
 
@@ -164,8 +164,8 @@ export const CloudinaryUploadField: React.FC<TextFieldClientProps> = ({ field, p
           {isWidgetLoaded ? (
             <>
               <span className="icon">📁</span>
-              <span>Clica para fazer upload</span>
-              <span className="hint">ou arrasta ficheiros para aqui</span>
+              <span>Clique para carregar uma imagem</span>
+              <span className="hint">ou arraste um ficheiro para aqui</span>
             </>
           ) : (
             <span>A carregar...</span>
