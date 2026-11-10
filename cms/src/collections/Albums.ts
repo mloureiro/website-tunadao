@@ -78,6 +78,7 @@ export const Albums: CollectionConfig = {
       name: 'tracks',
       label: 'Faixas',
       type: 'array',
+      labels: { singular: 'Faixa', plural: 'Faixas' },
       admin: {
         description: 'Lista de faixas',
       },

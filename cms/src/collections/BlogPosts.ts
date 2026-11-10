@@ -83,6 +83,7 @@ export const BlogPosts: CollectionConfig = {
       name: 'tags',
       label: 'Etiquetas',
       type: 'array',
+      labels: { singular: 'Etiqueta', plural: 'Etiquetas' },
       fields: [
         {
           name: 'tag',

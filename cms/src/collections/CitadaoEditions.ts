@@ -104,6 +104,7 @@ export const CitadaoEditions: CollectionConfig = {
       name: 'schedule',
       label: 'Programação',
       type: 'array',
+      labels: { singular: 'Dia', plural: 'Dias' },
       admin: {
         description: 'Programação por dia/local',
       },

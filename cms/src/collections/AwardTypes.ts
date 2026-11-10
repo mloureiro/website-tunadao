@@ -41,6 +41,7 @@ export const AwardTypes: CollectionConfig = {
       name: 'aliases',
       label: 'Nomes alternativos',
       type: 'array',
+      labels: { singular: 'Nome alternativo', plural: 'Nomes alternativos' },
       admin: {
         description: 'Nomes alternativos usados por outros festivais',
       },
