@@ -9,8 +9,9 @@
  *   4. No hardcoded hosts (tunadao.pt, www.loureiro.me, tunadao1998.github.io)
  *      remain anywhere in dist/.
  *   5. No dropped-slash base joins in every dist HTML file.
- *   6. dist/404.html is noindex, has no canonical, and keeps every
- *      root-relative href/src under the base path.
+ *   6. dist/404.html and dist/en/404/index.html are noindex, have no
+ *      canonical, and keep every root-relative href/src under the base path;
+ *      dist/404.html redirects English paths to <base>en/404/.
  *
  * Expected env vars (set by the CI step that runs this script):
  *   EXPECTED_ORIGIN  e.g. https://example.test
@@ -214,24 +215,29 @@ if (BASE_WITHOUT_SLASH && BASE_WITHOUT_SLASH !== '') {
   pass(`Skipping dropped-slash check (base is root "/", no join ambiguity)`);
 }
 
-// ── 6. 404.html ──────────────────────────────────────────────────────────────
+// ── 6. 404 pages ─────────────────────────────────────────────────────────────
 
-const notFoundPath = path.join(DIST, '404.html');
-if (!fs.existsSync(notFoundPath)) {
-  fail('dist/404.html not found');
-} else {
+const NOT_FOUND_PAGES = ['404.html', 'en/404/index.html'];
+const ENGLISH_404_TARGET = `${EXPECTED_BASE}en/404/`;
+
+for (const relPath of NOT_FOUND_PAGES) {
+  const notFoundPath = path.join(DIST, relPath);
+  if (!fs.existsSync(notFoundPath)) {
+    fail(`dist/${relPath} not found`);
+    continue;
+  }
   const notFound = fs.readFileSync(notFoundPath, 'utf8');
 
   if (/<meta\s+name="robots"\s+content="noindex"/.test(notFound)) {
-    pass('404.html has robots noindex');
+    pass(`${relPath} has robots noindex`);
   } else {
-    fail('404.html is missing <meta name="robots" content="noindex">');
+    fail(`${relPath} is missing <meta name="robots" content="noindex">`);
   }
 
   if (/rel="canonical"/.test(notFound)) {
-    fail('404.html has a canonical link');
+    fail(`${relPath} has a canonical link`);
   } else {
-    pass('404.html has no canonical link');
+    pass(`${relPath} has no canonical link`);
   }
 
   const strayUrls = [...notFound.matchAll(/(?:href|src)="(\/[^"]*)"/g)]
@@ -240,11 +246,20 @@ if (!fs.existsSync(notFoundPath)) {
       (url) => !url.startsWith('//') && url !== BASE_WITHOUT_SLASH && !url.startsWith(EXPECTED_BASE)
     );
   if (strayUrls.length === 0) {
-    pass(`404.html root-relative href/src all start with ${EXPECTED_BASE}`);
+    pass(`${relPath} root-relative href/src all start with ${EXPECTED_BASE}`);
   } else {
     for (const url of strayUrls) {
-      fail(`404.html URL outside the base path: ${url}`);
+      fail(`${relPath} URL outside the base path: ${url}`);
     }
+  }
+}
+
+const rootNotFoundPath = path.join(DIST, '404.html');
+if (fs.existsSync(rootNotFoundPath)) {
+  if (fs.readFileSync(rootNotFoundPath, 'utf8').includes(ENGLISH_404_TARGET)) {
+    pass(`404.html redirects English paths to ${ENGLISH_404_TARGET}`);
+  } else {
+    fail(`404.html does not contain the English redirect target ${ENGLISH_404_TARGET}`);
   }
 }
 
