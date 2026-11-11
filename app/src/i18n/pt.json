@@ -379,19 +379,15 @@
   },
   "notFound": {
     "title": "Página não encontrada",
-    "text": "A página que procuras não existe ou mudou de endereço.",
-    "home": "Voltar ao início"
-  },
-  "error": {
-    "404": {
-      "title": "Página não encontrada",
-      "message": "A página que procura não existe ou foi movida.",
-      "backHome": "Voltar ao início"
-    },
-    "500": {
-      "title": "Erro de servidor",
-      "message": "Ocorreu um erro. Tente novamente mais tarde.",
-      "backHome": "Voltar ao início"
+    "heading": "Isto está desafinado.",
+    "text": "Afinámos tudo pelo Lá, mas a página que procuras não está cá.",
+    "home": "Afinar (voltar ao início)",
+    "more": "Ou salta para",
+    "tuner": {
+      "label": "Afinador com a agulha nos 404 Hz, muito abaixo do Lá a 440 Hz",
+      "reference": "Lá 440",
+      "off": "desafinado",
+      "tuned": "afinado — agora sim"
     }
   }
 }

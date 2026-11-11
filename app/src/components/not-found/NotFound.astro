@@ -1,0 +1,368 @@
+---
+import Button from '@components/Button.astro';
+import { getLocalizedPath, useTranslations, type Language } from '@i18n/index';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const CENTER = 210;
+const OUTER_RADIUS = 162;
+const ticks = Array.from({ length: 11 }, (_, index) => {
+  const step = index - 5;
+  const major = step % 5 === 0;
+  const angle = ((step * 12 - 90) * Math.PI) / 180;
+  const inner = 170 - (major ? 26 : 16);
+  const point = (radius: number) => ({
+    x: Number((CENTER + radius * Math.cos(angle)).toFixed(2)),
+    y: Number((CENTER + radius * Math.sin(angle)).toFixed(2)),
+  });
+  const from = point(inner);
+  const to = point(OUTER_RADIUS);
+  return { x1: from.x, y1: from.y, x2: to.x, y2: to.y, major };
+});
+
+const quickLinks = [
+  { href: getLocalizedPath('/citadao', lang), label: t('nav.citadao') },
+  { href: getLocalizedPath('/palmares', lang), label: t('nav.palmares') },
+  { href: getLocalizedPath('/musica', lang), label: t('nav.music') },
+];
+---
+
+<section class="not-found">
+  <div class="tuner" role="img" aria-label={t('notFound.tuner.label')}>
+    <svg class="tuner__dial" viewBox="0 0 420 240" aria-hidden="true" focusable="false">
+      <path class="tuner__arc" d="M 40 210 A 170 170 0 0 1 380 210"></path>
+      <path class="tuner__arc-ok" d="M 186 42 A 170 170 0 0 1 234 42"></path>
+      {
+        ticks.map((tick) => (
+          <line
+            class:list={['tuner__tick', { 'tuner__tick--major': tick.major }]}
+            x1={tick.x1}
+            y1={tick.y1}
+            x2={tick.x2}
+            y2={tick.y2}
+          />
+        ))
+      }
+      <text class="tuner__label" x="34" y="234" text-anchor="middle">−50</text>
+      <text class="tuner__label" x="386" y="234" text-anchor="middle">+50</text>
+      <text class="tuner__reference" x="210" y="20" text-anchor="middle">
+        {t('notFound.tuner.reference')}
+      </text>
+      <g class="needle">
+        <g class="needle__shake">
+          <line x1="210" y1="210" x2="210" y2="60"></line>
+          <circle cx="210" cy="210" r="10"></circle>
+        </g>
+      </g>
+    </svg>
+    <div class="tuner__readout" aria-hidden="true">
+      <span class="tuner__value tuner__value--off">404</span>
+      <span class="tuner__value tuner__value--tuned">440</span>
+      <span class="tuner__unit">Hz</span>
+    </div>
+    <p class="tuner__state" aria-hidden="true">
+      <span class="tuner__state-off">{t('notFound.tuner.off')}</span>
+      <span class="tuner__state-tuned">{t('notFound.tuner.tuned')}</span>
+    </p>
+  </div>
+
+  <h1 class="not-found__title">{t('notFound.heading')}</h1>
+  <p class="not-found__text">{t('notFound.text')}</p>
+
+  <div class="not-found__action">
+    <Button variant="primary" size="lg" href={getLocalizedPath('/', lang)}>
+      {t('notFound.home')}
+    </Button>
+  </div>
+
+  <nav class="not-found__more" aria-label={t('notFound.more')}>
+    <span class="not-found__more-lead">{t('notFound.more')}</span>
+    <ul class="not-found__links">
+      {
+        quickLinks.map((link) => (
+          <li>
+            <a class="not-found__link" href={link.href}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</section>
+
+<style>
+  .not-found {
+    --tuner-width: 26rem;
+    --tuner-swing-duration: 700ms;
+    --tuner-tremble-duration: 900ms;
+    --tuner-settle-duration: 2400ms;
+    --tuner-rest-angle: -52deg;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: var(--space-16) var(--space-4);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .tuner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(var(--tuner-width), 100%);
+  }
+
+  .tuner__dial {
+    width: 100%;
+    height: auto;
+  }
+
+  .tuner__arc,
+  .tuner__arc-ok {
+    fill: none;
+    stroke-width: 14;
+    stroke-linecap: round;
+  }
+
+  .tuner__arc {
+    stroke: var(--color-border);
+  }
+
+  .tuner__arc-ok {
+    stroke: var(--color-text-success);
+    opacity: 0.35;
+  }
+
+  .tuner__tick {
+    stroke: var(--color-text-secondary);
+    stroke-width: 2;
+  }
+
+  .tuner__tick--major {
+    stroke: var(--color-text);
+    stroke-width: 3;
+  }
+
+  .tuner__label {
+    fill: var(--color-text-secondary);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .tuner__reference {
+    fill: var(--color-text);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-extrabold);
+  }
+
+  .needle {
+    transform-origin: 210px 210px;
+    transform: rotate(var(--tuner-rest-angle));
+    transition: transform var(--tuner-swing-duration) var(--ease-spring);
+  }
+
+  .needle line,
+  .needle circle {
+    transition:
+      stroke var(--transition-base),
+      fill var(--transition-base);
+  }
+
+  .needle line {
+    stroke: var(--color-secondary);
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
+  .needle circle {
+    fill: var(--color-secondary);
+  }
+
+  .needle__shake {
+    transform-origin: 210px 210px;
+    animation: tremble var(--tuner-tremble-duration) linear infinite;
+  }
+
+  .tuner__readout {
+    margin-top: calc(-1 * var(--space-2));
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-black);
+    font-size: var(--font-size-5xl);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .tuner__value {
+    color: var(--color-link);
+    transition: color var(--transition-base);
+  }
+
+  .tuner__value--tuned,
+  .tuner__state-tuned {
+    display: none;
+  }
+
+  .tuner__unit {
+    margin-left: var(--space-1);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
+  }
+
+  .tuner__state {
+    margin: var(--space-2) 0 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+
+  .not-found__title {
+    margin: var(--space-6) 0 var(--space-3);
+    max-width: 18ch;
+    font-size: var(--font-size-4xl);
+    line-height: var(--line-height-tight);
+  }
+
+  .not-found__text {
+    max-width: 44ch;
+    margin: 0 0 var(--space-8);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+  }
+
+  .not-found__more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: var(--space-2);
+    margin-top: var(--space-6);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .not-found__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-2);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-link);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .needle {
+    transform: rotate(0deg);
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .needle__shake {
+    animation: settle var(--tuner-settle-duration) ease-in-out infinite;
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .needle line {
+    stroke: var(--color-text-success);
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .needle circle {
+    fill: var(--color-text-success);
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .tuner__value {
+    color: var(--color-text-success);
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .tuner__value--off,
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .tuner__state-off {
+    display: none;
+  }
+
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .tuner__value--tuned,
+  .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .tuner__state-tuned {
+    display: inline;
+  }
+
+  @keyframes tremble {
+    0% {
+      transform: rotate(0deg);
+    }
+    12% {
+      transform: rotate(2.2deg);
+    }
+    21% {
+      transform: rotate(-1.4deg);
+    }
+    33% {
+      transform: rotate(1.6deg);
+    }
+    47% {
+      transform: rotate(-2.4deg);
+    }
+    58% {
+      transform: rotate(0.8deg);
+    }
+    70% {
+      transform: rotate(-1deg);
+    }
+    84% {
+      transform: rotate(2deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes settle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(0.4deg);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .tuner__readout {
+      font-size: var(--font-size-6xl);
+    }
+
+    .not-found__title {
+      font-size: var(--font-size-5xl);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .needle {
+      transition: none;
+    }
+
+    .needle__shake,
+    .not-found:has(.not-found__action:hover, .not-found__action:focus-within) .needle__shake {
+      animation: none;
+    }
+  }
+</style>
