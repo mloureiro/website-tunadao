@@ -7,9 +7,10 @@ import { normalizeBase } from '@utils/url';
 
 interface Props {
   lang?: Language;
+  languageSwitchPath?: string;
 }
 
-const { lang = defaultLang } = Astro.props;
+const { lang = defaultLang, languageSwitchPath = Astro.url.pathname } = Astro.props;
 const t = useTranslations(lang);
 
 const navItems = navItemsConfig
@@ -66,7 +67,7 @@ const currentPath = normalizePath(Astro.url.pathname);
     </nav>
 
     <div class="header__actions">
-      <LanguageSelector lang={lang} currentPath={Astro.url.pathname} />
+      <LanguageSelector lang={lang} currentPath={languageSwitchPath} />
       <ThemeToggle lang={lang} />
       <button
         class="header__menu-btn"
