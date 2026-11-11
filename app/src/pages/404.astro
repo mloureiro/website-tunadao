@@ -1,7 +1,10 @@
 ---
 import Layout from '@layouts/Layout.astro';
 import NotFound from '@components/not-found/NotFound.astro';
-import { t } from '@i18n/index';
+import { getLocalizedPath, t } from '@i18n/index';
+
+const enPrefix = `${getLocalizedPath('/', 'en').replace(/\/+$/, '')}/`;
+const variantPath = `${getLocalizedPath('/404', 'en').replace(/\/+$/, '')}/`;
 ---
 
 <Layout
@@ -10,5 +13,18 @@ import { t } from '@i18n/index';
   noindex
   languageSwitchPath="/"
 >
+  <Fragment slot="head">
+    <script is:inline define:vars={{ enPrefix, variantPath }}>
+      // GitHub Pages serves only this root 404.html for every missing path, so /en/ paths land here too.
+      if (location.pathname === enPrefix.slice(0, -1) || location.pathname.startsWith(enPrefix)) {
+        document.documentElement.style.visibility = 'hidden';
+        location.replace(
+          variantPath +
+            '?from=' +
+            encodeURIComponent(location.pathname + location.search + location.hash)
+        );
+      }
+    </script>
+  </Fragment>
   <NotFound lang="pt" />
 </Layout>
