@@ -1,0 +1,24 @@
+---
+import Layout from '@layouts/Layout.astro';
+import NotFound from '@components/not-found/NotFound.astro';
+import { getLocalizedPath, t } from '@i18n/index';
+
+const enPrefix = `${getLocalizedPath('/', 'en').replace(/\/+$/, '')}/`;
+---
+
+<Layout
+  title={`${t('notFound.title', 'en')} | Tunadão 1998`}
+  description={t('notFound.text', 'en')}
+  noindex
+  languageSwitchPath="/"
+>
+  <Fragment slot="head">
+    <script is:inline define:vars={{ enPrefix }}>
+      const from = new URLSearchParams(location.search).get('from');
+      if (typeof from === 'string' && from.startsWith(enPrefix)) {
+        history.replaceState(history.state, '', from);
+      }
+    </script>
+  </Fragment>
+  <NotFound lang="en" />
+</Layout>
