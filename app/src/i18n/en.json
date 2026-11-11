@@ -379,19 +379,15 @@
   },
   "notFound": {
     "title": "Page not found",
-    "text": "The page you are looking for does not exist or has moved.",
-    "home": "Back to the homepage"
-  },
-  "error": {
-    "404": {
-      "title": "Page not found",
-      "message": "The page you're looking for doesn't exist or has been moved.",
-      "backHome": "Go back home"
-    },
-    "500": {
-      "title": "Server error",
-      "message": "An error occurred. Please try again later.",
-      "backHome": "Go back home"
+    "heading": "Flat out not found.",
+    "text": "We tuned everything to A440, but the page you're after is way off pitch.",
+    "home": "Tune up (back home)",
+    "more": "Or jump to",
+    "tuner": {
+      "label": "A tuner with the needle at 404 Hz, well below A at 440 Hz",
+      "reference": "A 440",
+      "off": "out of tune",
+      "tuned": "in tune — finally"
     }
   }
 }

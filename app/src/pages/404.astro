@@ -1,65 +1,14 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import Button from '@components/Button.astro';
-import { getLocalizedPath, t } from '@i18n/index';
+import NotFound from '@components/not-found/NotFound.astro';
+import { t } from '@i18n/index';
 ---
 
-<Layout title={`${t('notFound.title', 'pt')} | Tunadão 1998`} noindex>
-  <section class="not-found">
-    <p class="not-found__code" aria-hidden="true">404</p>
-    <h1 class="not-found__title">{t('notFound.title', 'pt')}</h1>
-    <p class="not-found__text">{t('notFound.text', 'pt')}</p>
-    <Button variant="primary" size="lg" href={getLocalizedPath('/', 'pt')}>
-      {t('notFound.home', 'pt')}
-    </Button>
-    <p class="not-found__en" lang="en">
-      {t('notFound.title', 'en')}.
-      <a href={getLocalizedPath('/', 'en')}>{t('notFound.home', 'en')}</a>
-    </p>
-  </section>
+<Layout
+  title={`${t('notFound.title', 'pt')} | Tunadão 1998`}
+  description={t('notFound.text', 'pt')}
+  noindex
+  languageSwitchPath="/"
+>
+  <NotFound lang="pt" />
 </Layout>
-
-<style>
-  .not-found {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    max-width: 40rem;
-    margin: 0 auto;
-    padding: var(--space-16) var(--space-4);
-    text-align: center;
-    overflow-wrap: anywhere;
-  }
-
-  .not-found__code {
-    margin: 0;
-    font-family: var(--font-family-heading);
-    font-weight: var(--font-weight-black);
-    font-size: clamp(5rem, 22vw, 9rem);
-    line-height: 1;
-    color: var(--color-link);
-  }
-
-  .not-found__title {
-    margin: var(--space-4) 0 var(--space-3);
-  }
-
-  .not-found__text {
-    margin: 0 0 var(--space-8);
-    color: var(--color-text-secondary);
-  }
-
-  .not-found__en {
-    margin: var(--space-8) 0 0;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-  }
-
-  .not-found__en a {
-    color: var(--color-link);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-</style>
