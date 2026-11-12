@@ -40,11 +40,11 @@ export const postsData: Record<string, BlogPost> = {
     slug: 'aniversario-tunadao',
     title: 'Tunadão celebra mais um aniversário',
     excerpt:
-      'Mais um ano de história para a tuna mais antiga do Instituto Politécnico de Viseu. Celebramos com música e convívio.',
+      'Mais um ano de história para a tuna mais antiga da Universidade Politécnica de Viseu. Celebramos com música e convívio.',
     content: `
       <p>A <strong>Tunadão 1998</strong> celebra mais um aniversário, reafirmando o seu compromisso com a tradição tunante e a vida académica de Viseu.</p>
 
-      <p>Desde a sua fundação em 3 de Maio de 1998, a Tunadão tem sido um pilar da cultura académica do Instituto Politécnico de Viseu, levando o nome da instituição por todo o país e além-fronteiras.</p>
+      <p>Desde a sua fundação em 3 de Maio de 1998, a Tunadão tem sido um pilar da cultura académica da Universidade Politécnica de Viseu, levando o nome da instituição por todo o país e além-fronteiras.</p>
 
       <h2>Uma história de sucesso</h2>
       <p>Ao longo destes anos, conquistámos centenas de prémios em festivais de tunas, organizámos 18 edições do CITADÃO, e formámos dezenas de tunos que levam connosco memórias inesquecíveis.</p>
