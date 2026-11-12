@@ -2,7 +2,7 @@
 
 ## 1. Visão Geral
 
-**Propósito:** Site institucional para a Tunadão - Tuna do Instituto Politécnico de Viseu, apresentando:
+**Propósito:** Site institucional para a Tunadão - Tuna da Universidade Politécnica de Viseu, apresentando:
 
 - Festival CITADÃO
 - Palmarés (prémios ganhos)
