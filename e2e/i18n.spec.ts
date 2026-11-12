@@ -30,8 +30,8 @@ function navAboutLabel(lang: 'pt' | 'en'): string {
 /**
  * Locale-aware hero subtitle (`home.subtitle`): always rendered in the hero
  * section, visible on every viewport size.
- * PT: "Tuna do Instituto Politécnico de Viseu"
- * EN: "Tuna of the Polytechnic Institute of Viseu"
+ * PT: "Tuna da Universidade Politécnica de Viseu"
+ * EN: "Tuna of the Polytechnic University of Viseu"
  */
 function homeSubtitle(lang: 'pt' | 'en'): string {
   return t('home.subtitle', lang);
