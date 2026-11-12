@@ -20,7 +20,7 @@
   "highlights": {
     "citadaoDesc": "O maior certame de tunas académicas da região do Dão. Desde 2004 a reunir as melhores tunas do país.",
     "palmaresDesc": "Mais de duas décadas de prémios conquistados em festivais por todo o país.",
-    "aboutDesc": "Conhece a história da tuna mais antiga do Instituto Politécnico de Viseu."
+    "aboutDesc": "Conhece a história da tuna mais antiga da Universidade Politécnica de Viseu."
   },
   "aboutPreview": {
     "text1": "A Tunadão nasceu em 1998, fruto da vontade de um grupo de estudantes do Instituto Politécnico de Viseu em criar uma tuna académica que representasse a instituição e a cidade. Desde então, tem sido uma referência na vida académica viseense, participando em festivais por todo o país e organizando o CITADÃO - Certame Internacional de Tunas Académicas do Dão.",
@@ -51,7 +51,7 @@
   },
   "home": {
     "title": "Tunadão 1998",
-    "subtitle": "Tuna do Instituto Politécnico de Viseu",
+    "subtitle": "Tuna da Universidade Politécnica de Viseu",
     "heroText": "Desde 1998 a representar a academia e a cidade de Viseu por todo o país",
     "cta": {
       "about": "Conhecer a história",
@@ -114,7 +114,7 @@
   "about": {
     "title": "Sobre Nós",
     "subtitle": "Mais de 25 anos de história",
-    "description": "Conhece a história da Tunadão 1998, a tuna académica do Instituto Politécnico de Viseu. Mais de 25 anos de tradição e música.",
+    "description": "Conhece a história da Tunadão 1998, a tuna académica da Universidade Politécnica de Viseu. Mais de 25 anos de tradição e música.",
     "hero": {
       "alt": "Tunadão 1998 — vinheta"
     },
@@ -146,7 +146,7 @@
       },
       "represent": {
         "title": "Representar a Academia",
-        "description": "Levar o nome do Instituto Politécnico de Viseu e da cidade por todo o país e além-fronteiras."
+        "description": "Levar o nome da Universidade Politécnica de Viseu e da cidade por todo o país e além-fronteiras."
       },
       "community": {
         "title": "Promover a Convivência",
@@ -274,7 +274,7 @@
   "blog": {
     "title": "Blog",
     "subtitle": "Notícias e eventos",
-    "description": "Blog da Tunadão 1998 - Notícias, eventos e novidades da tuna do Instituto Politécnico de Viseu.",
+    "description": "Blog da Tunadão 1998 - Notícias, eventos e novidades da tuna da Universidade Politécnica de Viseu.",
     "readingTime": "min de leitura",
     "publishedAt": "Publicado a",
     "byAuthor": "por",
@@ -292,7 +292,7 @@
   "videos": {
     "title": "Vídeos",
     "subtitle": "A nossa música em vídeo",
-    "description": "Vídeos da Tunadão 1998 - Atuações, festivais, serenatas e momentos especiais da tuna do Instituto Politécnico de Viseu.",
+    "description": "Vídeos da Tunadão 1998 - Atuações, festivais, serenatas e momentos especiais da tuna da Universidade Politécnica de Viseu.",
     "categories": {
       "all": "Todos",
       "atuacao": "Atuações",

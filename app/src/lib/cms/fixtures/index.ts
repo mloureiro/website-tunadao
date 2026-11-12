@@ -291,7 +291,7 @@ const fallbackAlbums: CMSAlbum[] = [
 const fallbackSiteSettings: CMSSiteSettings = {
   id: 1,
   siteName: 'Tunadão 1998',
-  siteDescription: 'Tuna Académica do Instituto Politécnico de Viseu',
+  siteDescription: 'Tuna Académica da Universidade Politécnica de Viseu',
   instagram: 'https://www.instagram.com/tunadao1998/',
   facebook: 'https://www.facebook.com/tunadao1998',
   youtube: 'https://www.youtube.com/@TUNADAO1998',

@@ -20,7 +20,7 @@
   "highlights": {
     "citadaoDesc": "The largest academic tuna competition in the Dão region. Since 2004, bringing together the best tunas in the country.",
     "palmaresDesc": "More than two decades of awards won at festivals across the country.",
-    "aboutDesc": "Discover the history of the oldest tuna at the Polytechnic Institute of Viseu."
+    "aboutDesc": "Discover the history of the oldest tuna at the Polytechnic University of Viseu."
   },
   "aboutPreview": {
     "text1": "Tunadão was born in 1998, from the desire of a group of students at the Polytechnic Institute of Viseu to create an academic tuna that would represent the institution and the city. Since then, it has been a reference in Viseu's academic life, participating in festivals across the country and organizing CITADÃO - International Competition of Academic Tunas of Dão.",
@@ -51,7 +51,7 @@
   },
   "home": {
     "title": "Tunadão 1998",
-    "subtitle": "Tuna of the Polytechnic Institute of Viseu",
+    "subtitle": "Tuna of the Polytechnic University of Viseu",
     "heroText": "Since 1998, representing the academy and the city of Viseu throughout Portugal",
     "cta": {
       "about": "Discover our history",
@@ -114,7 +114,7 @@
   "about": {
     "title": "About Us",
     "subtitle": "More than 25 years of history",
-    "description": "Discover the history of Tunadão 1998, the academic tuna of the Polytechnic Institute of Viseu. More than 25 years of tradition and music.",
+    "description": "Discover the history of Tunadão 1998, the academic tuna of the Polytechnic University of Viseu. More than 25 years of tradition and music.",
     "hero": {
       "alt": "Tunadão 1998 — vignette"
     },
@@ -146,7 +146,7 @@
       },
       "represent": {
         "title": "Represent the Academy",
-        "description": "Carry the name of the Polytechnic Institute of Viseu and the city throughout the country and beyond."
+        "description": "Carry the name of the Polytechnic University of Viseu and the city throughout the country and beyond."
       },
       "community": {
         "title": "Promote Community",
@@ -274,7 +274,7 @@
   "blog": {
     "title": "Blog",
     "subtitle": "News and events",
-    "description": "Tunadão 1998 Blog - News, events and updates from the tuna of the Polytechnic Institute of Viseu.",
+    "description": "Tunadão 1998 Blog - News, events and updates from the tuna of the Polytechnic University of Viseu.",
     "readingTime": "min read",
     "publishedAt": "Published on",
     "byAuthor": "by",
@@ -292,7 +292,7 @@
   "videos": {
     "title": "Videos",
     "subtitle": "Our music in video",
-    "description": "Tunadão 1998 Videos - Performances, festivals, serenades and special moments from the tuna of the Polytechnic Institute of Viseu.",
+    "description": "Tunadão 1998 Videos - Performances, festivals, serenades and special moments from the tuna of the Polytechnic University of Viseu.",
     "categories": {
       "all": "All",
       "atuacao": "Performances",
