@@ -284,7 +284,7 @@ export interface AwardType {
 export interface Venue {
   id: number;
   /**
-   * Nome do local (ex: Aula Magna do IPV)
+   * Nome do local (ex: Aula Magna da UPV)
    */
   name: string;
   /**

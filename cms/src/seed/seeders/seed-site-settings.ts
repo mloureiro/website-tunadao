@@ -7,7 +7,7 @@ export const seedSiteSettings = async (payload: Payload) => {
       slug: 'site-settings',
       data: {
         siteName: 'Tunadao 1998',
-        siteDescription: 'Tuna do Instituto Politecnico de Viseu',
+        siteDescription: 'Tuna da Universidade Politecnica de Viseu',
         instagram: 'https://www.instagram.com/tunadao1998/',
         facebook: 'https://www.facebook.com/tunadao1998',
         tiktok: 'https://www.tiktok.com/@tunadao1998',

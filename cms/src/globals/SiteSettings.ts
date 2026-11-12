@@ -32,7 +32,7 @@ export const SiteSettings: GlobalConfig = {
       label: 'Descrição do site',
       type: 'textarea',
       required: true,
-      defaultValue: 'Tuna do Instituto Politécnico de Viseu',
+      defaultValue: 'Tuna da Universidade Politécnica de Viseu',
     },
     {
       name: 'logo',

@@ -25,7 +25,7 @@ export const Venues: CollectionConfig = {
       type: 'text',
       required: true,
       admin: {
-        description: 'Nome do local (ex: Aula Magna do IPV)',
+        description: 'Nome do local (ex: Aula Magna da UPV)',
       },
     },
     {
