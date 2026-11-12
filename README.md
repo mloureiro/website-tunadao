@@ -1,6 +1,6 @@
 # Tunadão 1998 Website
 
-Website institucional da **Tunadão** - Tuna do Instituto Politécnico de Viseu.
+Website institucional da **Tunadão** - Tuna da Universidade Politécnica de Viseu.
 
 ## Stack
 

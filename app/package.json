@@ -2,7 +2,7 @@
   "name": "tunadao-website",
   "type": "module",
   "version": "1.0.0",
-  "description": "Website for Tunadão 1998 - Tuna do Instituto Politécnico de Viseu",
+  "description": "Website for Tunadão 1998 - Tuna da Universidade Politécnica de Viseu",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -24,6 +24,7 @@
     "tunadao",
     "viseu",
     "ipv",
+    "upv",
     "citadao"
   ],
   "author": "Tunadão 1998",
