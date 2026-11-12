@@ -569,7 +569,7 @@ export const MASTER_TUNAS: MasterTuna[] = [
   },
   {
     shortName: 'Tunadao1998',
-    fullName: 'Tuna do Instituto Politecnico de Viseu',
+    fullName: 'Tuna da Universidade Politecnica de Viseu',
     city: 'Viseu',
   },
   {
