@@ -93,13 +93,6 @@ export const ContactSubmissions: CollectionConfig = {
         create: () => false,
       },
     },
-    {
-      name: 'honeypot',
-      type: 'text',
-      admin: {
-        hidden: true,
-      },
-    },
   ],
   hooks: {
     beforeValidate: [

@@ -712,7 +712,6 @@ export interface ContactSubmission {
    * Notas internas sobre este contacto
    */
   notes?: string | null;
-  honeypot?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1103,7 +1102,6 @@ export interface ContactSubmissionsSelect<T extends boolean = true> {
   message?: T;
   status?: T;
   notes?: T;
-  honeypot?: T;
   updatedAt?: T;
   createdAt?: T;
 }
