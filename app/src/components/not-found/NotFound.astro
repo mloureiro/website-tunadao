@@ -366,3 +366,64 @@ const quickLinks = [
     }
   }
 </style>
+
+<script>
+  const START_HZ = 404;
+  const PEAK_HZ = 448;
+  const REST_HZ = 440;
+  const SWING_MS = 700;
+  const SETTLE_MS = 500;
+
+  const easeOut = (t: number): number => 1 - (1 - t) ** 3;
+  const easeInOut = (t: number): number => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('.not-found').forEach((section) => {
+    const action = section.querySelector<HTMLElement>('.not-found__action');
+    const readout = section.querySelector<HTMLElement>('.tuner__value--tuned');
+    if (!action || !readout) return;
+
+    let frame = 0;
+
+    const stop = (): void => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const release = (): void => {
+      if (!action.matches(':hover, :focus-within')) stop();
+    };
+
+    const tune = (): void => {
+      if (frame) return;
+      if (reducedMotion.matches) {
+        readout.textContent = String(REST_HZ);
+        return;
+      }
+
+      const start = performance.now();
+      const step = (now: number): void => {
+        const elapsed = now - start;
+        if (elapsed >= SWING_MS + SETTLE_MS) {
+          readout.textContent = String(REST_HZ);
+          frame = 0;
+          return;
+        }
+        const value =
+          elapsed < SWING_MS
+            ? START_HZ + (PEAK_HZ - START_HZ) * easeOut(elapsed / SWING_MS)
+            : PEAK_HZ + (REST_HZ - PEAK_HZ) * easeInOut((elapsed - SWING_MS) / SETTLE_MS);
+        readout.textContent = String(Math.round(value));
+        frame = requestAnimationFrame(step);
+      };
+
+      readout.textContent = String(START_HZ);
+      frame = requestAnimationFrame(step);
+    };
+
+    action.addEventListener('pointerenter', tune);
+    action.addEventListener('focusin', tune);
+    action.addEventListener('pointerleave', release);
+    action.addEventListener('focusout', release);
+  });
+</script>
