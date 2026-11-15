@@ -371,54 +371,76 @@ const quickLinks = [
   const START_HZ = 404;
   const PEAK_HZ = 448;
   const REST_HZ = 440;
-  const SWING_MS = 700;
-  const SETTLE_MS = 500;
 
-  const easeOut = (t: number): number => 1 - (1 - t) ** 3;
-  const easeInOut = (t: number): number => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const angleOf = (element: Element): number => {
+    const { transform } = getComputedStyle(element);
+    if (transform === 'none') return 0;
+    const matrix = new DOMMatrixReadOnly(transform);
+    return (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
+  };
+
+  const peakProgressOf = (timingFunction: string): number => {
+    const points = timingFunction
+      .match(/^cubic-bezier\((.+)\)$/)?.[1]
+      .split(',')
+      .map(Number);
+    if (!points) return 1;
+    const [, y1, , y2] = points;
+    let peak = 1;
+    for (let s = 0; s <= 1; s += 0.01) {
+      peak = Math.max(peak, 3 * (1 - s) ** 2 * s * y1 + 3 * (1 - s) * s ** 2 * y2 + s ** 3);
+    }
+    return peak;
+  };
 
   document.querySelectorAll<HTMLElement>('.not-found').forEach((section) => {
     const action = section.querySelector<HTMLElement>('.not-found__action');
+    const needle = section.querySelector<SVGGElement>('.needle');
     const readout = section.querySelector<HTMLElement>('.tuner__value--tuned');
-    if (!action || !readout) return;
+    if (!action || !needle || !readout) return;
+
+    const restAngle = Math.abs(
+      parseFloat(getComputedStyle(section).getPropertyValue('--tuner-rest-angle'))
+    );
+    const overshootAngle =
+      restAngle * (peakProgressOf(getComputedStyle(needle).transitionTimingFunction) - 1);
+
+    const frequencyAt = (angle: number): number =>
+      angle > 0 && overshootAngle > 0
+        ? REST_HZ + ((PEAK_HZ - REST_HZ) * Math.min(angle, overshootAngle)) / overshootAngle
+        : REST_HZ + ((REST_HZ - START_HZ) * Math.max(angle, -restAngle)) / restAngle;
 
     let frame = 0;
+
+    const render = (): void => {
+      readout.textContent = String(Math.round(frequencyAt(angleOf(needle))));
+    };
 
     const stop = (): void => {
       cancelAnimationFrame(frame);
       frame = 0;
     };
 
-    const release = (): void => {
-      if (!action.matches(':hover, :focus-within')) stop();
-    };
-
     const tune = (): void => {
-      if (frame) return;
-      if (reducedMotion.matches) {
-        readout.textContent = String(REST_HZ);
-        return;
-      }
+      const swing = needle
+        .getAnimations()
+        .find(
+          (animation) =>
+            animation instanceof CSSTransition && animation.transitionProperty === 'transform'
+        );
+      render();
+      if (!swing || frame) return;
 
-      const start = performance.now();
-      const step = (now: number): void => {
-        const elapsed = now - start;
-        if (elapsed >= SWING_MS + SETTLE_MS) {
-          readout.textContent = String(REST_HZ);
-          frame = 0;
-          return;
-        }
-        const value =
-          elapsed < SWING_MS
-            ? START_HZ + (PEAK_HZ - START_HZ) * easeOut(elapsed / SWING_MS)
-            : PEAK_HZ + (REST_HZ - PEAK_HZ) * easeInOut((elapsed - SWING_MS) / SETTLE_MS);
-        readout.textContent = String(Math.round(value));
+      const step = (): void => {
+        render();
         frame = requestAnimationFrame(step);
       };
-
-      readout.textContent = String(START_HZ);
       frame = requestAnimationFrame(step);
+      swing.finished.then(render, () => undefined).finally(stop);
+    };
+
+    const release = (): void => {
+      if (!action.matches(':hover, :focus-within')) stop();
     };
 
     action.addEventListener('pointerenter', tune);
