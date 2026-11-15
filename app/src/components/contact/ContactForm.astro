@@ -174,17 +174,13 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
     background-color: var(--color-background);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    transition:
-      border-color var(--transition-fast),
-      box-shadow var(--transition-fast);
+    transition: border-color var(--transition-fast);
   }
 
   .form-group input:focus,
   .form-group select:focus,
   .form-group textarea:focus {
-    outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(41, 22, 111, 0.1);
   }
 
   .form-group textarea {
