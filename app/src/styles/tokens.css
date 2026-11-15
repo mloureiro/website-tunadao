@@ -49,6 +49,7 @@
 
   /* Link / text-emphasis token (contrast-safe alternative to --color-primary for text-on-background) */
   --color-link: var(--color-primary);
+  --focus-ring-color: var(--color-primary);
 
   /* Brand Colors */
   --color-youtube: #ff0000;
