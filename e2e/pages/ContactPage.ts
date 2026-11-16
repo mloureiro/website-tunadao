@@ -39,6 +39,10 @@ export class ContactPage extends BasePage {
     return this.page.locator('textarea#message');
   }
 
+  honeypotInput(): Locator {
+    return this.form().locator('input[name="website"]');
+  }
+
   submitButton(): Locator {
     return this.page.getByRole('button', { name: /enviar/i });
   }
