@@ -103,3 +103,19 @@ test.describe('Contact Page', () => {
     await expect(slowContact.statusRegion()).not.toContainText(t('contact.form.waking', 'pt'));
   });
 });
+
+test.describe('Contact form honeypot', () => {
+  for (const lang of ['pt', 'en'] as const) {
+    test(`exposes only named text fields to assistive technology (${lang})`, async ({ page }) => {
+      const contact = new ContactPage(page, lang);
+      await contact.goto();
+
+      const textboxes = contact.form().getByRole('textbox');
+      await expect(textboxes).toHaveCount(3);
+      for (const textbox of await textboxes.all()) {
+        await expect(textbox).toHaveAccessibleName(/\S/);
+      }
+      await expect(contact.honeypotInput()).toBeAttached();
+    });
+  }
+});

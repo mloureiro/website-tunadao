@@ -51,7 +51,9 @@ const isConfigured = Boolean(siteKey) && Boolean(cmsUrl);
     isConfigured && (
       <form class="contact-form" id="contactForm">
         {/* Honeypot field for spam protection */}
-        <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" />
+        <div class="honeypot" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
 
         <div class="form-group">
           <label for="name">{labels.name} *</label>
