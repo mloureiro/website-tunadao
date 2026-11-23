@@ -6,7 +6,7 @@ import { pt } from '@payloadcms/translations/languages/pt';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
-import { LOCAL_DB_URL } from './lib/db-path';
+import { resolveDbClientConfig } from './lib/db-client';
 import { isProduction } from './lib/env';
 import { ptPTTranslations } from './i18n/pt-PT';
 
@@ -99,10 +99,7 @@ export default buildConfig({
   editor: lexicalEditor(),
 
   db: sqliteAdapter({
-    client: {
-      url: process.env.TURSO_DATABASE_URL || LOCAL_DB_URL,
-      authToken: process.env.TURSO_AUTH_TOKEN,
-    },
+    client: resolveDbClientConfig(),
     // Schema is owned by committed migrations (cms/src/migrations); push is off
     // everywhere for strict dev/prod parity — run `payload migrate` to apply schema.
     push: false,

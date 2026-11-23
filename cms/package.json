@@ -15,6 +15,7 @@
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
     "migrate:status": "payload migrate:status",
+    "migrate:preflight": "tsx src/deploy/check-dev-migration.ts",
     "seed": "tsx src/seed/index.ts",
     "provision:admin": "tsx src/seed/provision-admin.ts",
     "db:reset": "tsx src/seed/reset-db.ts",

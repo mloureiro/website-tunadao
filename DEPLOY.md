@@ -78,13 +78,17 @@ npm ci --include=dev && npm run build -w cms
 **Start Command:**
 
 ```bash
-npm run payload -w cms -- migrate --force-accept-warning && npm run start -w cms
+npm run migrate:preflight -w cms && npm run payload -w cms -- migrate && npm run start -w cms
 ```
 
 Database migrations are applied automatically on every deploy, **before the service begins serving
 traffic**. The migrate step is idempotent — a redeploy with no new migrations is a no-op. If
 migrate fails (schema mismatch or DB unreachable), `npm run start` is not reached and the deploy is
 marked unhealthy, which is the correct fail-closed behaviour.
+
+Before migrating, `npm run migrate:preflight -w cms` (`cms/src/deploy/check-dev-migration.ts`) refuses
+to continue when `payload_migrations` holds a dev-mode row (`batch = -1`). See
+[Recovering from a dev-mode migration row](#recovering-from-a-dev-mode-migration-row).
 
 The Node version comes from the `NODE_VERSION` environment variable (`22.23.4`), declared in `render.yaml`.
 
@@ -156,17 +160,27 @@ never auto-created from collection definitions at runtime.
 **On every Render deploy** the start command runs:
 
 ```bash
-npm run payload -w cms -- migrate --force-accept-warning && npm run start -w cms
+npm run migrate:preflight -w cms && npm run payload -w cms -- migrate && npm run start -w cms
 ```
 
 This applies any pending migrations to Turso before the service serves traffic. If the schema is
 already up to date the migrate step is a no-op. If it fails, the deploy is aborted (fail-closed).
+The preflight exits non-zero, before `migrate`, when a dev-mode migration row exists.
 
 > **R1 note:** migrations are verified against a local libSQL file DB (same `@libsql/client`
 > that targets Turso). Remote Turso DDL apply is confirmed on first deploy.
 
 **`PAYLOAD_DISABLE_PUSH`** is kept in `render.yaml` as a documentation marker only. The variable
 no longer gates the adapter — push is disabled in code regardless of its value.
+
+#### Recovering from a dev-mode migration row
+
+1. **Why it exists.** Payload writes a `payload_migrations` row with `name = 'dev'` and `batch = -1` when it pushes schema in dev mode. Push is off in code today, so the row comes from an older checkout or a dev run against the production database. `payload migrate` always asks for confirmation when it sees the row, and no flag skips that prompt (the force-accept option is read only by `migrate:create` and `migrate:fresh`). Render has no TTY, so the deploy fails; `migrate:preflight` stops it earlier with a clear message.
+2. **Back up first.** `turso db shell <db> .dump > backup-<date>.sql`, or use the `backup.yml` workflow.
+3. **Inspect.** `SELECT id, name, batch, created_at FROM payload_migrations ORDER BY name;`
+4. **Verify every applied migration has its own row.** Each migration under `cms/src/migrations/` that production already applied must appear with `batch > 0`. If one is missing because the schema was pushed, stop: removing the dev row would make `migrate` re-run `CREATE TABLE` and fail. Insert the missing row (`INSERT INTO payload_migrations (name, batch) VALUES ('<migration name>', 1);`) only after verifying the schema matches that migration.
+5. **Remove the row.** `DELETE FROM payload_migrations WHERE batch = -1;`
+6. **Re-deploy** and look for `[migrate:preflight] No dev-mode migration row` in the Render logs.
 
 #### Developer schema-change workflow
 
@@ -353,7 +367,7 @@ on:
 - [ ] GitHub Pages enabled in repository settings
 - [ ] Render.com web service created
 - [ ] Turso database created and connected (`TURSO_DATABASE_URL` + `TURSO_AUTH_TOKEN` set)
-- [ ] Before a deploy that adds a migration: back up the Turso database and confirm `payload_migrations` has no `dev` row
+- [ ] Before a deploy that adds a migration: back up the Turso database (the `migrate:preflight` check stops the deploy if `payload_migrations` holds a dev row; see [Recovering from a dev-mode migration row](#recovering-from-a-dev-mode-migration-row))
 - [ ] Migrations applied on first deploy (automated via start command — verify in Render logs)
 - [ ] `PAYLOAD_DISABLE_PUSH` kept in `render.yaml` as documentation marker (push is off in code)
 - [ ] `FRONTEND_URL` set to production frontend URL (required for CORS/CSRF and provisioning)
@@ -446,7 +460,7 @@ The CI/CD pipeline (`.github/workflows/ci.yml`, `.github/workflows/backup.yml`) 
 Before building the frontend, `deploy-app` probes the CMS (`Check CMS availability` step) to decide between a live build, a seed-data build (only when `CMS_URL` is unset) and failing the deploy. The check is a **bounded retry**, not a single request:
 
 - The probed route is `GET $CMS_URL/api/globals/site-settings?depth=0`. It is publicly readable and does one database read, so it fails when the database is unreachable and not only when the process is down. It is also the same route family the build fetches.
-- With `CMS_URL` unset, the step emits a `::warning::` annotation and the deploy builds from seed data. That fallback path runs `migrate --force-accept-warning` **before** `seed`, then `db:export`.
+- With `CMS_URL` unset, the step emits a `::warning::` annotation and the deploy builds from seed data. That fallback path runs `migrate` **before** `seed`, then `db:export`.
 - ~5 attempts, each `curl --max-time 10`, with a 15s sleep between attempts → hard ceiling **under ~3 minutes**.
 - After the last failed attempt the step emits `::error::` and fails the job, so no artifact is uploaded and the previous Pages deployment stays live.
 - On the live path `Build site` sets `FORCE_PROD_CMS=true`, so a CMS that drops mid-build fails the build instead of shipping fixtures.
